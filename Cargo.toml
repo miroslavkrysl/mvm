@@ -1,0 +1,8 @@
+[package]
+name = "byint"
+version = "0.1.0"
+authors = ["Miroslav Krýsl <mkrysl@protonmail.com>"]
+edition = "2018"
+description = "Bytecode interpreter with simple graphical visualizer."
+
+[dependencies]
