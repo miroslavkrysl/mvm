@@ -42,6 +42,20 @@ impl DoubleWord {
     pub fn new(value: u64) -> Self {
         DoubleWord(value)
     }
+
+    pub fn from_words_be(value: &[Word; 2]) -> Self {
+        let h: u32 = value[0].into();
+        let l: u32 = value[0].into();
+
+        DoubleWord(((h as u64) << 32) + (l as u64))
+    }
+
+    pub fn to_words_be(&self) -> [Word; 2] {
+        let h = self.0 as u32;
+        let l = (self.0 >> 32) as u32;
+
+        [Word::new(h), Word::new(l)]
+    }
 }
 
 impl From<u64> for DoubleWord {
