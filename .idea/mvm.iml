@@ -6,6 +6,10 @@
       <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm-gtk/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm-cli/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vmm/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
