@@ -15,3 +15,7 @@ dependencies = [
 name = "mvm-gtk"
 version = "0.1.0"
 
+[[package]]
+name = "mvm-parse"
+version = "0.1.0"
+

@@ -9,35 +9,22 @@ pub enum VmError {
 }
 
 
-/// An error caused by the inappropriate OperandStack manipulation.
-#[derive(Debug)]
-pub enum OperandStackError {
-    StackOverflow,
-    StackUnderflow,
-}
-
-impl fmt::Display for OperandStackError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            OperandStackError::StackOverflow => write!(f, "stack overflow"),
-            OperandStackError::StackUnderflow => write!(f, "stack underflow"),
-        }
-    }
-}
-
-impl Error for OperandStackError {}
-
-
 /// An error caused by the inappropriate Locals manipulation.
 #[derive(Debug)]
 pub enum LocalsError {
-    IndexOutOfBounds
+    IndexOutOfBounds,
+    NonMatchingType,
+    VariableOccupied,
+    VariableEmpty,
 }
 
 impl fmt::Display for LocalsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             LocalsError::IndexOutOfBounds => write!(f, "index out of bounds"),
+            LocalsError::NonMatchingType => write!(f, "non matching type"),
+            LocalsError::VariableOccupied => write!(f, "variable is occupied"),
+            LocalsError::VariableEmpty => write!(f, "variable is empty")
         }
     }
 }
