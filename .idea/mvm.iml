@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/mvm-gtk/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/mvm/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/mvm-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm-parse/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/vmm/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
