@@ -6,7 +6,6 @@ use std::error::Error;
 pub enum OperandStackError {
     StackOverflow,
     StackUnderflow,
-    NonMatchingTypes,
 }
 
 impl fmt::Display for OperandStackError {
@@ -14,7 +13,6 @@ impl fmt::Display for OperandStackError {
         match self {
             OperandStackError::StackOverflow => write!(f, "stack overflow"),
             OperandStackError::StackUnderflow => write!(f, "stack underflow"),
-            OperandStackError::NonMatchingTypes => write!(f, "non matching types"),
         }
     }
 }
@@ -26,7 +24,6 @@ impl Error for OperandStackError {}
 #[derive(Debug)]
 pub enum VariablesError {
     IndexOutOfBounds,
-    NonMatchingTypes,
     Undefined,
 }
 
@@ -34,7 +31,6 @@ impl fmt::Display for VariablesError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             VariablesError::IndexOutOfBounds => write!(f, "index out of bounds"),
-            VariablesError::NonMatchingTypes => write!(f, "non matching types"),
             VariablesError::Undefined => write!(f, "variable value is undefined"),
         }
     }

@@ -61,6 +61,12 @@ pub struct Long(i64);
 #[derive(Debug, Copy, Clone)]
 pub struct Float(f32);
 
+impl Float {
+    pub fn new(value: f32) -> Self {
+        Float(value)
+    }
+}
+
 
 #[derive(Debug, Copy, Clone)]
 pub struct Double(f64);
