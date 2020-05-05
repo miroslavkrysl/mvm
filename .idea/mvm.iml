@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="CPP_MODULE" version="4">
-  <component name="NewModuleRootManager">
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/mvm-gtk/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/mvm/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/mvm-cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/mvm-parse/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/src/vmm/target" />
+      <sourceFolder url="file://$MODULE_DIR$/mvm-gtk/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

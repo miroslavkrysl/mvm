@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="CargoProjects">
+    <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/class.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/constant_pool.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/flags.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/method.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/name.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/symref.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/class_loader.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/engine.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/heap/heap.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/heap/instance.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/heap/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/instructions.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/lib.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stack/frame.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stack/frame_stack.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stackk/frame.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stackk/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stackk/operand_stack.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/stackk/variables.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/symref.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/thread.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/types/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/types/reference.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/types/word.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/typeses.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/value.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mvm.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/mvm.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-cli/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-cli/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-cli/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-cli/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-gtk/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-gtk/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-gtk/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-gtk/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-parse/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-parse/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm-parse/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-parse/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/error.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/opcode.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/opcode.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/stack/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/stack/error.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/stack/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/stack/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/stack/operand_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/stack/operand_stack.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/stack/variables.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/stack/variables.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/types.rs" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="lgdie4wm" />
+  </component>
+  <component name="ProjectId" id="1bQzqQ53g550oXSawwuDEKW7SD6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
+    <property name="settings.editor.selected.configurable" value="language.rust.cargo" />
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="cargo run" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Cargo Command.Run mvm-cli">
+    <configuration name="Run mvm-cli" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="run --package mvm-cli --bin mvm-cli" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="run" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="run" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo Command.Run mvm-cli" />
+        <item itemvalue="Cargo Command.run" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="RustProjectSettings">
+    <option name="externalLinter" value="Clippy" />
+    <option name="macroExpansionEngine" value="NEW" />
+    <option name="runExternalLinterOnTheFly" value="true" />
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="" />
+      <created>1588579295980</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1588579295980</updated>
+      <workItem from="1588579300376" duration="6924000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1588666708715">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1588666708715" />
+    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588662619351">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1588662619351" />
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1588665676393">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676393" />
+    <state width="1874" height="275" key="GridCell.Tab.0.center" timestamp="1588665676392">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="275" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676392" />
+    <state width="1874" height="275" key="GridCell.Tab.0.left" timestamp="1588665676392">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="275" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676392" />
+    <state width="1874" height="275" key="GridCell.Tab.0.right" timestamp="1588665676393">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="275" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676393" />
+    <state x="449" y="188" width="1022" height="737" key="SettingsEditor" timestamp="1588662273304">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="449" y="188" width="1022" height="737" key="SettingsEditor/0.27.1920.1053@0.27.1920.1053" timestamp="1588662273304" />
+    <state x="624" y="252" width="672" height="677" key="run.anything.popup" timestamp="1588664881903">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="624" y="252" width="672" height="677" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1588664881903" />
+  </component>
+</project>
