@@ -23,13 +23,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/class.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/constant_pool.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/flags.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/method.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/name.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/class/symref.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/class_loader.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/engine.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/heap/heap.rs" afterDir="false" />
@@ -43,6 +36,14 @@
       <change afterPath="$PROJECT_DIR$/mvm/src/stackk/mod.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/stackk/operand_stack.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/stackk/variables.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/class.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/code.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/constant_pool.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/error.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/flags.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/method.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvm/src/structs/symref.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/symref.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/thread.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/types/mod.rs" afterDir="false" />
@@ -51,9 +52,7 @@
       <change afterPath="$PROJECT_DIR$/mvm/src/typeses.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/value.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/mvm.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/mvm.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm-cli/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-cli/Cargo.toml" afterDir="false" />
@@ -102,6 +101,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
+    <property name="org.rust.hideDetachedFileNotifications/home/mkrysl/IdeaProjects/mvm/mvm/src/instructions.rs" value="true" />
     <property name="settings.editor.selected.configurable" value="language.rust.cargo" />
   </component>
   <component name="RunAnythingCache">
@@ -159,12 +159,44 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1588579295980</updated>
-      <workItem from="1588579300376" duration="6924000" />
+      <workItem from="1588579300376" duration="13623000" />
     </task>
+    <task id="LOCAL-00001" summary="switch to intellij">
+      <created>1588666952605</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1588666952605</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add names">
+      <created>1588666994732</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1588666994732</updated>
+    </task>
+    <task id="LOCAL-00003" summary="improve names for detecting invalid chars">
+      <created>1588669790828</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1588669790828</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -177,31 +209,41 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="switch to intellij" />
+    <MESSAGE value="add names" />
+    <MESSAGE value="improve names for detecting invalid chars" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve names for detecting invalid chars" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1588666708715">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1588668709745">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1588666708715" />
-    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588662619351">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1588668709745" />
+    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588670385651">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1588662619351" />
-    <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1588665676393">
+    <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1588670385651" />
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1588669790716">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676393" />
-    <state width="1874" height="275" key="GridCell.Tab.0.center" timestamp="1588665676392">
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1588669790716" />
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1588669902733">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676392" />
-    <state width="1874" height="275" key="GridCell.Tab.0.left" timestamp="1588665676392">
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1588669902733" />
+    <state width="1874" height="275" key="GridCell.Tab.0.center" timestamp="1588669902730">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676392" />
-    <state width="1874" height="275" key="GridCell.Tab.0.right" timestamp="1588665676393">
+    <state width="1874" height="275" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1588669902730" />
+    <state width="1874" height="275" key="GridCell.Tab.0.left" timestamp="1588669902729">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1588665676393" />
+    <state width="1874" height="275" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1588669902729" />
+    <state width="1874" height="275" key="GridCell.Tab.0.right" timestamp="1588669902732">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="275" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1588669902732" />
     <state x="449" y="188" width="1022" height="737" key="SettingsEditor" timestamp="1588662273304">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -210,5 +252,9 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="624" y="252" width="672" height="677" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1588664881903" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1588672313205">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1588672313205" />
   </component>
 </project>
