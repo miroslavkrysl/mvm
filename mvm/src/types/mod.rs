@@ -1,12 +1,27 @@
+pub use self::boolean::*;
+pub use self::byte::*;
+pub use self::category::*;
+pub use self::char::*;
+pub use self::comp_value::*;
+pub use self::double::*;
+pub use self::error::*;
+pub use self::float::*;
+pub use self::int::*;
+pub use self::jvm_value::*;
+pub use self::long::*;
+pub use self::reference::*;
+pub use self::short::*;
+
 mod error;
 mod reference;
 mod int;
 mod long;
 mod float;
 mod double;
-
-pub use self::reference::Reference;
-pub use self::int::Int;
-pub use self::long::Long;
-pub use self::float::Float;
-pub use self::double::Double;
+mod byte;
+mod short;
+mod char;
+mod boolean;
+mod comp_value;
+mod jvm_value;
+mod category;

@@ -1,72 +1,81 @@
-use crate::types::{Int, Long, Double};
+use crate::types::{Double, Long, Int, ValueCategory, Categorize};
+use std::fmt;
 
-#[derive(Debug, Copy, Clone)]
-pub struct Float {
-    value: f32
-}
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Float(f32);
 
 impl Float {
     pub fn new(value: f32) -> Self {
-        Float {
-            value
-        }
+        Float(value)
     }
 
     pub fn add(&self, other: Float) -> Float {
-        let result = self.value + other.value;
+        let result = self.0 + other.0;
         Float::new(result)
     }
 
     pub fn sub(&self, other: Float) -> Float {
-        let result = self.value - other.value;
+        let result = self.0 - other.0;
         Float::new(result)
     }
 
     pub fn mul(&self, other: Float) -> Float {
-        let result = self.value * other.value;
+        let result = self.0 * other.0;
         Float::new(result)
     }
 
     pub fn div(&self, other: Float) -> Float {
-        let result = self.value / other.value;
+        let result = self.0 / other.0;
         Float::new(result)
     }
 
     pub fn rem(&self, other: Float) -> Float {
-        let result = self.value % other.value;
+        let result = self.0 % other.0;
         Float::new(result)
     }
 
     pub fn neg(&self) -> Float {
-        let result = -self.value;
+        let result = -self.0;
         Float::new(result)
     }
 
     pub fn to_int(&self) -> Int {
-        Int::new(self.value as i32)
+        Int::new(self.0 as i32)
     }
 
     pub fn to_long(&self) -> Long {
-        Long::new(self.value as i64)
+        Long::new(self.0 as i64)
     }
 
     pub fn to_double(&self) -> Double {
-        Double::new(self.value as f64)
+        Double::new(self.0 as f64)
     }
 
     pub fn eq(&self, other: Float) -> bool {
-        self.value == other.value
+        self.0 == other.0
     }
 
     pub fn lt(&self, other: Float) -> bool {
-        self.value < other.value
+        self.0 < other.0
     }
 
     pub fn gt(&self, other: Float) -> bool {
-        self.value > other.value
+        self.0 > other.0
     }
 
     pub fn is_nan(&self) -> bool {
-        self.value.is_nan()
+        self.0.is_nan()
+    }
+}
+
+impl Categorize for Float {
+    fn category(&self) -> ValueCategory {
+        ValueCategory::Single
+    }
+}
+
+impl fmt::Display for Float {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

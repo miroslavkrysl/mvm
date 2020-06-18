@@ -1,72 +1,81 @@
-use crate::types::{Int, Long, Float};
+use crate::types::{Categorize, Float, Int, Long, ValueCategory};
+use std::fmt;
 
-#[derive(Debug, Copy, Clone)]
-pub struct Double {
-    value: f64
-}
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct Double(f64);
 
 impl Double {
     pub fn new(value: f64) -> Self {
-        Double {
-            value
-        }
+        Double(value)
     }
 
     pub fn add(&self, other: Double) -> Double {
-        let result = self.value + other.value;
+        let result = self.0 + other.0;
         Double::new(result)
     }
 
     pub fn sub(&self, other: Double) -> Double {
-        let result = self.value - other.value;
+        let result = self.0 - other.0;
         Double::new(result)
     }
 
     pub fn mul(&self, other: Double) -> Double {
-        let result = self.value * other.value;
+        let result = self.0 * other.0;
         Double::new(result)
     }
 
     pub fn div(&self, other: Double) -> Double {
-        let result = self.value / other.value;
+        let result = self.0 / other.0;
         Double::new(result)
     }
 
     pub fn rem(&self, other: Double) -> Double {
-        let result = self.value % other.value;
+        let result = self.0 % other.0;
         Double::new(result)
     }
 
     pub fn neg(&self) -> Double {
-        let result = -self.value;
+        let result = -self.0;
         Double::new(result)
     }
 
     pub fn to_int(&self) -> Int {
-        Int::new(self.value as i32)
+        Int::new(self.0 as i32)
     }
 
     pub fn to_long(&self) -> Long {
-        Long::new(self.value as i64)
+        Long::new(self.0 as i64)
     }
 
     pub fn to_float(&self) -> Float {
-        Float::new(self.value as f32)
+        Float::new(self.0 as f32)
     }
 
     pub fn eq(&self, other: Double) -> bool {
-        self.value == other.value
+        self.0 == other.0
     }
 
     pub fn lt(&self, other: Double) -> bool {
-        self.value < other.value
+        self.0 < other.0
     }
 
     pub fn gt(&self, other: Double) -> bool {
-        self.value > other.value
+        self.0 > other.0
     }
 
     pub fn is_nan(&self) -> bool {
-        self.value.is_nan()
+        self.0.is_nan()
+    }
+}
+
+impl Categorize for Double {
+    fn category(&self) -> ValueCategory {
+        ValueCategory::Double
+    }
+}
+
+impl fmt::Display for Double {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

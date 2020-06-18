@@ -1,29 +1,25 @@
+use crate::types::category::{Categorize, ValueCategory};
+use std::fmt;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Reference {
-    value: usize
+pub enum Reference {
+    Null
 }
 
 impl Reference {
-    const NULL_VALUE: usize = 0;
-
-    pub fn new(value: usize) -> Self {
-        Reference {
-            value
-        }
-    }
-
     pub fn null() -> Self {
-        Reference {
-            value: 0
-        }
+        Reference::Null
     }
+}
 
-    pub fn is_null(&self) -> bool {
-        self.value == Self::NULL_VALUE
+impl Categorize for Reference {
+    fn category(&self) -> ValueCategory {
+        ValueCategory::Single
     }
+}
 
-    pub fn eq(&self, other: Reference) -> bool {
-        self.value == other.value
+impl fmt::Display for Reference {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ref")
     }
 }
