@@ -2,7 +2,7 @@ use crate::class::symbolic::ClassSymRef;
 use std::fmt;
 use itertools::join;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum ValueDescriptor {
     Simple(SimpleValueDescriptor),
     Array(ArrayValueDescriptor),
@@ -18,7 +18,7 @@ impl fmt::Display for ValueDescriptor {
 }
 
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ArrayValueDescriptor {
     dim: u8,
     type_desc: SimpleValueDescriptor,
@@ -41,7 +41,7 @@ impl fmt::Display for ArrayValueDescriptor {
 }
 
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum SimpleValueDescriptor {
     Byte,
     Char,
@@ -71,7 +71,7 @@ impl fmt::Display for SimpleValueDescriptor {
 }
 
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct MethodDescriptor {
     params_desc: Vec<ValueDescriptor>,
     return_desc: ReturnDescriptor,
@@ -94,7 +94,7 @@ impl fmt::Display for MethodDescriptor {
 }
 
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum ReturnDescriptor {
     Void,
     NonVoid(ValueDescriptor),
@@ -110,7 +110,7 @@ impl fmt::Display for ReturnDescriptor {
 }
 
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct FieldDescriptor {
     value_desc: ValueDescriptor,
 }
