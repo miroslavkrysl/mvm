@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::memory::error::LocalsError;
+use crate::memory::LocalsError;
 use crate::types::{Categorize, CompValue, ValueCategory};
 use std::slice;
 
@@ -24,7 +24,7 @@ impl Locals {
 
     pub fn load<T>(&mut self, index: usize) -> Result<T, LocalsError>
         where T: TryFrom<CompValue>,
-              LocalsError: From<T::Error> {
+              LocalsError: From<<T as TryFrom<CompValue>>::Error> {
         let comp_value = self.load_value(index)?;
         let value = T::try_from(comp_value)?;
         Ok(value)
@@ -95,6 +95,7 @@ impl<'a> Iterator for LocalsIter<'a> {
         self.inner.next()
     }
 }
+
 
 impl<'a> ExactSizeIterator for LocalsIter<'a> {
     fn len(&self) -> usize {

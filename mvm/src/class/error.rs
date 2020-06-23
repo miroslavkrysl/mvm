@@ -1,4 +1,5 @@
 use thiserror::Error;
+use crate::types::ValueError;
 
 #[derive(Error, Debug)]
 pub enum ArrayError {
@@ -26,4 +27,15 @@ pub enum CodeError {
 pub enum FlagsError {
     #[error("invalid flags combination")]
     InvalidCombination,
+}
+
+#[derive(Error, Debug)]
+pub enum ConstantPoolError {
+    #[error("index is out of bounds")]
+    IndexOutOfBounds,
+    #[error(transparent)]
+    Value {
+        #[from]
+        source: ValueError
+    },
 }

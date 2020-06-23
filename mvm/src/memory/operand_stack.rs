@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::memory::error::OperandStackError;
+use crate::memory::OperandStackError;
 use crate::types::{Categorize, CompValue, ValueCategory};
 
 #[derive(Debug, Clone)]
@@ -175,7 +175,7 @@ impl OperandStack {
 
     pub fn pop<T>(&mut self) -> Result<T, OperandStackError>
         where T: TryFrom<CompValue>,
-              OperandStackError: From<T::Error> {
+              OperandStackError: From<<T as TryFrom<CompValue>>::Error> {
         match self.values.last() {
             None => Err(OperandStackError::Underflow),
             Some(comp_value) => {
@@ -261,5 +261,42 @@ mod test {
         stack.pop_value().unwrap();
         stack.pop_value().unwrap();
         stack.pop_value().expect_err("pop should return underflow error");
+    }
+
+    #[test]
+    fn dup1() {
+        let mut stack = OperandStack::new(32);
+        stack.dup1().expect_err("dup1 should return underflow error");
+
+        stack.push(Long::new(2)).unwrap();
+        stack.dup1().expect_err("dup1 should return invalid type error");
+        stack.push(Double::new(4.0)).unwrap();
+        stack.dup1().expect_err("dup1 should return invalid type error");
+        stack.push(Int::new(1)).unwrap();
+        stack.dup1().expect("dup1 on int should be ok");
+        stack.push(Float::new(3.0)).unwrap();
+        stack.dup1().expect("dup1 on float should be ok");
+        stack.push(Reference::null()).unwrap();
+        stack.dup1().expect("dup1 on reference should be ok");
+
+        assert_eq!(stack.pop::<Reference>().unwrap(), Reference::null());
+        assert_eq!(stack.pop::<Reference>().unwrap(), Reference::null());
+        assert_eq!(stack.pop::<Float>().unwrap(), Float::new(3.0));
+        assert_eq!(stack.pop::<Float>().unwrap(), Float::new(3.0));
+        assert_eq!(stack.pop::<Int>().unwrap(), Int::new(1));
+        assert_eq!(stack.pop::<Int>().unwrap(), Int::new(1));
+        assert_eq!(stack.pop::<Double>().unwrap(), Double::new(4.0));
+        assert_eq!(stack.pop::<Long>().unwrap(), Long::new(2));
+        stack.pop_value().expect_err("stack should be empty but is not");
+    }
+
+    #[test]
+    fn pop() {
+
+    }
+
+    #[test]
+    fn swap() {
+
     }
 }
