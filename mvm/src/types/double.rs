@@ -1,5 +1,6 @@
-use crate::types::{Categorize, Float, Int, Long, ValueCategory};
+use crate::types::{Categorize, Float, Int, Long, ValueCategory, Describe};
 use std::fmt;
+use crate::class::{ValueDescriptor, SimpleValueDescriptor};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Double(f64);
@@ -77,5 +78,17 @@ impl Categorize for Double {
 impl fmt::Display for Double {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl Default for Double {
+    fn default() -> Self {
+        Self::new(0.0)
+    }
+}
+
+impl Describe for Double {
+    fn descriptor(&self) -> ValueDescriptor {
+        ValueDescriptor::Simple(SimpleValueDescriptor::Double)
     }
 }

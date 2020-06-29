@@ -1,5 +1,6 @@
-use crate::types::{DivisionByZero, Int, Float, Double, Categorize, ValueCategory};
+use crate::types::{DivisionByZero, Int, Float, Double, Categorize, ValueCategory, Describe};
 use std::fmt;
+use crate::class::{ValueDescriptor, SimpleValueDescriptor};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Long(i64);
@@ -121,5 +122,17 @@ impl Categorize for Long {
 impl fmt::Display for Long {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl Default for Long {
+    fn default() -> Self {
+        Self::new(0)
+    }
+}
+
+impl Describe for Long {
+    fn descriptor(&self) -> ValueDescriptor {
+        ValueDescriptor::Simple(SimpleValueDescriptor::Long)
     }
 }

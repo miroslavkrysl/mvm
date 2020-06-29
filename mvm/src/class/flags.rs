@@ -16,6 +16,10 @@ impl Flags {
         Flags(flags)
     }
 
+    pub const fn empty() -> Self {
+        Flags(0)
+    }
+
     pub fn has(&self, flags: Self) -> bool {
         (self.0 & flags.0) == flags.0
     }
@@ -90,6 +94,10 @@ impl ClassFlags {
 
     pub fn has(&self, flags: Flags) -> bool {
         self.flags.has(flags)
+    }
+
+    pub fn has_any(&self, flags: Flags) -> bool {
+        self.flags.has_any(flags)
     }
 }
 
@@ -215,6 +223,10 @@ impl MethodFlags {
     pub fn has(&self, flags: Flags) -> bool {
         self.flags.has(flags)
     }
+
+    pub fn has_any(&self, flags: Flags) -> bool {
+        self.flags.has_any(flags)
+    }
 }
 
 impl fmt::Debug for MethodFlags {
@@ -293,6 +305,10 @@ impl FieldFlags {
 
     pub fn has(&self, flags: Flags) -> bool {
         self.flags.has(flags)
+    }
+
+    pub fn has_any(&self, flags: Flags) -> bool {
+        self.flags.has_any(flags)
     }
 }
 

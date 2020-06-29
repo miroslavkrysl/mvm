@@ -22,39 +22,17 @@ impl fmt::Display for ClassSymRef {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct FieldSymRef {
     class: ClassSymRef,
-    id: FieldId
-}
-
-impl FieldSymRef {
-    pub fn new(class: ClassSymRef, id: FieldId) -> Self {
-        FieldSymRef { class, id }
-    }
-    
-    pub fn class(&self) -> &ClassSymRef {
-        &self.class
-    }
-    
-    pub fn id(&self) -> &FieldId {
-        &self.id
-    }
-}
-
-impl fmt::Display for FieldSymRef {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}.{} {}", self.class, self.id.name(), self.id.descriptor())
-    }
-}
-
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct FieldId {
     name: FieldName,
     descriptor: FieldDescriptor
 }
 
-impl FieldId {
-    pub fn new(name: FieldName, descriptor: FieldDescriptor) -> Self {
-        FieldId { name, descriptor }
+impl FieldSymRef {
+    pub fn new(class: ClassSymRef, name: FieldName, descriptor: FieldDescriptor) -> Self {
+        FieldSymRef { class, name, descriptor }
+    }
+    
+    pub fn class(&self) -> &ClassSymRef {
+        &self.class
     }
 
     pub fn name(&self) -> &FieldName {
@@ -66,43 +44,27 @@ impl FieldId {
     }
 }
 
+impl fmt::Display for FieldSymRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}.{} {}", self.class, self.name, self.descriptor)
+    }
+}
+
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MethodSymRef {
     class: ClassSymRef,
-    id: MethodId
+    name: MethodName,
+    descriptor: MethodDescriptor,
 }
 
 impl MethodSymRef {
-    pub fn new(class: ClassSymRef, id: MethodId) -> Self {
-        MethodSymRef { class, id }
+    pub fn new(class: ClassSymRef, name: MethodName, descriptor: MethodDescriptor) -> Self {
+        MethodSymRef { class, name, descriptor }
     }
 
     pub fn class(&self) -> &ClassSymRef {
         &self.class
-    }
-
-    pub fn id(&self) -> &MethodId {
-        &self.id
-    }
-}
-
-impl fmt::Display for MethodSymRef {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}.{} {}", self.class, self.id.name(), self.id.descriptor())
-    }
-}
-
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub struct MethodId {
-    name: MethodName,
-    descriptor: MethodDescriptor
-}
-
-impl MethodId {
-    pub fn new(name: MethodName, descriptor: MethodDescriptor) -> Self {
-        MethodId { name, descriptor }
     }
 
     pub fn name(&self) -> &MethodName {
@@ -111,5 +73,12 @@ impl MethodId {
 
     pub fn descriptor(&self) -> &MethodDescriptor {
         &self.descriptor
+    }
+
+}
+
+impl fmt::Display for MethodSymRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}.{} {}", self.class, self.name, self.descriptor)
     }
 }

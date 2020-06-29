@@ -3,7 +3,7 @@ use crate::types::Categorize;
 use std::convert::TryFrom;
 use std::fmt;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CompValue {
     Int(Int),
     Long(Long),

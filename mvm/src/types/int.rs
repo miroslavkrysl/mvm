@@ -1,5 +1,6 @@
-use crate::types::{Long, Float, Double, Categorize, ValueCategory, DivisionByZero};
+use crate::types::{Long, Float, Double, Categorize, ValueCategory, DivisionByZero, Describe, Short};
 use std::fmt;
+use crate::class::{ValueDescriptor, SimpleValueDescriptor};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Int(i32);
@@ -9,22 +10,22 @@ impl Int {
         Int(value)
     }
 
-    pub fn add(&self, other: Int) -> Int {
+    pub fn add(&self, other: &Int) -> Int {
         let result = self.0.wrapping_add(other.0);
         Int::new(result)
     }
 
-    pub fn sub(&self, other: Int) -> Int {
+    pub fn sub(&self, other: &Int) -> Int {
         let result = self.0.wrapping_sub(other.0);
         Int::new(result)
     }
 
-    pub fn mul(&self, other: Int) -> Int {
+    pub fn mul(&self, other: &Int) -> Int {
         let result = self.0.wrapping_mul(other.0);
         Int::new(result)
     }
 
-    pub fn div(&self, other: Int) -> Result<Int, DivisionByZero> {
+    pub fn div(&self, other: &Int) -> Result<Int, DivisionByZero> {
         if other.0 == 0 {
             return Err(DivisionByZero);
         }
@@ -32,7 +33,7 @@ impl Int {
         Ok(Int::new(result))
     }
 
-    pub fn rem(&self, other: Int) -> Int {
+    pub fn rem(&self, other: &Int) -> Int {
         let result = self.0.wrapping_rem(other.0);
         Int::new(result)
     }
@@ -62,23 +63,23 @@ impl Int {
         Int::new(result as i32)
     }
 
-    pub fn and(&self, other: Int) -> Int {
+    pub fn and(&self, other: &Int) -> Int {
         let result = self.0 & other.0;
         Int::new(result)
     }
 
-    pub fn or(&self, other: Int) -> Int {
+    pub fn or(&self, other: &Int) -> Int {
         let result = self.0 | other.0;
         Int::new(result)
     }
 
-    pub fn xor(&self, other: Int) -> Int {
+    pub fn xor(&self, other: &Int) -> Int {
         let result = self.0 ^ other.0;
         Int::new(result)
     }
 
-    pub fn inc(&self, value: Int) -> Int {
-        self.add(value)
+    pub fn inc(&self, value: &Int) -> Int {
+        self.add(&value)
     }
 
     pub fn to_long(&self) -> Long {
@@ -105,23 +106,23 @@ impl Int {
         Int::new(self.0 as i16 as i32)
     }
 
-    pub fn eq(&self, other: Int) -> bool {
+    pub fn eq(&self, other: &Int) -> bool {
         self.0 == other.0
     }
 
-    pub fn lt(&self, other: Int) -> bool {
+    pub fn lt(&self, other: &Int) -> bool {
         self.0 < other.0
     }
 
-    pub fn le(&self, other: Int) -> bool {
+    pub fn le(&self, other: &Int) -> bool {
         self.0 <= other.0
     }
 
-    pub fn gt(&self, other: Int) -> bool {
+    pub fn gt(&self, other: &Int) -> bool {
         self.0 > other.0
     }
 
-    pub fn ge(&self, other: Int) -> bool {
+    pub fn ge(&self, other: &Int) -> bool {
         self.0 >= other.0
     }
 }
@@ -141,5 +142,17 @@ impl Categorize for Int {
 impl fmt::Display for Int {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl Default for Int {
+    fn default() -> Self {
+        Self::new(0)
+    }
+}
+
+impl Describe for Int {
+    fn descriptor(&self) -> ValueDescriptor {
+        ValueDescriptor::Simple(SimpleValueDescriptor::Int)
     }
 }

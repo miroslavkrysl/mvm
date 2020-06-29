@@ -1,3 +1,5 @@
+use crate::class::ValueDescriptor;
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ValueCategory {
     Single,
@@ -13,6 +15,12 @@ impl ValueCategory {
     }
 }
 
+
 pub trait Categorize {
     fn category(&self) -> ValueCategory;
+}
+
+
+pub trait Describe {
+    fn descriptor(&self) -> ValueDescriptor;
 }

@@ -49,11 +49,19 @@ pub enum ConstantPoolError {
 #[derive(Error, Debug)]
 pub enum ClassError {
     #[error("no such method was found in class")]
-    NoSuchMethodFound,
+    NoSuchMethod,
     #[error("no such field was found in class")]
-    NoSuchFieldFound,
+    NoSuchField,
     #[error("multiple definitions of the same method")]
-    MultipleMethodDefinitions,
+    DuplicateMethod,
     #[error("multiple definitions of the same field")]
-    MultipleFieldDefinitions,
+    DuplicateField,
+}
+
+#[derive(Error, Debug)]
+pub enum MethodError {
+    #[error("init method has invalid properties")]
+    InvalidInitProperties,
+    #[error("class init method has invalid properties")]
+    InvalidClassInitProperties,
 }
