@@ -1,10 +1,10 @@
+use std::{iter, slice};
 use std::collections::HashSet;
 use std::sync::{Arc, RwLock};
 
 use itertools::Itertools;
 
 use crate::class::{ClassError, ClassFlags, ClassName, ConstantPool, Field, FieldDescriptor, FieldFlags, FieldName, FieldSymRef, Method, MethodDescriptor, MethodName};
-use crate::memory::Instance;
 use crate::types::JvmValue;
 
 //
@@ -63,7 +63,7 @@ impl Class {
         let mut present_fields: HashSet<(&FieldName, &FieldDescriptor)> = HashSet::with_capacity(fields.len());
         let mut fields_offsets = Vec::with_capacity(fields.capacity());
 
-        for field in fields.into_iter() {
+        for field in fields.iter() {
             if present_fields.contains(&(field.name(), field.descriptor())) {
                 return Err(ClassError::DuplicateField);
             }
@@ -131,6 +131,12 @@ impl Class {
 }
 
 impl Class {
+    /// Iterator over all fields including the ones in superclasses.
+    pub fn fields(&self) -> FieldsIter {
+        FieldsIter { class: self, local_fields: self.fields.iter() }
+    }
+
+    /// Total count of instance fields including the ones from superclasses.
     fn instance_fields_len(&self) -> usize {
         let mut len = self.nonstatic_fields_len;
 
@@ -257,3 +263,31 @@ impl PartialEq for Class {
 }
 
 impl Eq for Class {}
+
+
+#[derive(Debug, Clone)]
+pub struct FieldsIter<'a> {
+    class: &'a Class,
+    local_fields: slice::Iter<'a, Arc<Field>>,
+}
+
+impl<'a> Iterator for FieldsIter<'a> {
+    type Item = &'a Arc<Field>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.local_fields.next()
+            .or_else(|| {
+                self.class.super_class().and_then(|sup| {
+                    self.class = sup;
+                    self.local_fields = self.class.fields.iter();
+                    self.next()
+                })
+            })
+    }
+}
+
+impl<'a> ExactSizeIterator for FieldsIter<'a> {
+    fn len(&self) -> usize {
+        self.class.instance_fields_len()
+    }
+}

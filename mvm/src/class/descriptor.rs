@@ -2,6 +2,8 @@ use crate::class::symbolic::ClassSymRef;
 use std::fmt;
 use itertools::join;
 use crate::types::{JvmValue, Byte, Char, Double, Float, Long, Reference, Boolean, Short, Int};
+use crate::class::{Array, DescriptorError};
+use std::convert::TryFrom;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum ValueDescriptor {
@@ -42,14 +44,47 @@ impl fmt::Display for ValueDescriptor {
 }
 
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ArrayDim(u8);
+
+impl ArrayDim {
+    pub fn new(dim: u8) -> Result<Self, DescriptorError> {
+        if dim == 0 {
+            return Err(DescriptorError::ZeroArrayDimension)
+        }
+
+        Ok(ArrayDim(dim))
+    }
+
+    pub fn as_u8(&self) -> &u8 {
+        &self.0
+    }
+}
+
+impl TryFrom<u8> for ArrayDim {
+    type Error = DescriptorError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        ArrayDim::new(value)
+    }
+}
+
+
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ArrayValueDescriptor {
-    dim: u8,
+    dim: ArrayDim,
     values_desc: SimpleValueDescriptor,
 }
 
 impl ArrayValueDescriptor {
-    pub fn dim(&self) -> &u8 {
+    pub fn new(dim: ArrayDim, values_desc: SimpleValueDescriptor) -> Self {
+        ArrayValueDescriptor {
+            dim,
+            values_desc
+        }
+    }
+
+    pub fn dim(&self) -> &ArrayDim {
         &self.dim
     }
 
@@ -60,7 +95,7 @@ impl ArrayValueDescriptor {
 
 impl fmt::Display for ArrayValueDescriptor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}{}", "[".repeat(self.dim as usize), self.values_desc)
+        write!(f, "{}{}", "[".repeat(*self.dim.as_u8() as usize), self.values_desc)
     }
 }
 
@@ -83,7 +118,7 @@ impl fmt::Display for SimpleValueDescriptor {
         match self {
             SimpleValueDescriptor::Byte => write!(f, "boolean"),
             SimpleValueDescriptor::Char => write!(f, "char"),
-            SimpleValueDescriptor::Double => write!(f, "Double"),
+            SimpleValueDescriptor::Double => write!(f, "double"),
             SimpleValueDescriptor::Float => write!(f, "float"),
             SimpleValueDescriptor::Int => write!(f, "int"),
             SimpleValueDescriptor::Long => write!(f, "long"),

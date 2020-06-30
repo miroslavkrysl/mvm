@@ -5,7 +5,9 @@ use crate::types::ValueError;
 #[derive(Error, Debug)]
 pub enum ArrayError {
     #[error("array type mismatch")]
-    ItemTypeMismatch
+    TypeMismatch,
+    #[error("index is out of bounds")]
+    IndexOutOfBounds
 }
 
 
@@ -24,6 +26,13 @@ pub enum NameError {
 pub enum CodeError {
     #[error("index is out of bounds")]
     IndexOutOfBounds,
+}
+
+
+#[derive(Error, Debug)]
+pub enum DescriptorError {
+    #[error("dimension must be non-zero")]
+    ZeroArrayDimension,
 }
 
 

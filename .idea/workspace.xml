@@ -22,8 +22,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="refactor types">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="implement instances and arrays">
+      <change afterPath="$PROJECT_DIR$/mvm/src/class/object.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/classs/array.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/classs/instance.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/classs/mod.rs" afterDir="false" />
@@ -40,13 +40,11 @@
       <change afterPath="$PROJECT_DIR$/mvm/src/memory/heap.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/memory/layout.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/memory/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvm/src/memory/object.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/memory/object_heap.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/todo/opcode.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/todo/runtime.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/types/array_value.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/mvm/src/types/value.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/mkrysl.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/mkrysl.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm-cli/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/mvm-cli/Cargo.toml" afterDir="false" />
@@ -59,33 +57,14 @@
       <change beforePath="$PROJECT_DIR$/mvm/src/class/class.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/class.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/class/descriptor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/descriptor.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/class/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/error.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/class/field.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/field.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/class/flags.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/flags.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/class/method.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/method.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/class/symbolic.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/symbolic.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvm/src/class/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/class/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/instructions.rs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/memory/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/memory/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/memory/locals.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/memory/locals.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/memory/operand_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/memory/operand_stack.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/opcode.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/stack/mod.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/stack/operand_stack.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/stack/variables.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/structs/name.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/boolean.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/boolean.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/byte.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/byte.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/category.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/category.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/char.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/char.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/comp_value.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/comp_value.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/double.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/double.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/float.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/float.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/int.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/int.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/jvm_value.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/jvm_value.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/long.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/long.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mvm/src/types/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/reference.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvm/src/types/short.rs" beforeDir="false" afterPath="$PROJECT_DIR$/mvm/src/types/short.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +94,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
+    <property name="ToolWindowRun.ShowToolbar" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -138,8 +118,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/mvm/src/memory" />
       <recent name="$PROJECT_DIR$/mvm/src/class" />
+      <recent name="$PROJECT_DIR$/mvm/src/memory" />
       <recent name="$PROJECT_DIR$/mvm/src" />
       <recent name="$PROJECT_DIR$/mvm/src/object" />
       <recent name="$PROJECT_DIR$/mvm/src/exec" />
@@ -271,7 +251,8 @@
       <workItem from="1593007754783" duration="11044000" />
       <workItem from="1593105819960" duration="4797000" />
       <workItem from="1593325237495" duration="58011000" />
-      <workItem from="1593448632675" duration="10286000" />
+      <workItem from="1593448632675" duration="10997000" />
+      <workItem from="1593497495568" duration="9397000" />
     </task>
     <task id="LOCAL-00001" summary="switch to intellij">
       <created>1588666952605</created>
@@ -343,7 +324,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592903935275</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="implement class methods and fields resolution">
+      <created>1593459434638</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1593459434638</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -382,7 +370,8 @@
     <MESSAGE value="refactor access and property flags" />
     <MESSAGE value="refactor names" />
     <MESSAGE value="add constant pool, constants, descriptors, symbolic references" />
-    <option name="LAST_COMMIT_MESSAGE" value="add constant pool, constants, descriptors, symbolic references" />
+    <MESSAGE value="implement class methods and fields resolution" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement class methods and fields resolution" />
   </component>
   <component name="WindowStateProjectService">
     <state x="555" y="197" width="800" height="719" key="#Plugins" timestamp="1593448698443">
@@ -397,10 +386,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1592505402616" />
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1593446659151">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1593503693483">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1593446659151" />
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1593503693483" />
     <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588670385651">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -413,34 +402,34 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1593434619535" />
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1592903935141">
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1593506576475">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1592903935141" />
-    <state x="182" y="121" width="1536" height="879" key="DiffContextDialog" timestamp="1591196482397">
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1593506576475" />
+    <state x="182" y="121" width="1536" height="879" key="DiffContextDialog" timestamp="1593459391453">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="182" y="121" width="1536" height="879" key="DiffContextDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1591196482397" />
+    <state x="182" y="121" width="1536" height="879" key="DiffContextDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1593459391453" />
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1591605039072">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1591605039072" />
-    <state width="1874" height="349" key="GridCell.Tab.0.bottom" timestamp="1593448593430">
+    <state width="1874" height="403" key="GridCell.Tab.0.bottom" timestamp="1593506815501">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="349" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1593448593430" />
-    <state width="1874" height="349" key="GridCell.Tab.0.center" timestamp="1593448593428">
+    <state width="1874" height="403" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1593506815501" />
+    <state width="1874" height="403" key="GridCell.Tab.0.center" timestamp="1593506815499">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="349" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1593448593428" />
-    <state width="1874" height="349" key="GridCell.Tab.0.left" timestamp="1593448593427">
+    <state width="1874" height="403" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1593506815499" />
+    <state width="1874" height="403" key="GridCell.Tab.0.left" timestamp="1593506815497">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="349" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1593448593427" />
-    <state width="1874" height="349" key="GridCell.Tab.0.right" timestamp="1593448593429">
+    <state width="1874" height="403" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1593506815497" />
+    <state width="1874" height="403" key="GridCell.Tab.0.right" timestamp="1593506815500">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="349" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1593448593429" />
+    <state width="1874" height="403" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1593506815500" />
     <state x="543" y="299" width="824" height="515" key="IDE.errors.dialog" timestamp="1592204678605">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -453,18 +442,18 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="449" y="188" width="1022" height="737" key="SettingsEditor/0.27.1920.1053@0.27.1920.1053" timestamp="1592670442652" />
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1592903937490">
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1593459438756">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1592903937490" />
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1593459438756" />
     <state x="734" y="234" width="442" height="646" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591606792888">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="734" y="234" width="442" height="646" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1591606792888" />
-    <state x="654" y="151" width="611" height="804" key="find.popup" timestamp="1593333974642">
+    <state x="654" y="151" width="611" height="804" key="find.popup" timestamp="1593498395124">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="654" y="151" width="611" height="804" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1593333974642" />
+    <state x="654" y="151" width="611" height="804" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1593498395124" />
     <state x="747" y="452" width="415" height="210" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1591196905114">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -477,9 +466,9 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="624" y="252" width="672" height="677" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1593356638058" />
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1593079560464">
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1593506475585">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1593079560464" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1593506475585" />
   </component>
 </project>

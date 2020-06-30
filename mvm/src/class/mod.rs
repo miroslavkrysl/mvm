@@ -8,6 +8,7 @@ pub use self::method::*;
 pub use self::code::*;
 pub use self::constant_pool::*;
 pub use self::class::*;
+pub use self::object::*;
 
 mod error;
 mod name;
@@ -19,3 +20,4 @@ mod method;
 mod code;
 mod constant_pool;
 mod class;
+mod object;
