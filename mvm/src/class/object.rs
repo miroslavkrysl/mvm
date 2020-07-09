@@ -1,8 +1,17 @@
 use std::iter;
 use std::sync::{Arc, RwLock};
+use crate::class::class::Class;
+use crate::types::jvm_value::JvmValue;
+use crate::types::byte::Byte;
+use crate::types::short::Short;
+use crate::types::int::Int;
+use crate::types::long::Long;
+use crate::types::float::Float;
+use crate::types::double::Double;
+use crate::types::reference::Reference;
+use crate::class::descriptor::SimpleDescriptor;
+use crate::class::error::ArrayError;
 
-use crate::class::{ArrayError, ArrayValueDescriptor, Class, SimpleValueDescriptor};
-use crate::types::{Boolean, Byte, Char, Double, Float, Int, JvmValue, Long, Reference, Short};
 
 #[derive(Debug)]
 pub enum Object {
@@ -22,7 +31,7 @@ impl Instance {
         let fields = RwLock::new(
             class.fields()
                 .filter(|field| !field.is_static())
-                .map(|field| field.descriptor().value_desc().default_value())
+                .map(|field| field.descriptor().default_value())
                 .collect());
 
         Instance {
@@ -66,41 +75,35 @@ pub enum Array {
     Long(RwLock<Box<[Long]>>),
     Float(RwLock<Box<[Float]>>),
     Double(RwLock<Box<[Double]>>),
-    Boolean(RwLock<Box<[Boolean]>>),
-    Char(RwLock<Box<[Char]>>),
     Reference(RwLock<Box<[Reference]>>),
 }
 
 impl Array {
-    pub fn new(descriptor: ArrayValueDescriptor) -> Self {
-        match descriptor.values_desc() {
-            SimpleValueDescriptor::Byte =>
+    pub const MAX_DIM: usize = 255;
+
+    pub fn new(descriptor: SimpleDescriptor, length: usize) -> Self {
+        match descriptor {
+            SimpleDescriptor::Byte =>
                 Array::Byte(RwLock::new(
-                    iter::repeat(Byte::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Char =>
-                Array::Char(RwLock::new(
-                    iter::repeat(Char::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Double =>
+                    iter::repeat(Byte::default()).take(length).collect())),
+            SimpleDescriptor::Double =>
                 Array::Double(RwLock::new(
-                    iter::repeat(Double::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Float =>
+                    iter::repeat(Double::default()).take(length).collect())),
+            SimpleDescriptor::Float =>
                 Array::Float(RwLock::new(
-                    iter::repeat(Float::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Int =>
+                    iter::repeat(Float::default()).take(length).collect())),
+            SimpleDescriptor::Int =>
                 Array::Int(RwLock::new(
-                    iter::repeat(Int::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Long =>
+                    iter::repeat(Int::default()).take(length).collect())),
+            SimpleDescriptor::Long =>
                 Array::Long(RwLock::new(
-                    iter::repeat(Long::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Reference(_) =>
+                    iter::repeat(Long::default()).take(length).collect())),
+            SimpleDescriptor::Reference(_) =>
                 Array::Reference(RwLock::new(
-                    iter::repeat(Reference::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Short =>
+                    iter::repeat(Reference::default()).take(length).collect())),
+            SimpleDescriptor::Short =>
                 Array::Short(RwLock::new(
-                    iter::repeat(Short::default()).take(*descriptor.dim().as_u8() as usize).collect())),
-            SimpleValueDescriptor::Boolean =>
-                Array::Boolean(RwLock::new(
-                    iter::repeat(Boolean::default()).take(*descriptor.dim().as_u8() as usize).collect())),
+                    iter::repeat(Short::default()).take(length).collect())),
         }
     }
 
@@ -112,8 +115,6 @@ impl Array {
             Array::Long(array) => array.read().unwrap().len(),
             Array::Float(array) => array.read().unwrap().len(),
             Array::Double(array) => array.read().unwrap().len(),
-            Array::Boolean(array) => array.read().unwrap().len(),
-            Array::Char(array) => array.read().unwrap().len(),
             Array::Reference(array) => array.read().unwrap().len(),
         }
     }
@@ -121,16 +122,6 @@ impl Array {
     pub fn get_byte(&self, index: usize) -> Result<Byte, ArrayError> {
         match self {
             Array::Byte(array) => {
-                array.read().unwrap().get(index).cloned()
-                    .ok_or(ArrayError::IndexOutOfBounds)
-            }
-            _ => Err(ArrayError::TypeMismatch)
-        }
-    }
-
-    pub fn get_char(&self, index: usize) -> Result<Char, ArrayError> {
-        match self {
-            Array::Char(array) => {
                 array.read().unwrap().get(index).cloned()
                     .ok_or(ArrayError::IndexOutOfBounds)
             }
@@ -198,34 +189,9 @@ impl Array {
         }
     }
 
-    pub fn get_boolean(&self, index: usize) -> Result<Boolean, ArrayError> {
-        match self {
-            Array::Boolean(array) => {
-                array.read().unwrap().get(index).cloned()
-                    .ok_or(ArrayError::IndexOutOfBounds)
-            }
-            _ => Err(ArrayError::TypeMismatch)
-        }
-    }
-
     pub fn set_byte(&mut self, index: usize, value: Byte) -> Result<(), ArrayError> {
         match self {
             Array::Byte(array) => {
-                match array.write().unwrap().get_mut(index) {
-                    None => Err(ArrayError::IndexOutOfBounds),
-                    Some(old_value) => {
-                        *old_value = value;
-                        Ok(())
-                    }
-                }
-            }
-            _ => Err(ArrayError::TypeMismatch)
-        }
-    }
-
-    pub fn set_char(&self, index: usize, value: Char) -> Result<(), ArrayError> {
-        match self {
-            Array::Char(array) => {
                 match array.write().unwrap().get_mut(index) {
                     None => Err(ArrayError::IndexOutOfBounds),
                     Some(old_value) => {
@@ -316,21 +282,6 @@ impl Array {
     pub fn set_short(&self, index: usize, value: Short) -> Result<(), ArrayError> {
         match self {
             Array::Short(array) => {
-                match array.write().unwrap().get_mut(index) {
-                    None => Err(ArrayError::IndexOutOfBounds),
-                    Some(old_value) => {
-                        *old_value = value;
-                        Ok(())
-                    }
-                }
-            }
-            _ => Err(ArrayError::TypeMismatch)
-        }
-    }
-
-    pub fn set_boolean(&self, index: usize, value: Boolean) -> Result<(), ArrayError> {
-        match self {
-            Array::Boolean(array) => {
                 match array.write().unwrap().get_mut(index) {
                     None => Err(ArrayError::IndexOutOfBounds),
                     Some(old_value) => {

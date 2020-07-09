@@ -31,3 +31,16 @@ pub enum LocalsError {
         source: ValueError
     },
 }
+
+
+#[derive(Error, Debug)]
+pub enum FrameError {
+    #[error("incompatible arguments")]
+    IncompatibleArguments
+}
+
+
+#[derive(Error, Debug)]
+pub enum HeapError {
+    
+}

@@ -5,8 +5,6 @@ use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign};
 use derive_more::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign};
 use itertools::Itertools;
 
-use crate::class::FlagsError;
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[derive(BitAnd, BitOr, BitXor, BitAndAssign, BitOrAssign, BitXorAssign)]
 pub struct Flags(u16);
@@ -68,36 +66,14 @@ impl ClassFlags {
         (Self::MODULE, "MODULE"),
     ];
 
-    pub fn new(flags: Flags) -> Result<Self, FlagsError> {
-        if !flags.has(Self::MODULE) {
-            if flags.has(Self::INTERFACE) {
-                if !flags.has(Self::ABSTRACT) {
-                    return Err(FlagsError::InvalidCombination);
-                }
-
-                if flags.has_any(Self::FINAL | Self::SUPER | Self::ENUM | Self::MODULE) {
-                    return Err(FlagsError::InvalidCombination);
-                }
-            } else {
-                if flags.has(Self::ANNOTATION) {
-                    return Err(FlagsError::InvalidCombination);
-                }
-
-                if !flags.has_at_most_one(Self::FINAL | Self::ABSTRACT) {
-                    return Err(FlagsError::InvalidCombination);
-                }
-            }
-        }
-
-        Ok(ClassFlags { flags })
+    pub fn new() -> Self {
+        ClassFlags{ flags: Flags::empty() }
     }
+}
 
-    pub fn has(&self, flags: Flags) -> bool {
-        self.flags.has(flags)
-    }
-
-    pub fn has_any(&self, flags: Flags) -> bool {
-        self.flags.has_any(flags)
+impl From<Flags> for ClassFlags {
+    fn from(flags: Flags) -> Self {
+        ClassFlags{flags}
     }
 }
 
@@ -115,21 +91,6 @@ impl fmt::Debug for ClassFlags {
 
         write!(f, "MethodFlags( {} )", flags.join(" | "))
     }
-}
-
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum MethodType {
-    Normal,
-    Init,
-    ClassInit
-}
-
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum MethodOwner {
-    Class,
-    Interface
 }
 
 
@@ -167,67 +128,22 @@ impl MethodFlags {
         (Self::SYNTHETIC, "SYNTHETIC"),
     ];
 
-    pub fn new(flags: Flags, method_owner: MethodOwner, method_type: MethodType) -> Result<Self, FlagsError> {
-        if flags.has(Self::ABSTRACT) {
-            if flags.has_any(Self::PRIVATE | Self::STATIC | Self::FINAL | Self::SYNCHRONIZED | Self::NATIVE | Self::STRICT) {
-                return Err(FlagsError::InvalidCombination)
-            }
-        }
-
-        match method_owner {
-            MethodOwner::Class => {
-                if !flags.has_at_most_one(Self::PUBLIC | Self::PRIVATE | Self::PROTECTED) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-            },
-            MethodOwner::Interface => {
-                if flags.has_any(Self::PROTECTED | Self::FINAL | Self::SYNCHRONIZED | Self::NATIVE) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-
-                // version >= 52.0
-                if !flags.has_one(Self::PUBLIC | Self::PRIVATE) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-
-                // version < 52.0
-                // if !flags.has(Self::PUBLIC | Self::ABSTRACT) {
-                //     return Err(FlagsError::InvalidCombination)
-                // }
-            },
-        }
-
-        match method_type {
-            MethodType::Init => {
-                if !flags.has_at_most_one(Self::PUBLIC | Self::PRIVATE | Self::PROTECTED) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-
-                if flags.has_any(Self::STATIC | Self::FINAL | Self::SYNCHRONIZED | Self::BRIDGE | Self::NATIVE ) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-            },
-            MethodType::ClassInit => {
-                // version >= 51.0
-                if !flags.has(Self::STATIC) {
-                    return Err(FlagsError::InvalidCombination)
-                }
-            },
-            _ => {}
-        }
-
-
-        Ok(MethodFlags { flags })
+    pub fn new(flags: Flags) -> Self {
+        MethodFlags{ flags }
     }
 
-    pub fn has(&self, flags: Flags) -> bool {
-        self.flags.has(flags)
-    }
-
-    pub fn has_any(&self, flags: Flags) -> bool {
-        self.flags.has_any(flags)
+    pub fn is_static(&self) -> bool {
+        self.flags.has(Self::STATIC)
     }
 }
+
+
+impl From<Flags> for MethodFlags {
+    fn from(flags: Flags) -> Self {
+        MethodFlags{flags}
+    }
+}
+
 
 impl fmt::Debug for MethodFlags {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -244,14 +160,6 @@ impl fmt::Debug for MethodFlags {
         write!(f, "MethodFlags( {} )", flags.join(" | "))
     }
 }
-
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum FieldOwner {
-    Class,
-    Interface
-}
-
 
 #[derive(Copy, Clone)]
 pub struct FieldFlags {
@@ -281,36 +189,22 @@ impl FieldFlags {
         (Self::ENUM, "ENUM"),
     ];
 
-    pub fn new(flags: Flags, field_owner: FieldOwner) -> Result<Self, FlagsError> {
-        if !flags.has_at_most_one(Self::PUBLIC | Self::PRIVATE | Self::PROTECTED) {
-            return Err(FlagsError::InvalidCombination)
-        }
-
-        if !flags.has_at_most_one(Self::FINAL | Self::VOLATILE) {
-            return Err(FlagsError::InvalidCombination)
-        }
-
-        if field_owner == FieldOwner::Interface {
-            if !flags.has(Self::PUBLIC | Self::STATIC | Self::FINAL) {
-                return Err(FlagsError::InvalidCombination)
-            }
-
-            if !flags.has_any(Self::PRIVATE | Self::PROTECTED | Self::VOLATILE | Self::TRANSIENT | Self::ENUM) {
-                return Err(FlagsError::InvalidCombination)
-            }
-        }
-
-        Ok(FieldFlags{ flags })
+    pub fn new(flags: Flags) -> Self {
+        FieldFlags{ flags }
     }
 
-    pub fn has(&self, flags: Flags) -> bool {
-        self.flags.has(flags)
-    }
-
-    pub fn has_any(&self, flags: Flags) -> bool {
-        self.flags.has_any(flags)
+    pub fn is_static(&self) -> bool {
+        self.flags.has(Self::STATIC)
     }
 }
+
+
+impl From<Flags> for FieldFlags {
+    fn from(flags: Flags) -> Self {
+        FieldFlags{flags}
+    }
+}
+
 
 impl fmt::Debug for FieldFlags {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

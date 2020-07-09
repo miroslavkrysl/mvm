@@ -1,7 +1,14 @@
-use crate::types::{Int, Long, Float, Double, Reference, ValueCategory, ValueError};
-use crate::types::Categorize;
+
 use std::convert::TryFrom;
 use std::fmt;
+use crate::types::int::Int;
+use crate::types::long::Long;
+use crate::types::float::Float;
+use crate::types::double::Double;
+use crate::types::reference::Reference;
+use crate::types::category::{ValueCategory, Categorize};
+use crate::types::error::ValueError;
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum CompValue {
@@ -12,14 +19,14 @@ pub enum CompValue {
     Reference(Reference),
 }
 
-impl Categorize for CompValue {
-    fn category(&self) -> ValueCategory {
+impl CompValue {
+    pub fn category(&self) -> ValueCategory {
         match self {
-            CompValue::Int(value) => value.category(),
-            CompValue::Long(value) => value.category(),
-            CompValue::Float(value) => value.category(),
-            CompValue::Double(value) => value.category(),
-            CompValue::Reference(value) => value.category(),
+            CompValue::Int(value) => Int::category(),
+            CompValue::Long(value) => Long::category(),
+            CompValue::Float(value) => Float::category(),
+            CompValue::Double(value) => Double::category(),
+            CompValue::Reference(value) => Reference::category(),
         }
     }
 }

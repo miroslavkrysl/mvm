@@ -1,37 +1,38 @@
-use std::sync::Arc;
+use crate::class::name::MethodName;
+use crate::class::flags::MethodFlags;
+use crate::class::code::Code;
+use crate::class::error::MethodError;
+use crate::class::class::Class;
+use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor};
 
-use crate::class::{Class, Code, MethodDescriptor, MethodError, MethodFlags, MethodName};
 
 #[derive(Debug, Clone)]
 pub struct Method {
-    class: Arc<Class>,
     name: MethodName,
+    return_desc: ReturnDescriptor,
+    params_desc: Vec<TypeDescriptor>,
     flags: MethodFlags,
-    descriptor: MethodDescriptor,
     code: Code,
 }
 
 impl Method {
-    pub fn new(class: Arc<Class>, name: MethodName, flags: MethodFlags, descriptor: MethodDescriptor, code: Code) -> Result<Self, MethodError> {
-        if name.is_init() {
-            if !class.is_class() || !descriptor.return_desc().is_void() {
-                return Err(MethodError::InvalidInitProperties);
-            }
-        } else if name.is_class_init() {
-            if !descriptor.return_desc().is_void() || descriptor.params_descs().len() == 0 || !flags.has(MethodFlags::STATIC) {
-                return Err(MethodError::InvalidInitProperties);
-            }
+    pub fn new(
+        name: MethodName,
+        return_desc: ReturnDescriptor,
+        params_desc: Vec<TypeDescriptor>,
+        flags: MethodFlags,
+        code: Code,
+    ) -> Result<Self, MethodError> {
+        if code.max_locals() < params_desc.len() {
+            return Err(MethodError::TooFewLocalsEntries)
         }
 
-        // TODO: check interface methods constraints
-        // TODO: check abstract methods constraints
-
         Ok(Method {
-            class,
             name,
+            return_desc,
+            params_desc,
             flags,
-            descriptor,
-            code,
+            code
         })
     }
 }
@@ -46,8 +47,12 @@ impl Method {
         &self.name
     }
 
-    pub fn descriptor(&self) -> &MethodDescriptor {
-        &self.descriptor
+    pub fn return_desc(&self) -> &ReturnDescriptor {
+        &self.return_desc
+    }
+
+    pub fn params_desc(&self) -> &Vec<TypeDescriptor> {
+        &self.params_desc
     }
 
     pub fn code(&self) -> &Code {
@@ -58,15 +63,7 @@ impl Method {
 /// Method access and properties related logic.
 impl Method {
     pub fn is_static(&self) -> bool {
-        self.flags.has(MethodFlags::STATIC)
-    }
-
-    pub fn is_private(&self) -> bool {
-        self.flags.has(MethodFlags::PRIVATE)
-    }
-
-    pub fn is_final(&self) -> bool {
-        self.flags.has(MethodFlags::FINAL)
+        self.flags.is_static()
     }
 
     pub fn is_init(&self) -> bool {
@@ -76,23 +73,4 @@ impl Method {
     pub fn is_class_init(&self) -> bool {
         self.name.is_class_init()
     }
-
-    pub fn is_accessible_for(&self, class: &Class) -> bool {
-        // TODO: implement inter-class accessibility
-        true
-    }
-
-    pub fn overrides(&self, method: &Method) -> bool {
-        self.name == method.name &&
-            self.descriptor == method.descriptor &&
-            self.is_accessible_for(method.class.as_ref())
-    }
 }
-
-impl PartialEq for Method {
-    fn eq(&self, other: &Self) -> bool {
-        self.name == other.name && self.descriptor == other.descriptor && self.class == other.class
-    }
-}
-
-impl Eq for Method {}

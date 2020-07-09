@@ -1,0 +1,13 @@
+HelloClass
+
+FIELD
+static hello jello
+
+FIELD
+[heloo;12] jello
+
+METHOD
+INT helloMethod () 4
+    BIPUSH 121      // push
+    DCONST_0
+END

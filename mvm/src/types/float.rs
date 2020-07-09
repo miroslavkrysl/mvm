@@ -1,6 +1,11 @@
-use crate::types::{Double, Long, Int, ValueCategory, Categorize, Describe};
+
 use std::fmt;
-use crate::class::{ValueDescriptor, SimpleValueDescriptor};
+use crate::types::int::Int;
+use crate::types::long::Long;
+use crate::types::double::Double;
+use crate::types::category::{Categorize, ValueCategory, Describe};
+use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Float(f32);
@@ -70,7 +75,7 @@ impl Float {
 }
 
 impl Categorize for Float {
-    fn category(&self) -> ValueCategory {
+    fn category() -> ValueCategory {
         ValueCategory::Single
     }
 }
@@ -88,7 +93,7 @@ impl Default for Float {
 }
 
 impl Describe for Float {
-    fn descriptor(&self) -> ValueDescriptor {
-        ValueDescriptor::Simple(SimpleValueDescriptor::Float)
+    fn descriptor() -> TypeDescriptor {
+        TypeDescriptor::Simple(SimpleDescriptor::Float)
     }
 }

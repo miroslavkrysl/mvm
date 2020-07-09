@@ -1,5 +1,5 @@
 use thiserror::Error;
-use crate::types::ValueError;
+use crate::types::error::ValueError;
 
 
 #[derive(Error, Debug)]
@@ -15,8 +15,10 @@ pub enum ArrayError {
 pub enum NameError {
     #[error("class name is invalid")]
     InvalidClassName,
-    #[error("method name is invalid")]
-    InvalidMethodName,
+    #[error("method name \"{name:?}\" is invalid")]
+    InvalidMethodName{
+        name: String
+    },
     #[error("field name is invalid")]
     InvalidFieldName,
 }
@@ -31,15 +33,13 @@ pub enum CodeError {
 
 #[derive(Error, Debug)]
 pub enum DescriptorError {
-    #[error("dimension must be non-zero")]
+    #[error("number of dimensions must not be 0")]
     ZeroArrayDimension,
-}
-
-
-#[derive(Error, Debug)]
-pub enum FlagsError {
-    #[error("invalid flags combination")]
-    InvalidCombination,
+    #[error("max number of dimensions is {max}, {given} given")]
+    TooManyDimensions {
+        max: usize,
+        given: usize
+    },
 }
 
 
@@ -73,4 +73,6 @@ pub enum MethodError {
     InvalidInitProperties,
     #[error("class init method has invalid properties")]
     InvalidClassInitProperties,
+    #[error("there are too few locals entries available for the method")]
+    TooFewLocalsEntries,
 }

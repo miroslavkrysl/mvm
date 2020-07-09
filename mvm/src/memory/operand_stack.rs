@@ -43,9 +43,9 @@ impl OperandStack {
         self.check_underflow(dup + skip)?;
         self.check_overflow(dup)?;
 
-        // compute index of values to duplicate
+        // compute number of values to duplicate
         let mut values_size = 0;
-        let mut dup_index = self.values.len();
+        let mut dup_count = 0;
         loop {
             if values_size == dup {
                 break;
@@ -55,13 +55,13 @@ impl OperandStack {
                 return Err(OperandStackError::InvalidType);
             }
 
-            dup_index -= 1;
-            values_size += self.values[dup_index].category().size();
+            dup_count += 1;
+            values_size += self.values[self.values.len() - dup_count].category().size();
         };
 
-        // compute index of values to skip
+        // compute number of values to skip
         let mut values_size = 0;
-        let mut skip_index = dup_index;
+        let mut skip_count = 0;
         loop {
             if values_size == skip {
                 break;
@@ -71,28 +71,79 @@ impl OperandStack {
                 return Err(OperandStackError::InvalidType);
             }
 
-            skip_index -= 1;
-            values_size += self.values[skip_index].category().size();
+            skip_count += 1;
+            values_size += self.values[self.values.len() - skip_count].category().size();
         };
 
-        let len = self.values.len();
-        let new_len = len + len - dup_index;
+        // remove skip + dup values
+        let to_dup: Vec<_> = self.values.drain((self.values.len() - dup_count - skip_count)..).collect();
 
-        // append dup values to the end
-        unsafe {
-            self.values.set_len(new_len);
-            self.values.copy_within(dup_index..len, len);
-        }
+        // append dup values
+        self.values.extend_from_slice(&to_dup[(to_dup.len() - dup_count)..]);
+        // append skip + dup values to the end
+        self.values.extend(to_dup);
 
         self.size += dup;
-
-        // copy skip values right before the duplicated values
-        self.values.copy_within(skip_index..dup_index, len - (dup_index - skip_index));
-
-        // copy dup values right before the copy of skip values
-        self.values.copy_within(len.., skip_index);
-
         Ok(())
+
+
+        // if dup == 0 {
+        //     return Ok(());
+        // }
+        //
+        // self.check_underflow(dup + skip)?;
+        // self.check_overflow(dup)?;
+        //
+        // // compute index of values to duplicate
+        // let mut values_size = 0;
+        // let mut dup_index = self.values.len();
+        // loop {
+        //     if values_size == dup {
+        //         break;
+        //     }
+        //
+        //     if values_size > dup {
+        //         return Err(OperandStackError::InvalidType);
+        //     }
+        //
+        //     dup_index -= 1;
+        //     values_size += self.values[dup_index].category().size();
+        // };
+        //
+        // // compute index of values to skip
+        // let mut values_size = 0;
+        // let mut skip_index = dup_index;
+        // loop {
+        //     if values_size == skip {
+        //         break;
+        //     }
+        //
+        //     if values_size > skip {
+        //         return Err(OperandStackError::InvalidType);
+        //     }
+        //
+        //     skip_index -= 1;
+        //     values_size += self.values[skip_index].category().size();
+        // };
+        //
+        // let len = self.values.len();
+        // let new_len = len + len - dup_index;
+        //
+        // // append dup values to the end
+        // unsafe {
+        //     self.values.set_len(new_len);
+        //     self.values.copy_within(dup_index..len, len);
+        // }
+        //
+        // self.size += dup;
+        //
+        // // copy skip values right before the duplicated values
+        // self.values.copy_within(skip_index..dup_index, len - (dup_index - skip_index));
+        //
+        // // copy dup values right before the copy of skip values
+        // self.values.copy_within(len.., skip_index);
+        //
+        // Ok(())
     }
 
     pub fn pop_discard(&mut self, size: usize) -> Result<(), OperandStackError> {
@@ -120,12 +171,12 @@ impl OperandStack {
         Ok(())
     }
 
-    pub fn peek(&self, index: usize) -> Result<CompValue, OperandStackError> {
+    pub fn peek(&self, index: usize) -> Result<&CompValue, OperandStackError> {
         if index >= self.values.len() {
             return Err(OperandStackError::Underflow);
         }
 
-        Ok(self.values[self.values.len() - index - 1])
+        Ok(&self.values[self.values.len() - index - 1])
     }
 
     pub fn dup1(&mut self) -> Result<(), OperandStackError> {
@@ -203,8 +254,8 @@ impl OperandStack {
     pub fn push_value(&mut self, value: CompValue) -> Result<(), OperandStackError> {
         self.check_overflow(value.category().size())?;
 
-        self.values.push(value);
         self.size += value.category().size();
+        self.values.push(value);
 
         Ok(())
     }

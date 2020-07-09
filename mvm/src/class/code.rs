@@ -13,12 +13,12 @@ impl Code {
         Code { max_stack, max_locals, instructions }
     }
 
-    pub fn max_stack(&self) -> &usize {
-        &self.max_stack
+    pub fn max_stack(&self) -> usize {
+        self.max_stack
     }
 
-    pub fn max_locals(&self) -> &usize {
-        &self.max_locals
+    pub fn max_locals(&self) -> usize {
+        self.max_locals
     }
 
     pub fn instructions(&self) -> &Vec<Instruction> {

@@ -4,7 +4,7 @@ use crate::memory::LocalsError;
 use crate::types::{Categorize, CompValue, ValueCategory};
 use std::slice;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Slot {
     Undefined,
     Value(CompValue),
@@ -37,7 +37,7 @@ impl Locals {
                 Err(LocalsError::InvalidIndex)
             }
             Some(Slot::Value(value)) => {
-                Ok(*value)
+                Ok(value.clone())
             }
         }
     }
@@ -58,7 +58,7 @@ impl Locals {
         // check if the previous value is of double category and invalidate it eventually
         if index != 0 {
             if let Slot::Undefined = self.values[index] {
-                if let Slot::Value(prev_value) = self.values[index - 1] {
+                if let Slot::Value(prev_value) = &self.values[index - 1] {
                     if prev_value.category() == ValueCategory::Double {
                         self.values[index - 1] = Slot::Undefined;
                     }

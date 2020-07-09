@@ -1,20 +1,24 @@
-use crate::class::{FieldFlags, FieldDescriptor, FieldName, Class};
-use crate::types::{Int, Float, Long, Double, JvmValue};
-use std::sync::Arc;
+use crate::class::name::FieldName;
+use crate::class::flags::FieldFlags;
+use crate::class::descriptor::TypeDescriptor;
+use crate::types::jvm_value::JvmValue;
+use crate::types::int::Int;
+use crate::types::float::Float;
+use crate::types::long::Long;
+use crate::types::double::Double;
+
 
 #[derive(Debug, Clone)]
 pub struct Field {
-    class: Arc<Class>,
     name: FieldName,
     flags: FieldFlags,
-    descriptor: FieldDescriptor,
+    descriptor: TypeDescriptor,
     constant_value: Option<FieldConst>,
 }
 
 impl Field {
-    pub fn new(class: Arc<Class>, name: FieldName, flags: FieldFlags, descriptor: FieldDescriptor, constant_value: Option<FieldConst>) -> Self {
+    pub fn new(name: FieldName, flags: FieldFlags, descriptor: TypeDescriptor, constant_value: Option<FieldConst>) -> Self {
         Field {
-            class,
             name,
             flags,
             descriptor,
@@ -25,10 +29,6 @@ impl Field {
 
 /// Getters
 impl Field {
-    pub fn class(&self) -> &Arc<Class> {
-        &self.class
-    }
-    
     pub fn flags(&self) -> &FieldFlags {
         &self.flags
     }
@@ -37,7 +37,7 @@ impl Field {
         &self.name
     }
 
-    pub fn descriptor(&self) -> &FieldDescriptor {
+    pub fn descriptor(&self) -> &TypeDescriptor {
         &self.descriptor
     }
 
@@ -49,7 +49,7 @@ impl Field {
 impl Field {
     pub fn init_value(&self) -> JvmValue {
         match self.constant_value {
-            None => self.descriptor.value_desc().default_value(),
+            None => self.descriptor.default_value(),
             Some(value) => {
                 value.into()
             },
@@ -60,26 +60,9 @@ impl Field {
 /// Field access and properties related logic.
 impl Field {
     pub fn is_static(&self) -> bool {
-        self.flags.has(FieldFlags::STATIC)
-    }
-
-    pub fn is_final(&self) -> bool {
-        self.flags.has(FieldFlags::FINAL)
-    }
-
-    pub fn is_accessible_for(&self, class: &Class) -> bool {
-        // TODO: implement inter-class accessibility
-        true
+        self.flags.is_static()
     }
 }
-
-impl PartialEq for Field {
-    fn eq(&self, other: &Self) -> bool {
-        self.name == other.name && self.descriptor == other.descriptor && self.class == other.class
-    }
-}
-
-impl Eq for Field {}
 
 
 #[derive(Debug, Copy, Clone)]

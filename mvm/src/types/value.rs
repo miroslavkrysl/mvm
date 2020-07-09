@@ -1,40 +1,7 @@
-use std::convert::TryFrom;
-use std::fmt;
-use crate::types::byte::Byte;
-use crate::types::short::Short;
-use crate::types::int::Int;
-use crate::types::long::Long;
-use crate::types::float::Float;
-use crate::types::double::Double;
-use crate::types::reference::Reference;
-use crate::class::descriptor::TypeDescriptor;
-use crate::types::category::Describe;
-use crate::types::error::ValueError;
+use crate::types::{JvmValue, CompValue};
 
+pub trait Value: Into<JvmValue> + Into<CompValue> {
 
-#[derive(Debug, Clone)]
-pub enum JvmValue {
-    Byte(Byte),
-    Short(Short),
-    Int(Int),
-    Long(Long),
-    Float(Float),
-    Double(Double),
-    Reference(Reference),
-}
-
-impl JvmValue {
-    pub fn descriptor(&self) -> TypeDescriptor {
-        match self {
-            JvmValue::Byte(value) => Byte::descriptor(),
-            JvmValue::Short(value) => Short::descriptor(),
-            JvmValue::Int(value) => Int::descriptor(),
-            JvmValue::Long(value) => Long::descriptor(),
-            JvmValue::Float(value) => Float::descriptor(),
-            JvmValue::Double(value) => Double::descriptor(),
-            JvmValue::Reference(value) => Reference::descriptor(),
-        }
-    }
 }
 
 impl TryFrom<JvmValue> for Int {
@@ -109,6 +76,30 @@ impl TryFrom<JvmValue> for Short {
 }
 
 
+impl TryFrom<JvmValue> for Boolean {
+    type Error = ValueError;
+
+    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+        match value {
+            JvmValue::Boolean(boolean) => Ok(boolean),
+            _ => Err(ValueError::UnexpectedType),
+        }
+    }
+}
+
+
+impl TryFrom<JvmValue> for Char {
+    type Error = ValueError;
+
+    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+        match value {
+            JvmValue::Char(char) => Ok(char),
+            _ => Err(ValueError::UnexpectedType),
+        }
+    }
+}
+
+
 impl TryFrom<JvmValue> for Reference {
     type Error = ValueError;
 
@@ -170,6 +161,20 @@ impl From<Short> for JvmValue {
 }
 
 
+impl From<Boolean> for JvmValue {
+    fn from(boolean: Boolean) -> Self {
+        JvmValue::Boolean(boolean)
+    }
+}
+
+
+impl From<Char> for JvmValue {
+    fn from(char: Char) -> Self {
+        JvmValue::Char(char)
+    }
+}
+
+
 impl fmt::Display for JvmValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -180,6 +185,8 @@ impl fmt::Display for JvmValue {
             JvmValue::Reference(value) => write!(f, "{}", value),
             JvmValue::Byte(value) => write!(f, "{}", value),
             JvmValue::Short(value) => write!(f, "{}", value),
+            JvmValue::Boolean(value) => write!(f, "{}", value),
+            JvmValue::Char(value) => write!(f, "{}", value),
         }
     }
 }

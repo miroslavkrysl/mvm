@@ -3,9 +3,14 @@ use std::collections::HashSet;
 use std::sync::{Arc, RwLock};
 
 use itertools::Itertools;
+use crate::class::name::{ClassName, FieldName, MethodName};
+use crate::class::flags::ClassFlags;
+use crate::class::field::Field;
+use crate::class::method::Method;
+use crate::types::jvm_value::JvmValue;
+use crate::class::error::ClassError;
+use crate::class::descriptor::{TypeDescriptor, ReturnDescriptor};
 
-use crate::class::{ClassError, ClassFlags, ClassName, ConstantPool, Field, FieldDescriptor, FieldFlags, FieldName, FieldSymRef, Method, MethodDescriptor, MethodName};
-use crate::types::JvmValue;
 
 //
 // #[derive(Debug, Clone)]
@@ -34,7 +39,6 @@ pub struct Class {
     name: ClassName,
     flags: ClassFlags,
     super_class: Option<Arc<Class>>,
-    constant_pool: ConstantPool,
     fields: Vec<Arc<Field>>,
     methods: Vec<Arc<Method>>,
     fields_offsets: Vec<usize>,
@@ -47,7 +51,6 @@ impl Class {
         name: ClassName,
         flags: ClassFlags,
         super_class: Option<Arc<Class>>,
-        constant_pool: ConstantPool,
         mut fields: Vec<Arc<Field>>,
         mut methods: Vec<Arc<Method>>,
     ) -> Result<Self, ClassError> {
@@ -60,7 +63,7 @@ impl Class {
             0
         };
 
-        let mut present_fields: HashSet<(&FieldName, &FieldDescriptor)> = HashSet::with_capacity(fields.len());
+        let mut present_fields: HashSet<(&FieldName, &TypeDescriptor)> = HashSet::with_capacity(fields.len());
         let mut fields_offsets = Vec::with_capacity(fields.capacity());
 
         for field in fields.iter() {
@@ -90,21 +93,20 @@ impl Class {
             .collect();
 
         // check for method duplicates
-        let mut present_methods: HashSet<(&MethodName, &MethodDescriptor)> = HashSet::with_capacity(methods.len());
+        let mut present_methods: HashSet<(&MethodName, &ReturnDescriptor, &Vec<TypeDescriptor>)> = HashSet::with_capacity(methods.len());
 
         for method in methods.iter() {
-            if present_methods.contains(&(method.name(), method.descriptor())) {
+            if present_methods.contains(&(method.name(), method.return_desc(), method.params_desc())) {
                 return Err(ClassError::DuplicateMethod);
             }
 
-            present_methods.insert((method.name(), method.descriptor()));
+            present_methods.insert((method.name(), method.return_desc(), method.params_desc()));
         }
 
         Ok(Class {
             name,
             flags,
             super_class,
-            constant_pool,
             fields,
             methods,
             fields_offsets,
@@ -123,10 +125,6 @@ impl Class {
 
     pub fn flags(&self) -> &ClassFlags {
         &self.flags
-    }
-
-    pub fn constant_pool(&self) -> &ConstantPool {
-        &self.constant_pool
     }
 }
 
@@ -147,51 +145,36 @@ impl Class {
     }
 }
 
-/// Class access and property flags related logic.
-impl Class {
-    pub fn is_class(&self) -> bool {
-        !self.flags.has_any(ClassFlags::INTERFACE | ClassFlags::MODULE)
-    }
-
-    pub fn is_interface(&self) -> bool {
-        self.flags.has(ClassFlags::INTERFACE)
-    }
-
-    pub fn is_accessible_for(&self, class: &Class) -> bool {
-        // TODO: implement inter-class accessibility
-        true
-    }
-}
 
 /// Method resolution.
 impl Class {
-    /// Find a local method.
-    ///
-    /// # Errors
-    ///
-    /// Will return a ClassError::NoSuchMethodFound if there is not a method
-    /// of the given name and descriptor.
-    pub fn local_method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
-        self.methods.iter().find(|method| {
-            method.name() == name && method.descriptor() == descriptor
-        }).ok_or(ClassError::NoSuchMethod)
-    }
-
-    /// Find a method in this class or its superclasses.
-    ///
-    /// # Errors
-    ///
-    /// Will return a ClassError::NoSuchMethod if there is not a method
-    /// of the given name and descriptor.
-    pub fn method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
-        self.local_method(name, descriptor)
-            .or_else(|error| {
-                match &self.super_class {
-                    None => Err(error),
-                    Some(sup) => sup.method(name, descriptor),
-                }
-            })
-    }
+    // /// Find a local method.
+    // ///
+    // /// # Errors
+    // ///
+    // /// Will return a ClassError::NoSuchMethodFound if there is not a method
+    // /// of the given name and descriptor.
+    // pub fn local_method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
+    //     self.methods.iter().find(|method| {
+    //         method.name() == name && method.descriptor() == descriptor
+    //     }).ok_or(ClassError::NoSuchMethod)
+    // }
+    //
+    // /// Find a method in this class or its superclasses.
+    // ///
+    // /// # Errors
+    // ///
+    // /// Will return a ClassError::NoSuchMethod if there is not a method
+    // /// of the given name and descriptor.
+    // pub fn method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
+    //     self.local_method(name, descriptor)
+    //         .or_else(|error| {
+    //             match &self.super_class {
+    //                 None => Err(error),
+    //                 Some(sup) => sup.method(name, descriptor),
+    //             }
+    //         })
+    // }
 }
 
 /// Field resolution.
@@ -202,7 +185,7 @@ impl Class {
     ///
     /// Will return a ClassError::NoSuchField if there is not a field
     /// of the given name and descriptor.
-    pub fn local_field(&self, name: &FieldName, descriptor: &FieldDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
+    pub fn local_field(&self, name: &FieldName, descriptor: &TypeDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
         self.fields.iter()
             .position(|field| {
                 field.name() == name && field.descriptor() == descriptor
@@ -217,7 +200,7 @@ impl Class {
     ///
     /// Will return a ClassError::NoSuchField if there is not a static field
     /// of the given name and descriptor.
-    pub fn field(&self, name: &FieldName, descriptor: &FieldDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
+    pub fn field(&self, name: &FieldName, descriptor: &TypeDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
         self.local_field(name, descriptor)
             .or_else(|error| {
                 match &self.super_class {

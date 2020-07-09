@@ -1,6 +1,12 @@
-use crate::types::{DivisionByZero, Int, Float, Double, Categorize, ValueCategory, Describe};
+
 use std::fmt;
-use crate::class::{ValueDescriptor, SimpleValueDescriptor};
+use crate::types::error::DivisionByZero;
+use crate::types::int::Int;
+use crate::types::float::Float;
+use crate::types::double::Double;
+use crate::types::category::{ValueCategory, Categorize, Describe};
+use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Long(i64);
@@ -114,7 +120,7 @@ impl From<Long> for i64 {
 }
 
 impl Categorize for Long {
-    fn category(&self) -> ValueCategory {
+    fn category() -> ValueCategory {
         ValueCategory::Double
     }
 }
@@ -132,7 +138,7 @@ impl Default for Long {
 }
 
 impl Describe for Long {
-    fn descriptor(&self) -> ValueDescriptor {
-        ValueDescriptor::Simple(SimpleValueDescriptor::Long)
+    fn descriptor() -> TypeDescriptor {
+        TypeDescriptor::Simple(SimpleDescriptor::Long)
     }
 }

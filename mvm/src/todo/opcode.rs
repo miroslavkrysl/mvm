@@ -205,3 +205,8 @@ pub const JSR_W: u8 = 0xc9;
 pub const BREAKPOINT: u8 = 0xca;
 pub const IMPDEP1: u8 = 0xfe;
 pub const IMPDEP2: u8 = 0xff;
+
+
+pub enum Opcode {
+    Hello(12)
+}

@@ -1,6 +1,7 @@
 use std::fmt;
-use crate::types::Describe;
-use crate::class::{ValueDescriptor, SimpleValueDescriptor};
+use crate::types::category::{Describe, ValueCategory, Categorize};
+use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+
 
 #[derive(Debug, Copy, Clone)]
 pub struct Short(i16);
@@ -30,7 +31,13 @@ impl fmt::Display for Short {
 }
 
 impl Describe for Short {
-    fn descriptor(&self) -> ValueDescriptor {
-        ValueDescriptor::Simple(SimpleValueDescriptor::Short)
+    fn descriptor() -> TypeDescriptor {
+        TypeDescriptor::Simple(SimpleDescriptor::Short)
+    }
+}
+
+impl Categorize for Short {
+    fn category() -> ValueCategory {
+        ValueCategory::Single
     }
 }

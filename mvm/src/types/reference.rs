@@ -2,10 +2,10 @@ use std::fmt;
 use std::intrinsics::transmute;
 use std::sync::Arc;
 
-use crate::class::{SimpleValueDescriptor, ValueDescriptor};
-use crate::memory::Object;
-use crate::types::category::{Categorize, ValueCategory};
-use crate::types::Describe;
+use crate::class::object::Object;
+use crate::types::category::{ValueCategory, Categorize, Describe};
+use crate::class::descriptor::TypeDescriptor;
+
 
 #[derive(Debug, Clone)]
 pub enum Reference {
@@ -24,7 +24,7 @@ impl Reference {
 }
 
 impl Categorize for Reference {
-    fn category(&self) -> ValueCategory {
+    fn category() -> ValueCategory {
         ValueCategory::Single
     }
 }
@@ -64,7 +64,7 @@ impl Default for Reference {
 }
 
 impl Describe for Reference {
-    fn descriptor(&self) -> ValueDescriptor {
+    fn descriptor() -> TypeDescriptor {
         unimplemented!()
     }
 }

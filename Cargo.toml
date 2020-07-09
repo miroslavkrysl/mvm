@@ -3,5 +3,4 @@ members = [
     "mvm",
     "mvm-cli",
     "mvm-gtk",
-    "mvm-parse",
 ]

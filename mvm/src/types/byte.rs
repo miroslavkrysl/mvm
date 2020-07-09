@@ -1,6 +1,7 @@
 use std::fmt;
-use crate::types::Describe;
-use crate::class::{ValueDescriptor, SimpleValueDescriptor};
+use crate::types::category::{Describe, ValueCategory, Categorize};
+use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+
 
 #[derive(Debug, Copy, Clone)]
 pub struct Byte(i8);
@@ -30,7 +31,13 @@ impl fmt::Display for Byte {
 }
 
 impl Describe for Byte {
-    fn descriptor(&self) -> ValueDescriptor {
-        ValueDescriptor::Simple(SimpleValueDescriptor::Byte)
+    fn descriptor() -> TypeDescriptor {
+        TypeDescriptor::Simple(SimpleDescriptor::Byte)
+    }
+}
+
+impl Categorize for Byte {
+    fn category() -> ValueCategory {
+        ValueCategory::Single
     }
 }

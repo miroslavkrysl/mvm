@@ -15,12 +15,23 @@ pub struct ClassName {
 }
 
 impl ClassName {
-    pub fn new(name: String) -> Result<Self, NameError> {
-        if !CLASS_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidClassName);
-        }
-
+    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
+        let name = name.into();
+        Self::validate(&name)?;
         Ok(ClassName { name })
+    }
+
+    /// Just validate the class name.
+    ///
+    /// # Errors
+    ///
+    /// Will return NameError::InvalidClassName, if the class name is invalid.
+    pub fn validate(name: &str) -> Result<(), NameError> {
+        if CLASS_NAME_REGEX.is_match(&name) {
+            Ok(())
+        } else {
+            Err(NameError::InvalidClassName)
+        }
     }
 }
 
@@ -40,9 +51,10 @@ impl MethodName {
     pub const INSTANCE_INIT_STRING: &'static str = "<init>";
     pub const CLASS_INIT_STRING: &'static str = "<clinit>";
 
-    pub fn new(name: String) -> Result<Self, NameError> {
-        if name != Self::INSTANCE_INIT_STRING || name != Self::CLASS_INIT_STRING || !METHOD_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidMethodName);
+    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
+        let name = name.into();
+        if name != Self::INSTANCE_INIT_STRING && name != Self::CLASS_INIT_STRING && !METHOD_NAME_REGEX.is_match(&name) {
+            return Err(NameError::InvalidMethodName{name});
         }
 
         Ok(MethodName { name })
@@ -70,7 +82,9 @@ pub struct FieldName {
 }
 
 impl FieldName {
-    pub fn new(name: String) -> Result<Self, NameError> {
+    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String>  {
+        let name = name.into();
+
         if !FIELD_NAME_REGEX.is_match(&name) {
             return Err(NameError::InvalidFieldName);
         }
