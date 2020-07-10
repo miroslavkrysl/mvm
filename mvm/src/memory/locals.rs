@@ -18,6 +18,9 @@ pub struct Locals {
 }
 
 impl Locals {
+    /// Max allowed size of the locals array.
+    pub const MAX_SIZE: usize = 255;
+    
     pub fn new(size: usize) -> Self {
         Locals {
             values: vec![Slot::Undefined; size]

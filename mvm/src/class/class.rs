@@ -1,257 +1,310 @@
-use std::{iter, slice};
 use std::collections::HashSet;
 use std::sync::{Arc, RwLock};
 
-use itertools::Itertools;
-use crate::class::name::{ClassName, FieldName, MethodName};
-use crate::class::flags::ClassFlags;
+use crate::class::descriptor::TypeDesc;
+use crate::class::error::ClassError;
 use crate::class::field::Field;
 use crate::class::method::Method;
-use crate::types::jvm_value::JvmValue;
-use crate::class::error::ClassError;
-use crate::class::descriptor::{TypeDescriptor, ReturnDescriptor, ParamsDescriptor};
+use crate::class::name::{ClassName, FieldName};
+use crate::class::object::Instance;
+use crate::class::signature::{FieldSig, MethodSig};
+use crate::types::value::Value;
 
 
-//
-// #[derive(Debug, Clone)]
-// pub struct FieldInfo {
-//     index: usize,
-//     field: Field,
-// }
-//
-// impl FieldInfo {
-//     pub fn new(index: usize, field: Field) -> Self {
-//         FieldInfo { index, field }
-//     }
-//
-//     pub fn index(&self) -> usize {
-//         self.index
-//     }
-//
-//     pub fn field(&self) -> &Field {
-//         &self.field
-//     }
-// }
-
-
+/// A class.
 #[derive(Debug)]
 pub struct Class {
     name: ClassName,
-    fields: Vec<Arc<Field>>,
+    fields: Vec<FieldEntry>,
     methods: Vec<Arc<Method>>,
-    fields_offsets: Vec<usize>,
-    static_fields_values: RwLock<Vec<JvmValue>>,
+    static_fields_values: RwLock<Vec<Value>>,
     nonstatic_fields_len: usize,
 }
 
+
 impl Class {
-    pub fn new(
-        name: ClassName,
-        mut fields: Vec<Arc<Field>>,
-        mut methods: Vec<Arc<Method>>,
-    ) -> Result<Self, ClassError> {
+    /// Create a new class with the given name, fields and methods.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ClassError::DuplicateField` if there are two fields with the same signature
+    /// or `ClassError::DuplicateMethod` if there are two methods with the same signature.
+    pub fn new<F, M>(name: ClassName, fields: F, methods: M) -> Result<Self, ClassError>
+                     where F: IntoIterator<Item=Field>,
+                           M: IntoIterator<Item=Method> {
+        let f = fields.into_iter();
+        let m = methods.into_iter();
 
         // count indexes of static and nonstatic fields and check for duplicates
+        let mut fields = Vec::new();
         let mut static_fields_len = 0;
         let mut nonstatic_fields_len = 0;
 
-        let mut present_fields: HashSet<(&FieldName, &TypeDescriptor)> = HashSet::with_capacity(fields.len());
-        let mut fields_offsets = Vec::with_capacity(fields.capacity());
+        let mut present_fields: HashSet<FieldSig> = HashSet::with_capacity(f.size_hint().0);
 
-        for field in fields.iter() {
-            if present_fields.contains(&(field.name(), field.descriptor())) {
-                return Err(ClassError::DuplicateField);
+        for field in f {
+            if present_fields.contains(field.signature()) {
+                return Err(ClassError::DuplicateField(field.signature().clone()));
             }
 
-            present_fields.insert((field.name(), field.descriptor()));
-
-            let offset;
+            present_fields.insert(field.signature().clone());
 
             if field.is_static() {
-                offset = static_fields_len;
+                fields.push(FieldEntry {
+                    offset: static_fields_len,
+                    field: Arc::new(field),
+                });
                 static_fields_len += 1;
             } else {
-                offset = nonstatic_fields_len;
+                fields.push(FieldEntry {
+                    offset: nonstatic_fields_len,
+                    field: Arc::new(field),
+                });
                 nonstatic_fields_len += 1;
             }
-
-            fields_offsets.push(offset);
         }
 
         // initialize static fields values
         let static_fields_values = fields.iter()
-            .filter(|field| field.is_static())
-            .map(|field| field.descriptor().default_value())
-            .collect();
+                                         .filter(|entry| entry.field.is_static())
+                                         .map(|entry| entry.field
+                                                           .signature()
+                                                           .type_desc()
+                                                           .default_value())
+                                         .collect();
 
         // check for method duplicates
-        let mut present_methods: HashSet<(&MethodName, &ReturnDescriptor, &ParamsDescriptor)> = HashSet::with_capacity(methods.len());
+        let mut methods = Vec::new();
+        let mut present_methods: HashSet<MethodSig> = HashSet::with_capacity(m.size_hint().0);
 
-        for method in methods.iter() {
-            if present_methods.contains(&(method.name(), method.return_desc(), method.params_desc())) {
-                return Err(ClassError::DuplicateMethod{
-                    return_desc: method.return_desc().clone(),
-                    name: method.name().clone(),
-                    params_desc: method.params_desc().clone()
-                });
+        for method in m {
+            if present_methods.contains(method.signature()) {
+                return Err(ClassError::DuplicateMethod(method.signature().clone()));
             }
 
-            present_methods.insert((method.name(), method.return_desc(), method.params_desc()));
+            present_methods.insert(method.signature().clone());
+            methods.push(Arc::new(method));
         }
 
         Ok(Class {
             name,
             fields,
             methods,
-            fields_offsets,
             static_fields_values: RwLock::new(static_fields_values),
             nonstatic_fields_len,
         })
     }
 
+    /// Returns the name of this class.
     pub fn name(&self) -> &ClassName {
         &self.name
     }
 }
 
-impl Class {
-    // /// Iterator over all fields including the ones in superclasses.
-    // pub fn fields(&self) -> FieldsIter {
-    //     FieldsIter { class: self, local_fields: self.fields.iter() }
-    // }
 
-    /// Total count of instance fields including the ones from superclasses.
-    fn instance_fields_len(&self) -> usize {
-        self.nonstatic_fields_len
+/// Fields.
+impl Class {
+    /// Returns an iterator over all fields.
+    pub fn fields(&self) -> impl ExactSizeIterator<Item=&Arc<Field>> {
+        self.fields.iter().map(|entry| &entry.field)
     }
-}
 
-
-/// Method resolution.
-impl Class {
-    // /// Find a local method.
-    // ///
-    // /// # Errors
-    // ///
-    // /// Will return a ClassError::NoSuchMethodFound if there is not a method
-    // /// of the given name and descriptor.
-    // pub fn local_method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
-    //     self.methods.iter().find(|method| {
-    //         method.name() == name && method.descriptor() == descriptor
-    //     }).ok_or(ClassError::NoSuchMethod)
-    // }
-    //
-    // /// Find a method in this class or its superclasses.
-    // ///
-    // /// # Errors
-    // ///
-    // /// Will return a ClassError::NoSuchMethod if there is not a method
-    // /// of the given name and descriptor.
-    // pub fn method(&self, name: &MethodName, descriptor: &MethodDescriptor) -> Result<&Arc<Method>, ClassError> {
-    //     self.local_method(name, descriptor)
-    //         .or_else(|error| {
-    //             match &self.super_class {
-    //                 None => Err(error),
-    //                 Some(sup) => sup.method(name, descriptor),
-    //             }
-    //         })
-    // }
-}
-
-/// Field resolution.
-impl Class {
-    /// Find a local field and its index in the class.
+    /// Finds a field of the given signature.
     ///
     /// # Errors
     ///
-    /// Will return a ClassError::NoSuchField if there is not a field
-    /// of the given name and descriptor.
-    pub fn local_field(&self, name: &FieldName, descriptor: &TypeDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
+    /// Returns a `ClassError::NoSuchField` if there is not a field of the given signature.
+    fn field(&self, signature: &FieldSig) -> Result<&Arc<Field>, ClassError> {
+        Ok(&self.field_entry(signature)?.field)
+    }
+
+    /// Finds a static field of the given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
+    pub fn static_field(&self, signature: &FieldSig) -> Result<&Arc<Field>, ClassError> {
+        Ok(&self.static_field_entry(signature)?.field)
+    }
+
+    /// Finds an instance field of the given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not an instance field of the given signature.
+    pub fn instance_field(&self, signature: &FieldSig) -> Result<&Arc<Field>, ClassError> {
+        Ok(&self.static_field_entry(signature)?.field)
+    }
+}
+
+
+/// Field entries.
+impl Class {
+    /// Finds a field entry of the field of given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a field of the given signature.
+    fn field_entry(&self, signature: &FieldSig) -> Result<&FieldEntry, ClassError> {
         self.fields.iter()
-            .position(|field| {
-                field.name() == name && field.descriptor() == descriptor
+            .find(|entry| {
+                entry.field.signature() == signature
             })
-            .map(|index| (&self.fields[index], index))
-            .ok_or(ClassError::NoSuchField)
-    }
-    //
-    // /// Find a field in this class or its superclasses.
-    // ///
-    // /// # Errors
-    // ///
-    // /// Will return a ClassError::NoSuchField if there is not a static field
-    // /// of the given name and descriptor.
-    // pub fn field(&self, name: &FieldName, descriptor: &TypeDescriptor) -> Result<(&Arc<Field>, usize), ClassError> {
-    //     self.local_field(name, descriptor)
-    //         .or_else(|error| {
-    //             match &self.super_class {
-    //                 None => Err(error),
-    //                 Some(sup) => sup.field(name, descriptor),
-    //             }
-    //         })
-    // }
-
-    /// Get the field offset in instance fields or static fields, it depends
-    /// on what type of field the field_id is referencing.
-    ///
-    /// # Panics
-    ///
-    /// Will panic if the field_id is out of bounds.
-    pub fn field_offset(&self, field_id: usize) -> usize {
-        self.fields_offsets[field_id]
+            .ok_or(ClassError::NoSuchField(signature.clone()))
     }
 
-    /// Get the static field value.
+    /// Finds a static field entry.
     ///
-    /// # Panics
+    /// # Errors
     ///
-    /// Will panic if the offset is out of bounds.
-    pub fn static_field_value(&self, offset: usize) -> JvmValue {
-        self.static_fields_values.read().unwrap()[offset].clone()
+    /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
+    fn static_field_entry(&self, signature: &FieldSig) -> Result<&FieldEntry, ClassError> {
+        let entry = self.field_entry(&signature)?;
+
+        if !entry.field.is_static() {
+            return Err(ClassError::NoSuchField(signature.clone()));
+        }
+
+        Ok(entry)
     }
 
-    /// Set the static field value.
+    /// Finds an instance field entry.
     ///
-    /// # Panics
+    /// # Errors
     ///
-    /// Will panic if the offset is out of bounds.
-    pub fn set_static_field_value(&mut self, index: usize, value: JvmValue) {
-        self.static_fields_values.write().unwrap()[index] = value;
+    /// Returns a `ClassError::NoSuchField` if there is not an instance field of the given signature.
+    fn instance_field_entry(&self, signature: &FieldSig) -> Result<&FieldEntry, ClassError> {
+        let entry = self.field_entry(&signature)?;
+
+        if entry.field.is_static() {
+            return Err(ClassError::NoSuchField(signature.clone()));
+        }
+
+        Ok(entry)
     }
 }
 
-impl PartialEq for Class {
-    fn eq(&self, other: &Self) -> bool {
-        self.name == other.name
+
+/// Field values.
+impl Class {
+    /// Returns a static field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
+    pub fn static_field_value(&self, signature: &FieldSig) -> Result<Value, ClassError> {
+        let i = self.static_field_entry(signature)?.offset;
+        Ok(self.static_fields_values.read().unwrap()[i].clone())
+    }
+
+    /// Sets a static field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
+    pub fn set_static_field_value(&self, signature: &FieldSig, value: Value) -> Result<(), ClassError> {
+        let i = self.static_field_entry(signature)?.offset;
+
+        if !signature.type_desc().describes(&value) {
+            return Err(ClassError::FieldValueTypeMismatch(signature.clone(), value));
+        }
+
+        self.static_fields_values.write().unwrap()[i] = value;
+        Ok(())
+    }
+
+    /// Returns an instance field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
+    /// Returns a `ClassError::NotInstanceOf` if the given instance is not an instance of this class.
+    pub fn instance_field_value(&self, instance: &Instance, signature: &FieldSig, value: Value) -> Result<Value, ClassError> {
+        if self.name != instance.class().name {
+            return Err(ClassError::NotInstanceOf(instance.class().name.clone(), self.name.clone()));
+        }
+
+        let i = self.instance_field_entry(signature)?.offset;
+        Ok(instance.field(i))
+    }
+
+    /// Sets an instance field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchField` if there is not a instance field of the given signature.
+    /// Returns a `ClassError::NotInstanceOf` if the given instance is not an instance of this class.
+    pub fn set_instance_field_value(&self, instance: &Instance, signature: &FieldSig, value: Value) -> Result<(), ClassError> {
+        if self.name != instance.class().name {
+            return Err(ClassError::NotInstanceOf(instance.class().name.clone(), self.name.clone()));
+        }
+
+        let i = self.instance_field_entry(signature)?.offset;
+
+        if !signature.type_desc().describes(&value) {
+            return Err(ClassError::FieldValueTypeMismatch(signature.clone(), value));
+        }
+
+        instance.set_field(i, value);
+        Ok(())
     }
 }
 
-impl Eq for Class {}
 
-//
-// #[derive(Debug, Clone)]
-// pub struct FieldsIter<'a> {
-//     class: &'a Class,
-//     local_fields: slice::Iter<'a, Arc<Field>>,
-// }
-//
-// impl<'a> Iterator for FieldsIter<'a> {
-//     type Item = &'a Arc<Field>;
-//
-//     fn next(&mut self) -> Option<Self::Item> {
-//         self.local_fields.next()
-//             .or_else(|| {
-//                 self.class.super_class().and_then(|sup| {
-//                     self.class = sup;
-//                     self.local_fields = self.class.fields.iter();
-//                     self.next()
-//                 })
-//             })
-//     }
-// }
-//
-// impl<'a> ExactSizeIterator for FieldsIter<'a> {
-//     fn len(&self) -> usize {
-//         self.class.instance_fields_len()
-//     }
-// }
+/// Methods.
+impl Class {
+    /// Returns an iterator over all methods.
+    pub fn methods(&self) -> impl ExactSizeIterator<Item=&Arc<Method>> {
+        self.methods.iter()
+    }
+
+    /// Finds a method of the given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchMethod` if there is not a field of the given signature.
+    fn method(&self, signature: &MethodSig) -> Result<&Arc<Method>, ClassError> {
+        self.methods.iter()
+            .find(|method| {
+                method.signature() == signature
+            })
+            .ok_or(ClassError::NoSuchMethod(signature.clone()))
+    }
+
+    /// Finds a static method of the given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchMethod` if there is not a static method of the given signature.
+    pub fn static_method(&self, signature: &MethodSig) -> Result<&Arc<Method>, ClassError> {
+        let method = self.method(&signature)?;
+
+        if !method.is_static() {
+            return Err(ClassError::NoSuchMethod(signature.clone()));
+        }
+
+        Ok(method)
+    }
+
+    /// Finds an instance method of the given signature.
+    ///
+    /// # Errors
+    ///
+    /// Returns a `ClassError::NoSuchMethod` if there is not an instance method of the given signature.
+    pub fn instance_method(&self, signature: &MethodSig) -> Result<&Arc<Method>, ClassError> {
+        let method = self.method(&signature)?;
+
+        if method.is_static() {
+            return Err(ClassError::NoSuchMethod(signature.clone()));
+        }
+
+        Ok(method)
+    }
+}
+
+
+#[derive(Debug, Clone)]
+struct FieldEntry {
+    offset: usize,
+    field: Arc<Field>,
+}

@@ -1,71 +1,75 @@
-use crate::class::name::MethodName;
-use crate::class::flags::MethodFlags;
 use crate::class::code::Code;
 use crate::class::error::MethodError;
-use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor, ParamsDescriptor};
+use crate::class::signature::MethodSig;
 
 
+/// A field of a class.
+/// Can be static (class field) or non-static (instance field).
 #[derive(Debug, Clone)]
 pub struct Method {
-    name: MethodName,
-    return_desc: ReturnDescriptor,
-    params_desc: ParamsDescriptor,
+    signature: MethodSig,
     is_static: bool,
     code: Code,
 }
 
+
 impl Method {
-    pub fn new(
-        name: MethodName,
-        return_desc: ReturnDescriptor,
-        params_desc: ParamsDescriptor,
-        is_static: bool,
-        code: Code,
-    ) -> Result<Self, MethodError> {
-        if code.locals_len() < params_desc.len() {
-            return Err(MethodError::TooFewLocalsEntries)
+    /// Creates a new method with the given signature and code.
+    ///
+    /// # Errors
+    ///
+    /// Returns `MethodError::TooFewLocalsEntries` if the method locals size is smaller
+    /// than required for method parameters,
+    /// `MethodError::InitIsStatic` if the method signature is of instance initialization method
+    /// or `MethodError::ClinitIsNonStatic` if the method signature is of class initialization method.
+    pub fn new(signature: MethodSig, is_static: bool, code: Code) -> Result<Self, MethodError> {
+        if code.locals_size() < signature.params_desc().size() {
+            return Err(MethodError::TooFewLocalsEntries {
+                locals_size: code.locals_size(),
+                params_size: signature.params_desc().size(),
+            });
+        }
+
+        if signature.is_init() && is_static {
+            return Err(MethodError::InitIsStatic);
+        }
+
+        if signature.is_clinit() && !is_static {
+            return Err(MethodError::ClinitIsNonStatic);
         }
 
         Ok(Method {
-            name,
-            return_desc,
-            params_desc,
+            signature,
             is_static,
-            code
+            code,
         })
     }
-}
 
-/// Getters
-impl Method {
-    pub fn name(&self) -> &MethodName {
-        &self.name
+    /// Returns the method signature.
+    pub fn signature(&self) -> &MethodSig {
+        &self.signature
     }
 
-    pub fn return_desc(&self) -> &ReturnDescriptor {
-        &self.return_desc
-    }
-
-    pub fn params_desc(&self) -> &ParamsDescriptor {
-        &self.params_desc
-    }
-
+    /// Returns the method code.
     pub fn code(&self) -> &Code {
         &self.code
     }
-}
 
-/// Method access and properties related logic.
-impl Method {
+    /// Returns true if this method is static, false otherwise.
     pub fn is_static(&self) -> bool {
         self.is_static
     }
+}
 
+
+impl Method {
+    /// Returns true if this method is an instance initialization method, false otherwise.
     pub fn is_init(&self) -> bool {
-        self.name.is_init()
+        self.signature.is_init() && self.is_static
     }
 
-    pub fn is_class_init(&self) -> bool {
-        self.name.is_class_init()
+    /// Returns true if this method is an instance initialization method, false otherwise.
+    pub fn is_clinit(&self) -> bool {
+        self.signature.is_init() && self.is_static
     }
 }

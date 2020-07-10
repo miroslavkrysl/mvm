@@ -1,192 +1,213 @@
-use crate::types::{JvmValue, CompValue};
+use std::convert::TryFrom;
+use std::fmt;
+use crate::types::byte::Byte;
+use crate::types::short::Short;
+use crate::types::int::Int;
+use crate::types::long::Long;
+use crate::types::float::Float;
+use crate::types::double::Double;
+use crate::types::reference::Reference;
+use crate::class::descriptor::TypeDesc;
+use crate::types::category::Describe;
+use crate::types::error::ValueError;
 
-pub trait Value: Into<JvmValue> + Into<CompValue> {
 
+#[derive(Debug, Clone)]
+pub enum Value {
+    Byte(Byte),
+    Short(Short),
+    Int(Int),
+    Long(Long),
+    Float(Float),
+    Double(Double),
+    Reference(Reference),
 }
 
-impl TryFrom<JvmValue> for Int {
+impl Value {
+    pub fn descriptor(&self) -> TypeDesc {
+        match self {
+            Value::Byte(value) => Byte::descriptor(),
+            Value::Short(value) => Short::descriptor(),
+            Value::Int(value) => Int::descriptor(),
+            Value::Long(value) => Long::descriptor(),
+            Value::Float(value) => Float::descriptor(),
+            Value::Double(value) => Double::descriptor(),
+            Value::Reference(value) => Reference::descriptor(),
+        }
+    }
+
+    pub fn is_byte(&self) -> bool {
+        if let Value::Byte(_) = self {true} else {false}
+    }
+
+    pub fn is_short(&self) -> bool {
+        if let Value::Short(_) = self {true} else {false}
+    }
+
+    pub fn is_int(&self) -> bool {
+        if let Value::Int(_) = self {true} else {false}
+    }
+
+    pub fn is_long(&self) -> bool {
+        if let Value::Long(_) = self {true} else {false}
+    }
+
+    pub fn is_float(&self) -> bool {
+        if let Value::Float(_) = self {true} else {false}
+    }
+
+    pub fn is_double(&self) -> bool {
+        if let Value::Double(_) = self {true} else {false}
+    }
+
+    pub fn is_reference(&self) -> bool {
+        if let Value::Reference(_) = self {true} else {false}
+    }
+}
+
+impl TryFrom<Value> for Int {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Int(int) => Ok(int),
+            Value::Int(int) => Ok(int),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Long {
+impl TryFrom<Value> for Long {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Long(long) => Ok(long),
+            Value::Long(long) => Ok(long),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Float {
+impl TryFrom<Value> for Float {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Float(float) => Ok(float),
+            Value::Float(float) => Ok(float),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Double {
+impl TryFrom<Value> for Double {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Double(double) => Ok(double),
+            Value::Double(double) => Ok(double),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Byte {
+impl TryFrom<Value> for Byte {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Byte(byte) => Ok(byte),
+            Value::Byte(byte) => Ok(byte),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Short {
+impl TryFrom<Value> for Short {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Short(short) => Ok(short),
+            Value::Short(short) => Ok(short),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Boolean {
+impl TryFrom<Value> for Reference {
     type Error = ValueError;
 
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            JvmValue::Boolean(boolean) => Ok(boolean),
+            Value::Reference(reference) => Ok(reference),
             _ => Err(ValueError::UnexpectedType),
         }
     }
 }
 
 
-impl TryFrom<JvmValue> for Char {
-    type Error = ValueError;
-
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
-        match value {
-            JvmValue::Char(char) => Ok(char),
-            _ => Err(ValueError::UnexpectedType),
-        }
-    }
-}
-
-
-impl TryFrom<JvmValue> for Reference {
-    type Error = ValueError;
-
-    fn try_from(value: JvmValue) -> Result<Self, Self::Error> {
-        match value {
-            JvmValue::Reference(reference) => Ok(reference),
-            _ => Err(ValueError::UnexpectedType),
-        }
-    }
-}
-
-
-impl From<Int> for JvmValue {
+impl From<Int> for Value {
     fn from(int: Int) -> Self {
-        JvmValue::Int(int)
+        Value::Int(int)
     }
 }
 
 
-impl From<Long> for JvmValue {
+impl From<Long> for Value {
     fn from(long: Long) -> Self {
-        JvmValue::Long(long)
+        Value::Long(long)
     }
 }
 
 
-impl From<Float> for JvmValue {
+impl From<Float> for Value {
     fn from(float: Float) -> Self {
-        JvmValue::Float(float)
+        Value::Float(float)
     }
 }
 
 
-impl From<Double> for JvmValue {
+impl From<Double> for Value {
     fn from(double: Double) -> Self {
-        JvmValue::Double(double)
+        Value::Double(double)
     }
 }
 
 
-impl From<Reference> for JvmValue {
+impl From<Reference> for Value {
     fn from(reference: Reference) -> Self {
-        JvmValue::Reference(reference)
+        Value::Reference(reference)
     }
 }
 
 
-impl From<Byte> for JvmValue {
+impl From<Byte> for Value {
     fn from(byte: Byte) -> Self {
-        JvmValue::Byte(byte)
+        Value::Byte(byte)
     }
 }
 
 
-impl From<Short> for JvmValue {
+impl From<Short> for Value {
     fn from(short: Short) -> Self {
-        JvmValue::Short(short)
+        Value::Short(short)
     }
 }
 
 
-impl From<Boolean> for JvmValue {
-    fn from(boolean: Boolean) -> Self {
-        JvmValue::Boolean(boolean)
-    }
-}
-
-
-impl From<Char> for JvmValue {
-    fn from(char: Char) -> Self {
-        JvmValue::Char(char)
-    }
-}
-
-
-impl fmt::Display for JvmValue {
+impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            JvmValue::Int(value) => write!(f, "{}", value),
-            JvmValue::Long(value) => write!(f, "{}", value),
-            JvmValue::Float(value) => write!(f, "{}", value),
-            JvmValue::Double(value) => write!(f, "{}", value),
-            JvmValue::Reference(value) => write!(f, "{}", value),
-            JvmValue::Byte(value) => write!(f, "{}", value),
-            JvmValue::Short(value) => write!(f, "{}", value),
-            JvmValue::Boolean(value) => write!(f, "{}", value),
-            JvmValue::Char(value) => write!(f, "{}", value),
+            Value::Int(value) => write!(f, "{}", value),
+            Value::Long(value) => write!(f, "{}", value),
+            Value::Float(value) => write!(f, "{}", value),
+            Value::Double(value) => write!(f, "{}", value),
+            Value::Reference(value) => write!(f, "{}", value),
+            Value::Byte(value) => write!(f, "{}", value),
+            Value::Short(value) => write!(f, "{}", value),
         }
     }
 }

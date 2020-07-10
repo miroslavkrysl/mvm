@@ -3,7 +3,7 @@ use crate::types::int::Int;
 use crate::types::long::Long;
 use crate::types::float::Float;
 use crate::types::category::{Categorize, ValueCategory, Describe};
-use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -92,7 +92,7 @@ impl Default for Double {
 }
 
 impl Describe for Double {
-    fn descriptor() -> TypeDescriptor {
-        TypeDescriptor::Simple(SimpleDescriptor::Double)
+    fn descriptor() -> TypeDesc {
+        TypeDesc::Simple(SimpleDescriptor::Double)
     }
 }

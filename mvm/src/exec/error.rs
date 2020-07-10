@@ -1,9 +1,9 @@
 use thiserror::Error;
 use std::io;
-use crate::parse::error::{ParseClassError, CreateClassError};
 use crate::memory::error::{OperandStackError, LocalsError};
 use crate::class::name::ClassName;
 use crate::class::error::ClassError;
+use crate::parse::error::{ParseClassError, CreateClassError};
 
 
 #[derive(Error, Debug)]

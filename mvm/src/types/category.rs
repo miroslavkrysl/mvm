@@ -1,4 +1,4 @@
-use crate::class::descriptor::TypeDescriptor;
+use crate::class::descriptor::TypeDesc;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -23,5 +23,5 @@ pub trait Categorize {
 
 
 pub trait Describe {
-    fn descriptor() -> TypeDescriptor;
+    fn descriptor() -> TypeDesc;
 }

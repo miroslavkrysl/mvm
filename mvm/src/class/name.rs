@@ -1,18 +1,16 @@
+//! Class, field, and method names.
+
 use std::fmt;
-use std::path::Path;
 
 use lazy_static::lazy_static;
 use regex::Regex;
 
 use crate::class::error::NameError;
-use std::convert::TryFrom;
 
-lazy_static! {
-    static ref CLASS_NAME_REGEX: Regex = Regex::new(r"([^.;\[/]+\.)*[^.;\[/]+").unwrap();
-    static ref METHOD_NAME_REGEX: Regex = Regex::new(r"[^.;\[/<>]+").unwrap();
-    static ref FIELD_NAME_REGEX: Regex = Regex::new(r"[^.;\[/]+").unwrap();
-}
 
+/// A class name.
+/// The name must have at least one character and must not
+/// contain any of the characters {`. ; [ ]`}.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ClassName {
     name: String
@@ -20,23 +18,38 @@ pub struct ClassName {
 
 
 impl ClassName {
+    /// Create a new class name.
+    ///
+    /// # Errors
+    ///
+    /// Returns `NameError::InvalidClassName` if the name is invalid.
     pub fn new<S>(name: S) -> Result<Self, NameError>
                   where S: Into<String> {
         let name = name.into();
 
-        if !CLASS_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidClassName)
+        if !Self::regex().is_match(&name) {
+            return Err(NameError::InvalidClassName(name));
         }
 
         Ok(ClassName { name })
     }
+
+    pub fn regex() -> &'static Regex {
+        lazy_static! {
+            static ref REGEX: Regex = Regex::new(r"([^.;\[/]+\.)*[^.;\[/]+").unwrap();
+        }
+
+        &REGEX
+    }
 }
+
 
 impl AsRef<str> for ClassName {
     fn as_ref(&self) -> &str {
         self.name.as_ref()
     }
 }
+
 
 impl fmt::Display for ClassName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -51,25 +64,54 @@ pub struct MethodName {
 }
 
 
+/// A method name.
+/// The name must have at least one character and must not
+/// contain any of the characters {`. ; [ ] < >`} except for
+/// special method names `<init>` and `<clinit>`.
 impl MethodName {
-    pub const INSTANCE_INIT_STRING: &'static str = "<init>";
-    pub const CLASS_INIT_STRING: &'static str = "<clinit>";
+    pub const INIT_STRING: &'static str = "<init>";
+    pub const CLINIT_STRING: &'static str = "<clinit>";
 
+    /// Create a new method name.
+    ///
+    /// # Errors
+    ///
+    /// Returns `NameError::InvalidMethodName` if the name is invalid.
     pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
         let name = name.into();
-        if name != Self::INSTANCE_INIT_STRING && name != Self::CLASS_INIT_STRING && !METHOD_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidMethodName { name });
+
+        if &name != Self::INIT_STRING
+            && &name != Self::CLINIT_STRING
+            && !Self::regex().is_match(&name) {
+            return Err(NameError::InvalidMethodName(name));
         }
 
         Ok(MethodName { name })
     }
 
-    pub fn is_init(&self) -> bool {
-        self.name == Self::INSTANCE_INIT_STRING
+    pub fn regex() -> &'static Regex {
+        lazy_static! {
+            static ref REGEX: Regex = Regex::new(r"[^.;\[/<>]+").unwrap();
+        }
+
+        &REGEX
     }
 
-    pub fn is_class_init(&self) -> bool {
-        self.name == Self::CLASS_INIT_STRING
+    /// Returns true if the name is of instance initialization method, false otherwise.
+    pub fn is_init(&self) -> bool {
+        &self.name == Self::INIT_STRING
+    }
+
+    /// Returns true if the name is of class initialization method, false otherwise.
+    pub fn is_clinit(&self) -> bool {
+        &self.name == Self::CLINIT_STRING
+    }
+}
+
+
+impl AsRef<str> for MethodName {
+    fn as_ref(&self) -> &str {
+        self.name.as_ref()
     }
 }
 
@@ -87,15 +129,39 @@ pub struct FieldName {
 }
 
 
+/// A field name.
+/// The name must have at least one character and must not
+/// contain any of the characters {`. ; [ ]`}.
 impl FieldName {
+    /// Create a new field name.
+    ///
+    /// # Errors
+    ///
+    /// Returns `NameError::InvalidFieldName` if the name is invalid.
     pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
         let name = name.into();
 
-        if !FIELD_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidFieldName);
+        if !Self::regex().is_match(&name) {
+            return Err(NameError::InvalidFieldName(name));
         }
 
         Ok(FieldName { name })
+    }
+
+    /// Get the field name regex.
+    #[inline]
+    pub fn regex() -> &'static Regex {
+        lazy_static! {
+            static ref REGEX: Regex = Regex::new(r"[^.;\[/]+").unwrap();
+        }
+        &REGEX
+    }
+}
+
+
+impl AsRef<str> for FieldName {
+    fn as_ref(&self) -> &str {
+        self.name.as_ref()
     }
 }
 

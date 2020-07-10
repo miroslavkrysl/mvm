@@ -1,87 +1,81 @@
+//! Symbolic references to fields and methods.
+
 use std::fmt;
-use crate::class::name::{ClassName, FieldName, MethodName};
-use crate::class::descriptor::{TypeDescriptor, ReturnDescriptor, ParamsDescriptor};
-use itertools::join;
+
+use crate::class::name::ClassName;
+use crate::class::signature::{FieldSig, MethodSig};
 
 
+/// A symbolic reference to a class field with a specific signature.
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct FieldSymRef {
+pub struct FieldRef {
     class_name: ClassName,
-    name: FieldName,
-    descriptor: TypeDescriptor,
+    signature: FieldSig,
 }
 
 
-impl FieldSymRef {
-    pub fn new(descriptor: TypeDescriptor, class_name: ClassName, name: FieldName,) -> Self {
-        FieldSymRef { class_name, name, descriptor }
-    }
-
-    pub fn class_name(&self) -> &ClassName {
-        &self.class_name
-    }
-
-    pub fn name(&self) -> &FieldName {
-        &self.name
-    }
-
-    pub fn descriptor(&self) -> &TypeDescriptor {
-        &self.descriptor
-    }
-}
-
-
-impl fmt::Display for FieldSymRef {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}:{}", self.descriptor, self.class_name, self.name)
-    }
-}
-
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct MethodSymRef {
-    return_desc: ReturnDescriptor,
-    class_name: ClassName,
-    name: MethodName,
-    params_desc: ParamsDescriptor
-}
-
-
-impl MethodSymRef {
-    pub fn new(
-        return_desc: ReturnDescriptor,
-        class_name: ClassName,
-        name: MethodName,
-        params_desc: ParamsDescriptor
-    ) -> Self {
-        MethodSymRef {
-            return_desc,
+impl FieldRef {
+    /// Creates a new `FieldRef` with the given class name and signature.
+    pub fn new(class_name: ClassName, signature: FieldSig) -> Self {
+        FieldRef {
             class_name,
-            name,
-            params_desc
+            signature,
         }
     }
 
+    /// Returns the name of the class of the referenced field
     pub fn class_name(&self) -> &ClassName {
         &self.class_name
     }
 
-    pub fn name(&self) -> &MethodName {
-        &self.name
-    }
-
-    pub fn return_desc(&self) -> &ReturnDescriptor {
-        &self.return_desc
-    }
-
-    pub fn params_desc(&self) -> &ParamsDescriptor {
-        &self.params_desc
+    /// Returns the signature of the referenced field.
+    pub fn signature(&self) -> &FieldSig {
+        &self.signature
     }
 }
 
 
-impl fmt::Display for MethodSymRef {
+impl fmt::Display for FieldRef {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}:{}{}", self.return_desc, self.class_name, self.name, self.params_desc)
+        write!(f, "{} {}:{}", self.signature.type_desc(), self.class_name, self.signature.name())
+    }
+}
+
+
+/// A symbolic reference to a class method with a specific signature.
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct MethodRef {
+    class_name: ClassName,
+    signature: MethodSig,
+}
+
+
+impl MethodRef {
+    /// Creates a new `MethodRef` with the given class name and signature.
+    pub fn new(class_name: ClassName, signature: MethodSig) -> Self {
+        MethodRef {
+            class_name,
+            signature,
+        }
+    }
+
+    /// Returns the name of the class of the referenced method.
+    pub fn class_name(&self) -> &ClassName {
+        &self.class_name
+    }
+
+    /// Returns the signature of the referenced method.
+    pub fn signature(&self) -> &MethodSig {
+        &self.signature
+    }
+}
+
+
+impl fmt::Display for MethodRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {}:{}({})",
+               self.signature.return_desc(),
+               self.class_name, self.signature.name(),
+               self.signature.params_desc())
     }
 }

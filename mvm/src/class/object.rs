@@ -1,7 +1,7 @@
 use std::iter;
 use std::sync::{Arc, RwLock};
 use crate::class::class::Class;
-use crate::types::jvm_value::JvmValue;
+use crate::types::value::Value;
 use crate::types::byte::Byte;
 use crate::types::short::Short;
 use crate::types::int::Int;
@@ -23,25 +23,34 @@ pub enum Object {
 #[derive(Debug)]
 pub struct Instance {
     class: Arc<Class>,
-    fields: RwLock<Vec<JvmValue>>,
+    is_initialized: bool,
+    fields: RwLock<Vec<Value>>,
 }
 
 impl Instance {
-    // pub fn new(class: Arc<Class>) -> Self {
-    //     let fields = RwLock::new(
-    //         class.fields()
-    //             .filter(|field| !field.is_static())
-    //             .map(|field| field.descriptor().default_value())
-    //             .collect());
-    //
-    //     Instance {
-    //         class,
-    //         fields,
-    //     }
-    // }
+    pub fn new(class: Arc<Class>) -> Self {
+        let fields = RwLock::new(
+            class.fields()
+                .filter(|field| !field.is_static())
+                .map(|field|
+                    field.signature()
+                        .type_desc()
+                        .default_value())
+                .collect());
+
+        Instance {
+            class,
+            is_initialized: false,
+            fields,
+        }
+    }
 
     pub fn class(&self) -> &Arc<Class> {
         &self.class
+    }
+
+    pub fn is_initialized(&self) -> bool {
+        self.is_initialized
     }
 }
 
@@ -52,7 +61,7 @@ impl Instance {
     /// # Panics
     ///
     /// Will panic if the index is out of bounds.
-    pub fn field(&self, index: usize) -> JvmValue {
+    pub fn field(&self, index: usize) -> Value {
         self.fields.read().unwrap()[index].clone()
     }
 
@@ -61,7 +70,7 @@ impl Instance {
     /// # Panics
     ///
     /// Will panic if the index is out of bounds.
-    pub fn set_field(&self, index: usize, value: JvmValue) {
+    pub fn set_field(&self, index: usize, value: Value) {
         self.fields.write().unwrap()[index] = value
     }
 }
@@ -79,6 +88,7 @@ pub enum Array {
 }
 
 impl Array {
+    /// Max allowed number of array dimensions.
     pub const MAX_DIM: usize = 255;
 
     pub fn new(descriptor: SimpleDescriptor, length: usize) -> Self {

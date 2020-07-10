@@ -1,6 +1,6 @@
-use crate::class::symbolic::{MethodSymRef, FieldSymRef};
+use crate::class::symbolic::{MethodRef, FieldRef};
 use crate::class::name::ClassName;
-use crate::class::descriptor::{TypeDescriptor, ArrayDescriptor};
+use crate::class::descriptor::{TypeDesc};
 
 
 #[derive(Debug, Clone, PartialEq)]
@@ -215,16 +215,16 @@ pub enum Instruction {
     RETURN,
 
     // object access
-    GETSTATIC(FieldSymRef),
-    PUTSTATIC(FieldSymRef),
-    GETFIELD(FieldSymRef),
-    PUTFIELD(FieldSymRef),
-    INVOKEVIRTUAL(MethodSymRef),
-    INVOKESPECIAL(MethodSymRef),
-    INVOKESTATIC(MethodSymRef),
+    GETSTATIC(FieldRef),
+    PUTSTATIC(FieldRef),
+    GETFIELD(FieldRef),
+    PUTFIELD(FieldRef),
+    INVOKEVIRTUAL(MethodRef),
+    INVOKESPECIAL(MethodRef),
+    INVOKESTATIC(MethodRef),
     ARRAYLENGTH,
 
     // object creation
     NEW(ClassName),
-    NEWARRAY(TypeDescriptor),
+    NEWARRAY(TypeDesc),
 }

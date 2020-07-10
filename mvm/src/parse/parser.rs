@@ -8,9 +8,9 @@ use regex::internal::Inst;
 use crate::parse::classfile::{ClassInfo, FieldInfo, MethodInfo};
 use crate::parse::error::{ParseClassErrorKind, ParseClassError, ParseNumberError};
 use crate::instruction::{Instruction, LdcArg, Ldc2Arg};
-use crate::class::symbolic::{FieldSymRef, MethodSymRef};
+use crate::class::symbolic::{FieldRef, MethodSymRef};
 use crate::class::name::{ClassName, MethodName, FieldName};
-use crate::class::descriptor::{TypeDescriptor, ArrayDim, ArrayDescriptor, SimpleDescriptor, ReturnDescriptor, ParamsDescriptor};
+use crate::class::descriptor::{TypeDesc, ArrayDim, ArrayDesc, SimpleDescriptor, ReturnDesc, ParamsDesc};
 
 
 /// MVM class file parser.
@@ -367,28 +367,28 @@ impl<'a> ClassFileParser<'a> {
                     "ARETURN" => Instruction::ARETURN,
                     "RETURN" => Instruction::RETURN,
                     "GETSTATIC" => Instruction::GETSTATIC(
-                        FieldSymRef::new(
+                        FieldRef::new(
                             self.parse_type_desc(tokens.next_or_err()?)?,
                             self.parse_class_name(tokens.next_or_err()?)?,
                             self.parse_field_name(tokens.next_or_err()?)?,
                         )
                     ),
                     "PUTSTATIC" => Instruction::PUTSTATIC(
-                        FieldSymRef::new(
+                        FieldRef::new(
                             self.parse_type_desc(tokens.next_or_err()?)?,
                             self.parse_class_name(tokens.next_or_err()?)?,
                             self.parse_field_name(tokens.next_or_err()?)?,
                         )
                     ),
                     "GETFIELD" => Instruction::GETFIELD(
-                        FieldSymRef::new(
+                        FieldRef::new(
                             self.parse_type_desc(tokens.next_or_err()?)?,
                             self.parse_class_name(tokens.next_or_err()?)?,
                             self.parse_field_name(tokens.next_or_err()?)?,
                         )
                     ),
                     "PUTFIELD" => Instruction::PUTFIELD(
-                        FieldSymRef::new(
+                        FieldRef::new(
                             self.parse_type_desc(tokens.next_or_err()?)?,
                             self.parse_class_name(tokens.next_or_err()?)?,
                             self.parse_field_name(tokens.next_or_err()?)?,
@@ -459,7 +459,7 @@ impl<'a> ClassFileParser<'a> {
     }
 
     /// Parse type descriptor.
-    fn parse_type_desc(&self, desc: &str) -> Result<TypeDescriptor, ParseClassErrorKind> {
+    fn parse_type_desc(&self, desc: &str) -> Result<TypeDesc, ParseClassErrorKind> {
         if desc.is_empty() {
             return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
@@ -479,7 +479,7 @@ impl<'a> ClassFileParser<'a> {
             let d = self.parse_u8(d.unwrap())?;
             let dim = ArrayDim::new(d)?;
 
-            return Ok(ArrayDescriptor::new(t, dim).into());
+            return Ok(ArrayDesc::new(t, dim).into());
         }
 
         self.parse_simple_desc(desc).map(|d| d.into())
@@ -503,19 +503,19 @@ impl<'a> ClassFileParser<'a> {
     }
 
     /// Parse return descriptor.
-    fn parse_return_desc(&self, desc: &str) -> Result<ReturnDescriptor, ParseClassErrorKind> {
+    fn parse_return_desc(&self, desc: &str) -> Result<ReturnDesc, ParseClassErrorKind> {
         if desc.is_empty() {
             return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
 
         Ok(match desc {
-            "void" => ReturnDescriptor::Void,
+            "void" => ReturnDesc::Void,
             t => self.parse_type_desc(t)?.into(),
         })
     }
 
     /// Parse type descriptor.
-    fn parse_method_params(&self, desc: &str) -> Result<ParamsDescriptor, ParseClassErrorKind> {
+    fn parse_method_params(&self, desc: &str) -> Result<ParamsDesc, ParseClassErrorKind> {
         if !desc.starts_with("(") || !desc.ends_with(")") {
             return Err(ParseClassErrorKind::InvalidParamsDescriptor(desc.into()));
         }
@@ -524,7 +524,7 @@ impl<'a> ClassFileParser<'a> {
         let desc = &desc[1..(desc.len() - 1)];
 
         if desc.is_empty() {
-            return Ok(ParamsDescriptor::empty());
+            return Ok(ParamsDesc::empty());
         }
 
         let tokens = desc[1..(desc.len() - 1)].split(",");

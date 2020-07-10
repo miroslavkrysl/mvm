@@ -3,11 +3,9 @@
 
 // pub mod error;
 pub mod class;
-pub mod exec;
+// pub mod exec;
 pub mod memory;
 // pub mod vm;
 pub mod instruction;
 pub mod types;
-pub mod parse;
-
-pub use pom;
+// pub mod parse;

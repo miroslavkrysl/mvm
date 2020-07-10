@@ -1,4 +1,4 @@
-use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor, ParamsDescriptor};
+use crate::class::descriptor::{ReturnDesc, TypeDesc, ParamsDesc};
 use crate::class::name::{ClassName, FieldName, MethodName};
 use crate::instruction::Instruction;
 use crate::class::class::Class;
@@ -28,13 +28,13 @@ impl ClassInfo {
 #[derive(Debug, Clone)]
 pub struct FieldInfo {
     name: FieldName,
-    descriptor: TypeDescriptor,
+    descriptor: TypeDesc,
     is_static: bool,
 }
 
 
 impl FieldInfo {
-    pub fn new(name: FieldName, descriptor: TypeDescriptor, is_static: bool) -> Self {
+    pub fn new(name: FieldName, descriptor: TypeDesc, is_static: bool) -> Self {
         FieldInfo { name, descriptor, is_static }
     }
 }
@@ -43,8 +43,8 @@ impl FieldInfo {
 #[derive(Debug, Clone)]
 pub struct MethodInfo {
     name: MethodName,
-    return_desc: ReturnDescriptor,
-    params_desc: ParamsDescriptor,
+    return_desc: ReturnDesc,
+    params_desc: ParamsDesc,
     is_static: bool,
     locals: u8,
     instructions: Vec<Instruction>,
@@ -54,8 +54,8 @@ pub struct MethodInfo {
 impl MethodInfo {
     pub fn new(
         name: MethodName,
-        return_desc: ReturnDescriptor,
-        params_desc: ParamsDescriptor,
+        return_desc: ReturnDesc,
+        params_desc: ParamsDesc,
         is_static: bool,
         locals: u8,
         instructions: Vec<Instruction>,

@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::types::category::{Describe, ValueCategory, Categorize};
-use crate::class::descriptor::{TypeDescriptor, SimpleDescriptor};
+use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone)]
@@ -31,8 +31,8 @@ impl fmt::Display for Byte {
 }
 
 impl Describe for Byte {
-    fn descriptor() -> TypeDescriptor {
-        TypeDescriptor::Simple(SimpleDescriptor::Byte)
+    fn descriptor() -> TypeDesc {
+        TypeDesc::Simple(SimpleDescriptor::Byte)
     }
 }
 

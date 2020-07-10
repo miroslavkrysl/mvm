@@ -2,9 +2,9 @@ use std::fmt;
 use std::intrinsics::transmute;
 use std::sync::Arc;
 
+use crate::class::descriptor::TypeDesc;
 use crate::class::object::Object;
-use crate::types::category::{ValueCategory, Categorize, Describe};
-use crate::class::descriptor::TypeDescriptor;
+use crate::types::category::{Categorize, Describe, ValueCategory};
 
 
 #[derive(Debug, Clone)]
@@ -12,6 +12,7 @@ pub enum Reference {
     Null,
     Object(Arc<Object>),
 }
+
 
 impl Reference {
     pub fn null() -> Self {
@@ -21,13 +22,19 @@ impl Reference {
     pub fn new(ptr: Arc<Object>) -> Self {
         Reference::Object(ptr)
     }
+
+    pub fn is_null(&self) -> bool {
+        if let Reference::Null = self { true } else { false }
+    }
 }
+
 
 impl Categorize for Reference {
     fn category() -> ValueCategory {
         ValueCategory::Single
     }
 }
+
 
 impl PartialEq for Reference {
     fn eq(&self, other: &Self) -> bool {
@@ -39,7 +46,9 @@ impl PartialEq for Reference {
     }
 }
 
+
 impl Eq for Reference {}
+
 
 impl fmt::Display for Reference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -57,14 +66,16 @@ impl fmt::Display for Reference {
     }
 }
 
+
 impl Default for Reference {
     fn default() -> Self {
         Self::null()
     }
 }
 
+
 impl Describe for Reference {
-    fn descriptor() -> TypeDescriptor {
+    fn descriptor() -> TypeDesc {
         unimplemented!()
     }
 }

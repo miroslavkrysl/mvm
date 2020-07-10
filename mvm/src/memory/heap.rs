@@ -5,7 +5,7 @@ use crate::class::object::Object;
 use crate::memory::error::HeapError;
 use crate::types::reference::Reference;
 use crate::class::name::ClassName;
-use crate::class::descriptor::ArrayDescriptor;
+use crate::class::descriptor::ArrayDesc;
 
 
 pub struct Heap {
@@ -35,7 +35,7 @@ impl Heap {
         unimplemented!()
     }
 
-    pub fn create_array(descriptor: ArrayDescriptor) -> Result<Reference, HeapError> {
+    pub fn create_array(descriptor: ArrayDesc) -> Result<Reference, HeapError> {
         unimplemented!()
     }
 }
