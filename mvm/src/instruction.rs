@@ -1,22 +1,18 @@
 use crate::class::symbolic::{MethodSymRef, FieldSymRef};
 use crate::class::name::ClassName;
-use crate::class::descriptor::{TypeDescriptor, ArrayDim, ArrayDescriptor};
-use crate::types::int::Int;
-use crate::types::float::Float;
-use crate::types::long::Long;
-use crate::types::double::Double;
+use crate::class::descriptor::{TypeDescriptor, ArrayDescriptor};
 
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum LdcArg {
-    Int(Int),
-    Float(Float),
+    Int(i32),
+    Float(f32),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Ldc2Arg {
-    Long(Long),
-    Double(Double),
+    Long(i64),
+    Double(f64),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,7 +41,7 @@ pub enum Instruction {
     BIPUSH(i8),
     SIPUSH(i16),
     LDC(LdcArg),
-    LDC_W(Ldc2Arg),
+    LDC_W(LdcArg),
     LDC2_W(Ldc2Arg),
 
     // load from locals and push

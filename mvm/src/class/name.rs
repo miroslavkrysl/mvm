@@ -1,7 +1,11 @@
 use std::fmt;
+use std::path::Path;
+
 use lazy_static::lazy_static;
 use regex::Regex;
+
 use crate::class::error::NameError;
+use std::convert::TryFrom;
 
 lazy_static! {
     static ref CLASS_NAME_REGEX: Regex = Regex::new(r"([^.;\[/]+\.)*[^.;\[/]+").unwrap();
@@ -14,24 +18,23 @@ pub struct ClassName {
     name: String
 }
 
+
 impl ClassName {
-    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
+    pub fn new<S>(name: S) -> Result<Self, NameError>
+                  where S: Into<String> {
         let name = name.into();
-        Self::validate(&name)?;
+
+        if !CLASS_NAME_REGEX.is_match(&name) {
+            return Err(NameError::InvalidClassName)
+        }
+
         Ok(ClassName { name })
     }
+}
 
-    /// Just validate the class name.
-    ///
-    /// # Errors
-    ///
-    /// Will return NameError::InvalidClassName, if the class name is invalid.
-    pub fn validate(name: &str) -> Result<(), NameError> {
-        if CLASS_NAME_REGEX.is_match(&name) {
-            Ok(())
-        } else {
-            Err(NameError::InvalidClassName)
-        }
+impl AsRef<str> for ClassName {
+    fn as_ref(&self) -> &str {
+        self.name.as_ref()
     }
 }
 
@@ -47,6 +50,7 @@ pub struct MethodName {
     name: String,
 }
 
+
 impl MethodName {
     pub const INSTANCE_INIT_STRING: &'static str = "<init>";
     pub const CLASS_INIT_STRING: &'static str = "<clinit>";
@@ -54,7 +58,7 @@ impl MethodName {
     pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
         let name = name.into();
         if name != Self::INSTANCE_INIT_STRING && name != Self::CLASS_INIT_STRING && !METHOD_NAME_REGEX.is_match(&name) {
-            return Err(NameError::InvalidMethodName{name});
+            return Err(NameError::InvalidMethodName { name });
         }
 
         Ok(MethodName { name })
@@ -69,6 +73,7 @@ impl MethodName {
     }
 }
 
+
 impl fmt::Display for MethodName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.name.escape_debug())
@@ -81,8 +86,9 @@ pub struct FieldName {
     name: String
 }
 
+
 impl FieldName {
-    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String>  {
+    pub fn new<S>(name: S) -> Result<Self, NameError> where S: Into<String> {
         let name = name.into();
 
         if !FIELD_NAME_REGEX.is_match(&name) {
@@ -92,6 +98,7 @@ impl FieldName {
         Ok(FieldName { name })
     }
 }
+
 
 impl fmt::Display for FieldName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

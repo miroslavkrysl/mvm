@@ -1,7 +1,8 @@
 use std::convert::TryFrom;
+use crate::memory::error::OperandStackError;
+use crate::types::comp_value::CompValue;
+use crate::types::category::ValueCategory;
 
-use crate::memory::OperandStackError;
-use crate::types::{Categorize, CompValue, ValueCategory};
 
 #[derive(Debug, Clone)]
 pub struct OperandStack {
@@ -265,7 +266,12 @@ impl OperandStack {
 #[cfg(test)]
 mod test {
     use crate::memory::operand_stack::OperandStack;
-    use crate::types::{Int, Long, Float, Double, Reference};
+    use crate::types::int::Int;
+    use crate::types::float::Float;
+    use crate::types::double::Double;
+    use crate::types::reference::Reference;
+    use crate::types::long::Long;
+
 
     #[test]
     fn push_and_pop() {

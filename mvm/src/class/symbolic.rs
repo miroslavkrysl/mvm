@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::class::name::{ClassName, FieldName, MethodName};
-use crate::class::descriptor::{TypeDescriptor, ReturnDescriptor};
+use crate::class::descriptor::{TypeDescriptor, ReturnDescriptor, ParamsDescriptor};
 use itertools::join;
 
 
@@ -43,7 +43,7 @@ pub struct MethodSymRef {
     return_desc: ReturnDescriptor,
     class_name: ClassName,
     name: MethodName,
-    params_desc: Vec<TypeDescriptor>
+    params_desc: ParamsDescriptor
 }
 
 
@@ -52,7 +52,7 @@ impl MethodSymRef {
         return_desc: ReturnDescriptor,
         class_name: ClassName,
         name: MethodName,
-        params_desc: Vec<TypeDescriptor>
+        params_desc: ParamsDescriptor
     ) -> Self {
         MethodSymRef {
             return_desc,
@@ -74,7 +74,7 @@ impl MethodSymRef {
         &self.return_desc
     }
 
-    pub fn params_desc(&self) -> &Vec<TypeDescriptor> {
+    pub fn params_desc(&self) -> &ParamsDescriptor {
         &self.params_desc
     }
 }
@@ -82,6 +82,6 @@ impl MethodSymRef {
 
 impl fmt::Display for MethodSymRef {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}:{}({})", self.return_desc, self.class_name, self.name, join(&self.params_desc, ", "))
+        write!(f, "{} {}:{}{}", self.return_desc, self.class_name, self.name, self.params_desc)
     }
 }

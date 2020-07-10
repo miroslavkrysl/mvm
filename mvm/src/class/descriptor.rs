@@ -14,6 +14,7 @@ use crate::types::jvm_value::JvmValue;
 use crate::types::long::Long;
 use crate::types::reference::Reference;
 use crate::types::short::Short;
+use std::iter::FromIterator;
 
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -202,8 +203,42 @@ impl From<TypeDescriptor> for ReturnDescriptor {
 impl fmt::Display for ReturnDescriptor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ReturnDescriptor::Void => write!(f, "V"),
+            ReturnDescriptor::Void => write!(f, "void"),
             ReturnDescriptor::NonVoid(d) => write!(f, "{}", d),
         }
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub struct ParamsDescriptor {
+    params_desc: Vec<TypeDescriptor>,
+}
+
+
+impl ParamsDescriptor {
+    pub fn from_iter<I: Iterator<Item=TypeDescriptor>>(params_desc: I) -> Self {
+        ParamsDescriptor { params_desc: params_desc.collect() }
+    }
+
+    pub fn empty() -> Self {
+        ParamsDescriptor { params_desc: Vec::new()}
+    }
+
+    pub fn len(&self) -> usize {
+        self.params_desc.len()
+    }
+}
+
+impl FromIterator<TypeDescriptor> for ParamsDescriptor {
+    fn from_iter<T: IntoIterator<Item=TypeDescriptor>>(iter: T) -> Self {
+        ParamsDescriptor {
+            params_desc: iter.into_iter().collect()
+        }
+    }
+}
+
+impl fmt::Display for ParamsDescriptor {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({})", join(&self.params_desc, ", "))
     }
 }

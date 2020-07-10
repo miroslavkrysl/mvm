@@ -1,10 +1,8 @@
 use std::sync::Arc;
+use crate::class::method::Method;
+use crate::memory::operand_stack::OperandStack;
+use crate::memory::locals::Locals;
 
-use crate::class::Method;
-use crate::memory::{Locals, FrameError};
-use crate::memory::OperandStack;
-use crate::types::JvmValue;
-use regex::internal::Input;
 
 pub struct Frame {
     method: Arc<Method>,

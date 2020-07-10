@@ -1,102 +1,43 @@
 use std::cell::{Cell, RefCell};
 use std::fmt::Display;
 use std::fmt;
-use std::num::ParseIntError;
+use std::num::{ParseIntError, ParseFloatError};
 use std::str::{Lines, SplitWhitespace};
 
-use thiserror::Error;
-use crate::class::error::{DescriptorError, NameError};
-use crate::classloader::classfile::{ClassInfo, FieldInfo, MethodInfo};
-use crate::class::descriptor::{TypeDescriptor, ArrayDim, SimpleDescriptor, ReturnDescriptor, ArrayDescriptor};
-use crate::instruction::Instruction;
-use crate::class::name::{ClassName, MethodName, FieldName};
 use regex::internal::Inst;
+use crate::parse::classfile::{ClassInfo, FieldInfo, MethodInfo};
+use crate::parse::error::{ParseClassErrorKind, ParseClassError, ParseNumberError};
+use crate::instruction::{Instruction, LdcArg, Ldc2Arg};
 use crate::class::symbolic::{FieldSymRef, MethodSymRef};
+use crate::class::name::{ClassName, MethodName, FieldName};
+use crate::class::descriptor::{TypeDescriptor, ArrayDim, ArrayDescriptor, SimpleDescriptor, ReturnDescriptor, ParamsDescriptor};
 
 
-pub struct Parser<'a> {
+/// MVM class file parser.
+pub struct ClassFileParser<'a> {
     input: Input<'a>
 }
 
 
-#[derive(Error, Debug)]
-pub struct ParseError {
-    kind: ParseErrorKind,
-    line_pos: usize,
-}
-
-
-impl Display for ParseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "on line {}: {}", self.line_pos, self.kind)
-    }
-}
-
-
-#[derive(Error, Debug)]
-pub enum ParseErrorKind {
-    #[error("unknown entry: {0}")]
-    UnknownEntry(String),
-    #[error("unknown instruction: {0}")]
-    UnknownInstruction(String),
-    #[error("unexpected end of input")]
-    UnexpectedEndOfInput,
-    #[error("unexpected end of line")]
-    UnexpectedEndOfLine,
-    #[error("unexpected token: {0}")]
-    UnexpectedToken(String),
-    #[error("invalid method params descriptor: {0}")]
-    InvalidParamsDescriptor(String),
-    #[error("invalid field definition: {0}")]
-    InvalidFieldDefinition(String),
-    #[error("invalid method definition: {0}")]
-    InvalidInstructionDefinition(String),
-    #[error("invalid instruction definition: {0}")]
-    InvalidMethodDefinition(String),
-    #[error("invalid array descriptor: {0}")]
-    InvalidArrayDescriptor(String),
-    #[error("type descriptor is empty")]
-    EmptyTypeDescriptor,
-    #[error(transparent)]
-    Desriptor {
-        #[from]
-        source: DescriptorError
-    },
-    #[error(transparent)]
-    Name {
-        #[from]
-        source: NameError
-    },
-    #[error(transparent)]
-    Int {
-        #[from]
-        source: ParseIntError
-    },
-}
-
-
-impl<'a> Parser<'a> {
-    pub fn new(input: &str) -> Parser {
-        Parser {
+impl<'a> ClassFileParser<'a> {
+    pub fn new(input: &str) -> ClassFileParser {
+        ClassFileParser {
             input: Input::new(input)
         }
     }
 
     /// Parse the whole class file.
-    pub fn parse(&self) -> Result<ClassInfo, ParseError> {
+    pub fn parse(self) -> Result<ClassInfo, ParseClassError> {
         self.parse_inner().map_err(|e| {
-            ParseError {
-                kind: e,
-                line_pos: self.input.line_pos(),
-            }
+            ParseClassError::new(e, self.input.line_pos())
         })
     }
 }
 
 
-impl<'a> Parser<'a> {
+impl<'a> ClassFileParser<'a> {
     /// Parse the whole class file.
-    fn parse_inner(&self) -> Result<ClassInfo, ParseErrorKind> {
+    fn parse_inner(&self) -> Result<ClassInfo, ParseClassErrorKind> {
         // class name
         let class_name = self.parse_class_name(self.next_line_or_err()?)?;
 
@@ -115,7 +56,7 @@ impl<'a> Parser<'a> {
                     let info = self.parse_method()?;
                     methods.push(info);
                 }
-                _ => return Err(ParseErrorKind::UnknownEntry(line.into())),
+                _ => return Err(ParseClassErrorKind::UnknownEntry(line.into())),
             }
         }
 
@@ -152,17 +93,17 @@ impl<'a> Parser<'a> {
     /// # Errors
     ///
     /// When no line is available, returns `ParseError::UnexpectedEndOfInput`
-    fn next_line_or_err(&self) -> Result<&str, ParseErrorKind> {
+    fn next_line_or_err(&self) -> Result<&str, ParseClassErrorKind> {
         self.next_line().ok_or_else(|| {
-            ParseErrorKind::UnexpectedEndOfInput
+            ParseClassErrorKind::UnexpectedEndOfInput
         })
     }
 }
 
 
-impl<'a> Parser<'a> {
+impl<'a> ClassFileParser<'a> {
     /// Parse the whole class file.
-    fn parse_field(&self) -> Result<FieldInfo, ParseErrorKind> {
+    fn parse_field(&self) -> Result<FieldInfo, ParseClassErrorKind> {
         let line = self.next_line_or_err()?;
         let mut tokens = line.split_whitespace();
 
@@ -180,7 +121,7 @@ impl<'a> Parser<'a> {
 
         if desc.is_none() || name.is_none() || tokens.next().is_some() {
             // too few or too many items in field definition
-            return Err(ParseErrorKind::InvalidFieldDefinition(line.into()));
+            return Err(ParseClassErrorKind::InvalidFieldDefinition(line.into()));
         }
 
         let desc = self.parse_type_desc(desc.unwrap())?;
@@ -191,7 +132,7 @@ impl<'a> Parser<'a> {
 
 
     /// Parse the whole class file.
-    fn parse_method(&self) -> Result<MethodInfo, ParseErrorKind> {
+    fn parse_method(&self) -> Result<MethodInfo, ParseClassErrorKind> {
         let line = self.next_line_or_err()?;
         let mut tokens = line.split_whitespace();
 
@@ -211,7 +152,7 @@ impl<'a> Parser<'a> {
 
         if ret.is_none() || name.is_none() || params.is_none() || tokens.next().is_some() {
             // too few or too many items in method definition
-            return Err(ParseErrorKind::InvalidMethodDefinition(line.into()));
+            return Err(ParseClassErrorKind::InvalidMethodDefinition(line.into()));
         }
 
         let ret = self.parse_return_desc(ret.unwrap())?;
@@ -233,8 +174,9 @@ impl<'a> Parser<'a> {
     }
 
     /// Parse the whole class file.
-    fn parse_instructions(&self) -> Result<Vec<Instruction>, ParseErrorKind> {
+    fn parse_instructions(&self) -> Result<Vec<Instruction>, ParseClassErrorKind> {
         let mut instructions = Vec::new();
+        let mut ended = false;
 
         while let Some(line) = self.next_line() {
             if line.is_empty() {
@@ -244,7 +186,10 @@ impl<'a> Parser<'a> {
             let mut tokens = Tokens::whitespaces(line);
 
             let instruction = match tokens.next_or_err()? {
-                "END" => break,
+                "END" => {
+                    ended = true;
+                    break
+                },
                 name => match name {
                     "NOP" => Instruction::NOP,
                     "ACONST_NULL" => Instruction::ACONST_NULL,
@@ -264,6 +209,9 @@ impl<'a> Parser<'a> {
                     "DCONST_1" => Instruction::DCONST_1,
                     "BIPUSH" => Instruction::BIPUSH(self.parse_i8(tokens.next_or_err()?)?),
                     "SIPUSH" => Instruction::SIPUSH(self.parse_i16(tokens.next_or_err()?)?),
+                    "LDC" => Instruction::LDC(self.parse_ldc_arg(tokens.next_or_err()?)?),
+                    "LDC_W" => Instruction::LDC_W(self.parse_ldc_arg(tokens.next_or_err()?)?),
+                    "LDC2_W" => Instruction::LDC2_W(self.parse_ldc2_arg(tokens.next_or_err()?)?),
                     "ILOAD" => Instruction::ILOAD(self.parse_u8(tokens.next_or_err()?)?),
                     "LLOAD" => Instruction::LLOAD(self.parse_u8(tokens.next_or_err()?)?),
                     "FLOAD" => Instruction::FLOAD(self.parse_u8(tokens.next_or_err()?)?),
@@ -473,15 +421,19 @@ impl<'a> Parser<'a> {
                     "ARRAYLENGTH" => Instruction::ARRAYLENGTH,
                     "NEW" => Instruction::NEW(self.parse_class_name(tokens.next_or_err()?)?),
                     "NEWARRAY" => Instruction::NEWARRAY(self.parse_type_desc(tokens.next_or_err()?)?),
-                    _ => return Err(ParseErrorKind::UnknownInstruction(name.into()))
+                    _ => return Err(ParseClassErrorKind::UnknownInstruction(name.into()))
                 },
             };
 
             if tokens.next().is_some() {
-                return Err(ParseErrorKind::InvalidInstructionDefinition(line.into()));
+                return Err(ParseClassErrorKind::InvalidInstructionDefinition(line.into()));
             }
 
             instructions.push(instruction);
+        }
+
+        if !ended {
+            self.next_line_or_err()?;
         }
 
         Ok(instructions)
@@ -489,27 +441,27 @@ impl<'a> Parser<'a> {
 
 
     /// Parse the class name.
-    fn parse_class_name(&self, name: &str) -> Result<ClassName, ParseErrorKind> {
+    fn parse_class_name(&self, name: &str) -> Result<ClassName, ParseClassErrorKind> {
         let name = ClassName::new(name)?;
         Ok(name)
     }
 
     /// Parse the method name.
-    fn parse_method_name(&self, name: &str) -> Result<MethodName, ParseErrorKind> {
+    fn parse_method_name(&self, name: &str) -> Result<MethodName, ParseClassErrorKind> {
         let name = MethodName::new(name)?;
         Ok(name)
     }
 
     /// Parse the field name.
-    fn parse_field_name(&self, name: &str) -> Result<FieldName, ParseErrorKind> {
+    fn parse_field_name(&self, name: &str) -> Result<FieldName, ParseClassErrorKind> {
         let name = FieldName::new(name)?;
         Ok(name)
     }
 
     /// Parse type descriptor.
-    fn parse_type_desc(&self, desc: &str) -> Result<TypeDescriptor, ParseErrorKind> {
+    fn parse_type_desc(&self, desc: &str) -> Result<TypeDescriptor, ParseClassErrorKind> {
         if desc.is_empty() {
-            return Err(ParseErrorKind::EmptyTypeDescriptor);
+            return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
 
         if desc.starts_with("[") && desc.ends_with("]") {
@@ -520,7 +472,7 @@ impl<'a> Parser<'a> {
 
             if t.is_none() || d.is_none() || tokens.next().is_some() {
                 // too few or too many items in array descriptor
-                return Err(ParseErrorKind::InvalidArrayDescriptor(desc.into()));
+                return Err(ParseClassErrorKind::InvalidArrayDescriptor(desc.into()));
             }
 
             let t = self.parse_simple_desc(t.unwrap())?;
@@ -534,9 +486,9 @@ impl<'a> Parser<'a> {
     }
 
     /// Parse type descriptor.
-    fn parse_simple_desc(&self, desc: &str) -> Result<SimpleDescriptor, ParseErrorKind> {
+    fn parse_simple_desc(&self, desc: &str) -> Result<SimpleDescriptor, ParseClassErrorKind> {
         if desc.is_empty() {
-            return Err(ParseErrorKind::EmptyTypeDescriptor);
+            return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
 
         Ok(match desc {
@@ -551,9 +503,9 @@ impl<'a> Parser<'a> {
     }
 
     /// Parse return descriptor.
-    fn parse_return_desc(&self, desc: &str) -> Result<ReturnDescriptor, ParseErrorKind> {
+    fn parse_return_desc(&self, desc: &str) -> Result<ReturnDescriptor, ParseClassErrorKind> {
         if desc.is_empty() {
-            return Err(ParseErrorKind::EmptyTypeDescriptor);
+            return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
 
         Ok(match desc {
@@ -563,16 +515,16 @@ impl<'a> Parser<'a> {
     }
 
     /// Parse type descriptor.
-    fn parse_method_params(&self, desc: &str) -> Result<Vec<TypeDescriptor>, ParseErrorKind> {
+    fn parse_method_params(&self, desc: &str) -> Result<ParamsDescriptor, ParseClassErrorKind> {
         if !desc.starts_with("(") || !desc.ends_with(")") {
-            return Err(ParseErrorKind::InvalidParamsDescriptor(desc.into()));
+            return Err(ParseClassErrorKind::InvalidParamsDescriptor(desc.into()));
         }
 
         // array desc
         let desc = &desc[1..(desc.len() - 1)];
 
         if desc.is_empty() {
-            return Ok(Vec::new());
+            return Ok(ParamsDescriptor::empty());
         }
 
         let tokens = desc[1..(desc.len() - 1)].split(",");
@@ -580,24 +532,58 @@ impl<'a> Parser<'a> {
         tokens.map(|t| self.parse_type_desc(t)).collect()
     }
 
-    fn parse_u8(&self, i: &str) -> Result<u8, ParseErrorKind> {
+    fn parse_u8(&self, i: &str) -> Result<u8, ParseNumberError> {
         let n = i.parse::<u8>()?;
         Ok(n)
     }
 
-    fn parse_i8(&self, i: &str) -> Result<i8, ParseErrorKind> {
+    fn parse_i8(&self, i: &str) -> Result<i8, ParseNumberError> {
         let n = i.parse::<i8>()?;
         Ok(n)
     }
 
-    fn parse_i16(&self, i: &str) -> Result<i16, ParseErrorKind> {
+    fn parse_i16(&self, i: &str) -> Result<i16, ParseNumberError> {
         let n = i.parse::<i16>()?;
         Ok(n)
+    }
+
+    fn parse_ldc_arg(&self, i: &str) -> Result<LdcArg, ParseNumberError> {
+        match i.parse::<i32>() {
+            Ok(n) => {
+                Ok(LdcArg::Int(n))
+            },
+            Err(ei) => {
+                match i.parse::<f32>() {
+                    Ok(n) => Ok(LdcArg::Float(n)),
+                    Err(ef) => Err(ParseNumberError::NotIntOrFloat {
+                        i_error: ei,
+                        f_error: ef
+                    }),
+                }
+            },
+        }
+    }
+
+    fn parse_ldc2_arg(&self, i: &str) -> Result<Ldc2Arg, ParseNumberError> {
+        match i.parse::<i64>() {
+            Ok(n) => {
+                Ok(Ldc2Arg::Long(n))
+            },
+            Err(ei) => {
+                match i.parse::<f64>() {
+                    Ok(n) => Ok(Ldc2Arg::Double(n)),
+                    Err(ef) => Err(ParseNumberError::NotLongOrDouble {
+                        i_error: ei,
+                        f_error: ef
+                    }),
+                }
+            },
+        }
     }
 }
 
 
-
+/// Helper struct for input tokenized into lines.
 struct Input<'a> {
     lines: RefCell<Lines<'a>>,
     line_pos: Cell<usize>,
@@ -605,6 +591,7 @@ struct Input<'a> {
 
 
 impl<'a> Input<'a> {
+    /// Create new input by tokenining the input into lines.
     fn new(input: &'a str) -> Self {
         Input {
             lines: RefCell::new(input.lines()),
@@ -614,11 +601,12 @@ impl<'a> Input<'a> {
 
     /// Get next line from input and update current line.
     /// Returns `None`, if there are no more lines.
+    /// [None][None]
     fn next_line(&self) -> Option<&str> {
         let line = self.lines.borrow_mut().next();
 
         if let Some(_) = line {
-            self.line_pos.set(self.line_pos.get());
+            self.line_pos.set(self.line_pos.get() + 1);
         }
 
         line
@@ -630,7 +618,7 @@ impl<'a> Input<'a> {
 }
 
 
-
+/// Helper struct for tokenized input.
 struct Tokens<'a, I>
     where I: Iterator<Item=&'a str>
 {
@@ -640,14 +628,14 @@ struct Tokens<'a, I>
 impl<'a, I> Tokens<'a, I>
     where I: Iterator<Item=&'a str>
 {
-
+    /// Get next token.
     fn next(&mut self) -> Option<&'a str> {
         self.tokens.next()
     }
 
-    fn next_or_err(&mut self) -> Result<&'a str, ParseErrorKind> {
+    fn next_or_err(&mut self) -> Result<&'a str, ParseClassErrorKind> {
         self.next()
-            .ok_or(ParseErrorKind::UnexpectedEndOfLine)
+            .ok_or(ParseClassErrorKind::UnexpectedEndOfLine)
     }
 }
 
@@ -655,6 +643,14 @@ impl<'a> Tokens<'a, SplitWhitespace<'a>> {
     fn whitespaces(input: &'a str) -> Self {
         Tokens {
             tokens: input.split_whitespace()
+        }
+    }
+}
+
+impl<'a> Tokens<'a, Lines<'a>> {
+    fn lines(input: &'a str) -> Self {
+        Tokens {
+            tokens: input.lines()
         }
     }
 }

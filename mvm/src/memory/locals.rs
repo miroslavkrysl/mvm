@@ -1,8 +1,10 @@
 use std::convert::TryFrom;
 
-use crate::memory::LocalsError;
-use crate::types::{Categorize, CompValue, ValueCategory};
 use std::slice;
+use crate::types::comp_value::CompValue;
+use crate::memory::error::LocalsError;
+use crate::types::category::ValueCategory;
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Slot {

@@ -1,8 +1,12 @@
-use crate::class::{ClassSymRef, MethodSymRef, FieldSymRef, ValueDescriptor, ArrayValueDescriptor, Class, Object};
-use crate::types::{Reference, JvmValue};
-use crate::memory::{HeapError};
-use std::collections::HashMap;
+
 use std::sync::Arc;
+use crate::class::class::Class;
+use crate::class::object::Object;
+use crate::memory::error::HeapError;
+use crate::types::reference::Reference;
+use crate::class::name::ClassName;
+use crate::class::descriptor::ArrayDescriptor;
+
 
 pub struct Heap {
     classes: Vec<Arc<Class>>,
@@ -19,7 +23,7 @@ impl Heap {
     }
 }
 impl Heap {
-    pub fn class(sym_ref: &ClassSymRef) -> Result<Arc<Class>, HeapError> {
+    pub fn class(class_name: &ClassName) -> Result<Arc<Class>, HeapError> {
         unimplemented!()
     }
 
@@ -31,7 +35,7 @@ impl Heap {
         unimplemented!()
     }
 
-    pub fn create_array(descriptor: ArrayValueDescriptor) -> Result<Reference, HeapError> {
+    pub fn create_array(descriptor: ArrayDescriptor) -> Result<Reference, HeapError> {
         unimplemented!()
     }
 }

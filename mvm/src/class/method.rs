@@ -2,16 +2,15 @@ use crate::class::name::MethodName;
 use crate::class::flags::MethodFlags;
 use crate::class::code::Code;
 use crate::class::error::MethodError;
-use crate::class::class::Class;
-use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor};
+use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor, ParamsDescriptor};
 
 
 #[derive(Debug, Clone)]
 pub struct Method {
     name: MethodName,
     return_desc: ReturnDescriptor,
-    params_desc: Vec<TypeDescriptor>,
-    flags: MethodFlags,
+    params_desc: ParamsDescriptor,
+    is_static: bool,
     code: Code,
 }
 
@@ -19,11 +18,11 @@ impl Method {
     pub fn new(
         name: MethodName,
         return_desc: ReturnDescriptor,
-        params_desc: Vec<TypeDescriptor>,
-        flags: MethodFlags,
+        params_desc: ParamsDescriptor,
+        is_static: bool,
         code: Code,
     ) -> Result<Self, MethodError> {
-        if code.max_locals() < params_desc.len() {
+        if code.locals_len() < params_desc.len() {
             return Err(MethodError::TooFewLocalsEntries)
         }
 
@@ -31,7 +30,7 @@ impl Method {
             name,
             return_desc,
             params_desc,
-            flags,
+            is_static,
             code
         })
     }
@@ -39,10 +38,6 @@ impl Method {
 
 /// Getters
 impl Method {
-    pub fn flags(&self) -> &MethodFlags {
-        &self.flags
-    }
-
     pub fn name(&self) -> &MethodName {
         &self.name
     }
@@ -51,7 +46,7 @@ impl Method {
         &self.return_desc
     }
 
-    pub fn params_desc(&self) -> &Vec<TypeDescriptor> {
+    pub fn params_desc(&self) -> &ParamsDescriptor {
         &self.params_desc
     }
 
@@ -63,7 +58,7 @@ impl Method {
 /// Method access and properties related logic.
 impl Method {
     pub fn is_static(&self) -> bool {
-        self.flags.is_static()
+        self.is_static
     }
 
     pub fn is_init(&self) -> bool {

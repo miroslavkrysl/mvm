@@ -1,5 +1,10 @@
 use thiserror::Error;
-use crate::memory::{OperandStackError, LocalsError};
+use std::io;
+use crate::parse::error::{ParseClassError, CreateClassError};
+use crate::memory::error::{OperandStackError, LocalsError};
+use crate::class::name::ClassName;
+use crate::class::error::ClassError;
+
 
 #[derive(Error, Debug)]
 pub enum ExecError {
@@ -12,5 +17,36 @@ pub enum ExecError {
     Locals {
         #[from]
         source: LocalsError
+    },
+}
+
+#[derive(Error, Debug)]
+pub enum ClassLoadError {
+    #[error("class {0} was not found")]
+    ClassNotFound(ClassName),
+    #[error("class {expected} found, but has wrong name: {got}")]
+    WrongName {
+        expected: ClassName,
+        got: ClassName
+    },
+    #[error(transparent)]
+    Parse {
+        #[from]
+        source: ParseClassError
+    },
+    #[error(transparent)]
+    Create {
+        #[from]
+        source: CreateClassError
+    },
+    #[error(transparent)]
+    Class {
+        #[from]
+        source: ClassError
+    },
+    #[error(transparent)]
+    Io {
+        #[from]
+        source: io::Error
     },
 }

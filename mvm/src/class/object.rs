@@ -27,18 +27,18 @@ pub struct Instance {
 }
 
 impl Instance {
-    pub fn new(class: Arc<Class>) -> Self {
-        let fields = RwLock::new(
-            class.fields()
-                .filter(|field| !field.is_static())
-                .map(|field| field.descriptor().default_value())
-                .collect());
-
-        Instance {
-            class,
-            fields,
-        }
-    }
+    // pub fn new(class: Arc<Class>) -> Self {
+    //     let fields = RwLock::new(
+    //         class.fields()
+    //             .filter(|field| !field.is_static())
+    //             .map(|field| field.descriptor().default_value())
+    //             .collect());
+    //
+    //     Instance {
+    //         class,
+    //         fields,
+    //     }
+    // }
 
     pub fn class(&self) -> &Arc<Class> {
         &self.class

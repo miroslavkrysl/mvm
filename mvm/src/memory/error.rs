@@ -1,5 +1,6 @@
 use thiserror::Error;
-use crate::types::ValueError;
+use crate::types::error::ValueError;
+
 
 /// An error caused by the inappropriate OperandStack manipulation.
 #[derive(Error, Debug)]

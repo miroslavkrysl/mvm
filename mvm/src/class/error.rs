@@ -1,5 +1,7 @@
 use thiserror::Error;
 use crate::types::error::ValueError;
+use crate::class::descriptor::{ReturnDescriptor, TypeDescriptor, ParamsDescriptor};
+use crate::class::name::MethodName;
 
 
 #[derive(Error, Debug)]
@@ -26,8 +28,13 @@ pub enum NameError {
 
 #[derive(Error, Debug)]
 pub enum CodeError {
-    #[error("index is out of bounds")]
-    IndexOutOfBounds,
+    #[error("instruction index is out of bounds: the length is {max} but the index is {index}]")]
+    IndexOutOfBounds {
+        max: usize,
+        index: usize
+    },
+    #[error("there are no instructions in the code")]
+    NoInstructions,
 }
 
 
@@ -61,18 +68,21 @@ pub enum ClassError {
     NoSuchMethod,
     #[error("no such field was found in class")]
     NoSuchField,
-    #[error("multiple definitions of the same method")]
-    DuplicateMethod,
+    #[error("multiple definitions of the same method: {return_desc} {name}{params_desc}")]
+    DuplicateMethod {
+        return_desc: ReturnDescriptor,
+        name: MethodName,
+        params_desc: ParamsDescriptor
+    },
     #[error("multiple definitions of the same field")]
     DuplicateField,
 }
 
 #[derive(Error, Debug)]
 pub enum MethodError {
-    #[error("init method has invalid properties")]
-    InvalidInitProperties,
-    #[error("class init method has invalid properties")]
-    InvalidClassInitProperties,
     #[error("there are too few locals entries available for the method")]
     TooFewLocalsEntries,
 }
+
+#[derive(Error, Debug)]
+pub enum FieldError {}

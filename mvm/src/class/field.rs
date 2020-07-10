@@ -1,5 +1,4 @@
 use crate::class::name::FieldName;
-use crate::class::flags::FieldFlags;
 use crate::class::descriptor::TypeDescriptor;
 use crate::types::jvm_value::JvmValue;
 use crate::types::int::Int;
@@ -11,28 +10,22 @@ use crate::types::double::Double;
 #[derive(Debug, Clone)]
 pub struct Field {
     name: FieldName,
-    flags: FieldFlags,
-    descriptor: TypeDescriptor,
-    constant_value: Option<FieldConst>,
+    is_static: bool,
+    descriptor: TypeDescriptor
 }
 
 impl Field {
-    pub fn new(name: FieldName, flags: FieldFlags, descriptor: TypeDescriptor, constant_value: Option<FieldConst>) -> Self {
+    pub fn new(descriptor: TypeDescriptor, name: FieldName, is_static: bool) -> Self {
         Field {
             name,
-            flags,
-            descriptor,
-            constant_value,
+            is_static,
+            descriptor
         }
     }
 }
 
 /// Getters
 impl Field {
-    pub fn flags(&self) -> &FieldFlags {
-        &self.flags
-    }
-
     pub fn name(&self) -> &FieldName {
         &self.name
     }
@@ -41,26 +34,8 @@ impl Field {
         &self.descriptor
     }
 
-    pub fn constant_value(&self) -> Option<FieldConst> {
-        self.constant_value
-    }
-}
-
-impl Field {
-    pub fn init_value(&self) -> JvmValue {
-        match self.constant_value {
-            None => self.descriptor.default_value(),
-            Some(value) => {
-                value.into()
-            },
-        }
-    }
-}
-
-/// Field access and properties related logic.
-impl Field {
     pub fn is_static(&self) -> bool {
-        self.flags.is_static()
+        self.is_static
     }
 }
 
