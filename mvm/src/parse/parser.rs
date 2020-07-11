@@ -8,9 +8,11 @@ use regex::internal::Inst;
 use crate::parse::classfile::{ClassInfo, FieldInfo, MethodInfo};
 use crate::parse::error::{ParseClassErrorKind, ParseClassError, ParseNumberError};
 use crate::instruction::{Instruction, LdcArg, Ldc2Arg};
-use crate::class::symbolic::{FieldRef, MethodSymRef};
+use crate::class::symbolic::{FieldRef, MethodRef};
 use crate::class::name::{ClassName, MethodName, FieldName};
-use crate::class::descriptor::{TypeDesc, ArrayDim, ArrayDesc, SimpleDescriptor, ReturnDesc, ParamsDesc};
+use crate::class::descriptor::{TypeDesc, ReturnDesc, ParamsDesc};
+use crate::class::signature::{FieldSig, MethodSig};
+use crate::types::reference::Reference::Instance;
 
 
 /// MVM class file parser.
@@ -237,13 +239,6 @@ impl<'a> ClassFileParser<'a> {
                     "ALOAD_1" => Instruction::ALOAD_1,
                     "ALOAD_2" => Instruction::ALOAD_2,
                     "ALOAD_3" => Instruction::ALOAD_3,
-                    "IALOAD" => Instruction::IALOAD,
-                    "LALOAD" => Instruction::LALOAD,
-                    "FALOAD" => Instruction::FALOAD,
-                    "DALOAD" => Instruction::DALOAD,
-                    "AALOAD" => Instruction::AALOAD,
-                    "BALOAD" => Instruction::BALOAD,
-                    "SALOAD" => Instruction::SALOAD,
                     "ISTORE" => Instruction::ISTORE(self.parse_u8(tokens.next_or_err()?)?),
                     "LSTORE" => Instruction::LSTORE(self.parse_u8(tokens.next_or_err()?)?),
                     "FSTORE" => Instruction::FSTORE(self.parse_u8(tokens.next_or_err()?)?),
@@ -269,13 +264,6 @@ impl<'a> ClassFileParser<'a> {
                     "ASTORE_1" => Instruction::ASTORE_1,
                     "ASTORE_2" => Instruction::ASTORE_2,
                     "ASTORE_3" => Instruction::ASTORE_3,
-                    "IASTORE" => Instruction::IASTORE,
-                    "LASTORE" => Instruction::LASTORE,
-                    "FASTORE" => Instruction::FASTORE,
-                    "DASTORE" => Instruction::DASTORE,
-                    "AASTORE" => Instruction::AASTORE,
-                    "BASTORE" => Instruction::BASTORE,
-                    "SASTORE" => Instruction::SASTORE,
                     "POP" => Instruction::POP,
                     "POP2" => Instruction::POP2,
                     "DUP" => Instruction::DUP,
@@ -366,61 +354,52 @@ impl<'a> ClassFileParser<'a> {
                     "DRETURN" => Instruction::DRETURN,
                     "ARETURN" => Instruction::ARETURN,
                     "RETURN" => Instruction::RETURN,
-                    "GETSTATIC" => Instruction::GETSTATIC(
-                        FieldRef::new(
-                            self.parse_type_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_field_name(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "PUTSTATIC" => Instruction::PUTSTATIC(
-                        FieldRef::new(
-                            self.parse_type_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_field_name(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "GETFIELD" => Instruction::GETFIELD(
-                        FieldRef::new(
-                            self.parse_type_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_field_name(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "PUTFIELD" => Instruction::PUTFIELD(
-                        FieldRef::new(
-                            self.parse_type_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_field_name(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "INVOKEVIRTUAL" => Instruction::INVOKEVIRTUAL(
-                        MethodSymRef::new(
-                            self.parse_return_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_method_name(tokens.next_or_err()?)?,
-                            self.parse_method_params(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "INVOKESPECIAL" => Instruction::INVOKESPECIAL(
-                        MethodSymRef::new(
-                            self.parse_return_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_method_name(tokens.next_or_err()?)?,
-                            self.parse_method_params(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "INVOKESTATIC" => Instruction::INVOKESTATIC(
-                        MethodSymRef::new(
-                            self.parse_return_desc(tokens.next_or_err()?)?,
-                            self.parse_class_name(tokens.next_or_err()?)?,
-                            self.parse_method_name(tokens.next_or_err()?)?,
-                            self.parse_method_params(tokens.next_or_err()?)?,
-                        )
-                    ),
-                    "ARRAYLENGTH" => Instruction::ARRAYLENGTH,
+                    "GETSTATIC" => {
+                        let t = self.parse_type_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_field_name(tokens.next_or_err()?)?;
+                        Instruction::GETSTATIC(FieldRef::new(c, FieldSig::new(t, n)))
+                    },
+                    "PUTSTATIC" => {
+                        let t = self.parse_type_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_field_name(tokens.next_or_err()?)?;
+                        Instruction::PUTSTATIC(FieldRef::new(c, FieldSig::new(t, n)))
+                    },
+                    "GETFIELD" => {
+                        let t = self.parse_type_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_field_name(tokens.next_or_err()?)?;
+                        Instruction::GETFIELD(FieldRef::new(c, FieldSig::new(t, n)))
+                    },
+                    "PUTFIELD" => {
+                        let t = self.parse_type_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_field_name(tokens.next_or_err()?)?;
+                        Instruction::PUTFIELD(FieldRef::new(c, FieldSig::new(t, n)))
+                    },
+                    "INVOKEVIRTUAL" => {
+                        let r = self.parse_return_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_method_name(tokens.next_or_err()?)?;
+                        let p = self.parse_method_params(tokens.next_or_err()?)?;
+                        Instruction::INVOKEVIRTUAL(MethodRef::new(c, MethodSig::new(r, n, p)?))
+                    },
+                    "INVOKESPECIAL" => {
+                        let r = self.parse_return_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_method_name(tokens.next_or_err()?)?;
+                        let p = self.parse_method_params(tokens.next_or_err()?)?;
+                        Instruction::INVOKESPECIAL(MethodRef::new(c, MethodSig::new(r, n, p)?))
+                    },
+                    "INVOKESTATIC" => {
+                        let r = self.parse_return_desc(tokens.next_or_err()?)?;
+                        let c = self.parse_class_name(tokens.next_or_err()?)?;
+                        let n = self.parse_method_name(tokens.next_or_err()?)?;
+                        let p = self.parse_method_params(tokens.next_or_err()?)?;
+                        Instruction::INVOKESTATIC(MethodRef::new(c, MethodSig::new(r, n, p)?))
+                    },
                     "NEW" => Instruction::NEW(self.parse_class_name(tokens.next_or_err()?)?),
-                    "NEWARRAY" => Instruction::NEWARRAY(self.parse_type_desc(tokens.next_or_err()?)?),
                     _ => return Err(ParseClassErrorKind::UnknownInstruction(name.into()))
                 },
             };
@@ -464,41 +443,14 @@ impl<'a> ClassFileParser<'a> {
             return Err(ParseClassErrorKind::EmptyTypeDescriptor);
         }
 
-        if desc.starts_with("[") && desc.ends_with("]") {
-            // array desc
-            let mut tokens = desc[1..(desc.len() - 1)].split(";");
-            let t = tokens.next();
-            let d = tokens.next();
-
-            if t.is_none() || d.is_none() || tokens.next().is_some() {
-                // too few or too many items in array descriptor
-                return Err(ParseClassErrorKind::InvalidArrayDescriptor(desc.into()));
-            }
-
-            let t = self.parse_simple_desc(t.unwrap())?;
-            let d = self.parse_u8(d.unwrap())?;
-            let dim = ArrayDim::new(d)?;
-
-            return Ok(ArrayDesc::new(t, dim).into());
-        }
-
-        self.parse_simple_desc(desc).map(|d| d.into())
-    }
-
-    /// Parse type descriptor.
-    fn parse_simple_desc(&self, desc: &str) -> Result<SimpleDescriptor, ParseClassErrorKind> {
-        if desc.is_empty() {
-            return Err(ParseClassErrorKind::EmptyTypeDescriptor);
-        }
-
         Ok(match desc {
-            "byte" => SimpleDescriptor::Byte,
-            "short" => SimpleDescriptor::Short,
-            "int" => SimpleDescriptor::Int,
-            "long" => SimpleDescriptor::Long,
-            "float" => SimpleDescriptor::Float,
-            "double" => SimpleDescriptor::Double,
-            class_name => SimpleDescriptor::Reference(self.parse_class_name(class_name)?),
+            "byte" => TypeDesc::Byte,
+            "short" => TypeDesc::Short,
+            "int" => TypeDesc::Int,
+            "long" => TypeDesc::Long,
+            "float" => TypeDesc::Float,
+            "double" => TypeDesc::Double,
+            class_name => TypeDesc::Reference(self.parse_class_name(class_name)?),
         })
     }
 
@@ -520,14 +472,13 @@ impl<'a> ClassFileParser<'a> {
             return Err(ParseClassErrorKind::InvalidParamsDescriptor(desc.into()));
         }
 
-        // array desc
         let desc = &desc[1..(desc.len() - 1)];
 
         if desc.is_empty() {
             return Ok(ParamsDesc::empty());
         }
 
-        let tokens = desc[1..(desc.len() - 1)].split(",");
+        let tokens = desc.split(",");
 
         tokens.map(|t| self.parse_type_desc(t)).collect()
     }

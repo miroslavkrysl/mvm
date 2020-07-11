@@ -9,7 +9,8 @@ use crate::class::error::NameError;
 
 
 /// A class name.
-/// The name must have at least one character and must not
+/// The name may consist of multiple identifiers separated by dots.
+/// The identifiers must have at least one character and must not
 /// contain any of the characters {`. ; [ ]`}.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ClassName {
@@ -36,7 +37,7 @@ impl ClassName {
 
     pub fn regex() -> &'static Regex {
         lazy_static! {
-            static ref REGEX: Regex = Regex::new(r"([^.;\[/]+\.)*[^.;\[/]+").unwrap();
+            static ref REGEX: Regex = Regex::new(r"^([^\.;\[/]+\.)*[^\.;\[/]+$").unwrap();
         }
 
         &REGEX
@@ -91,7 +92,7 @@ impl MethodName {
 
     pub fn regex() -> &'static Regex {
         lazy_static! {
-            static ref REGEX: Regex = Regex::new(r"[^.;\[/<>]+").unwrap();
+            static ref REGEX: Regex = Regex::new(r"^[^\.;\[/<>]+$").unwrap();
         }
 
         &REGEX
@@ -152,7 +153,7 @@ impl FieldName {
     #[inline]
     pub fn regex() -> &'static Regex {
         lazy_static! {
-            static ref REGEX: Regex = Regex::new(r"[^.;\[/]+").unwrap();
+            static ref REGEX: Regex = Regex::new(r"^[^\.;\[/]+$").unwrap();
         }
         &REGEX
     }

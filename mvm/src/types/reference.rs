@@ -1,16 +1,14 @@
 use std::fmt;
 use std::intrinsics::transmute;
 use std::sync::Arc;
-
-use crate::class::descriptor::TypeDesc;
-use crate::class::object::Object;
-use crate::types::category::{Categorize, Describe, ValueCategory};
+use crate::class::instance::Instance;
+use crate::types::error::ValueError;
 
 
 #[derive(Debug, Clone)]
 pub enum Reference {
     Null,
-    Object(Arc<Object>),
+    Instance(Arc<Instance>),
 }
 
 
@@ -19,19 +17,22 @@ impl Reference {
         Reference::Null
     }
 
-    pub fn new(ptr: Arc<Object>) -> Self {
-        Reference::Object(ptr)
+    pub fn new(ptr: Arc<Instance>) -> Self {
+        Reference::Instance(ptr)
     }
 
-    pub fn is_null(&self) -> bool {
-        if let Reference::Null = self { true } else { false }
+    pub fn is_null(&self) -> bool { 
+        match self {
+            Reference::Null => true,
+            Reference::Instance(_) => false,
+        }
     }
-}
 
-
-impl Categorize for Reference {
-    fn category() -> ValueCategory {
-        ValueCategory::Single
+    pub fn instance(self) -> Result<Arc<Instance>, ValueError> {
+        match self {
+            Reference::Null => Err(ValueError::NullPointer),
+            Reference::Instance(instance) => Ok(instance),
+        }
     }
 }
 
@@ -40,7 +41,7 @@ impl PartialEq for Reference {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Reference::Null, Reference::Null) => true,
-            (Reference::Object(ptr1), Reference::Object(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
+            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
             _ => false
         }
     }
@@ -54,13 +55,9 @@ impl fmt::Display for Reference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Reference::Null => write!(f, "null"),
-            Reference::Object(object) => {
-                let ptr = unsafe { transmute::<_, usize>(object) };
-
-                match object.as_ref() {
-                    Object::Instance(instance) => write!(f, "{}@{}", instance.class().name(), ptr),
-                    Object::Array(array) => unimplemented!(),
-                }
+            Reference::Instance(instance) => {
+                let ptr = unsafe { transmute::<_, usize>(instance) };
+                write!(f, "{}@{:x}", instance.class().name(), ptr)
             }
         }
     }
@@ -70,12 +67,5 @@ impl fmt::Display for Reference {
 impl Default for Reference {
     fn default() -> Self {
         Self::null()
-    }
-}
-
-
-impl Describe for Reference {
-    fn descriptor() -> TypeDesc {
-        unimplemented!()
     }
 }

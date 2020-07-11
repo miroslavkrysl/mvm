@@ -1,16 +1,15 @@
 
 use std::sync::Arc;
 use crate::class::class::Class;
-use crate::class::object::Object;
 use crate::memory::error::HeapError;
 use crate::types::reference::Reference;
 use crate::class::name::ClassName;
-use crate::class::descriptor::ArrayDesc;
+use crate::class::instance::Instance;
 
 
 pub struct Heap {
     classes: Vec<Arc<Class>>,
-    objects: Vec<Arc<Object>>,
+    objects: Vec<Arc<Instance>>,
 }
 
 
@@ -32,10 +31,6 @@ impl Heap {
     }
 
     pub fn create_instance(class: Arc<Class>) -> Result<Reference, HeapError> {
-        unimplemented!()
-    }
-
-    pub fn create_array(descriptor: ArrayDesc) -> Result<Reference, HeapError> {
         unimplemented!()
     }
 }

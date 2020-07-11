@@ -21,13 +21,27 @@ pub enum ExecError {
 }
 
 #[derive(Error, Debug)]
-pub enum ClassLoadError {
-    #[error("class {0} was not found")]
-    ClassNotFound(ClassName),
-    #[error("class {expected} found, but has wrong name: {got}")]
+#[error("can not load class {name}: {kind}")]
+pub struct ClassLoadError {
+    name: ClassName,
+    kind: ClassLoadErrorKind
+}
+
+
+impl ClassLoadError {
+    pub fn new(name: ClassName, kind: ClassLoadErrorKind) -> Self {
+        ClassLoadError { name, kind }
+    }
+}
+
+
+#[derive(Error, Debug)]
+pub enum ClassLoadErrorKind {
+    #[error("class was not found")]
+    ClassNotFound,
+    #[error("class has wrong name: {name}")]
     WrongName {
-        expected: ClassName,
-        got: ClassName
+        name: ClassName
     },
     #[error(transparent)]
     Parse {
@@ -38,11 +52,6 @@ pub enum ClassLoadError {
     Create {
         #[from]
         source: CreateClassError
-    },
-    #[error(transparent)]
-    Class {
-        #[from]
-        source: ClassError
     },
     #[error(transparent)]
     Io {

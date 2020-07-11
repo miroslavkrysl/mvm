@@ -1,6 +1,4 @@
 use std::fmt;
-use crate::types::category::{Describe, ValueCategory, Categorize};
-use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone)]
@@ -27,17 +25,5 @@ impl Default for Short {
 impl fmt::Display for Short {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
-    }
-}
-
-impl Describe for Short {
-    fn descriptor() -> TypeDesc {
-        TypeDesc::Simple(SimpleDescriptor::Short)
-    }
-}
-
-impl Categorize for Short {
-    fn category() -> ValueCategory {
-        ValueCategory::Single
     }
 }

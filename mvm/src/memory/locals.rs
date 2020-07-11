@@ -1,9 +1,8 @@
 use std::convert::TryFrom;
 
 use std::slice;
-use crate::types::comp_value::CompValue;
+use crate::types::value::{CompValue, ValueCategory};
 use crate::memory::error::LocalsError;
-use crate::types::category::ValueCategory;
 
 
 #[derive(Debug, Clone, PartialEq)]
@@ -37,7 +36,10 @@ impl Locals {
 
     pub fn load_value(&mut self, index: usize) -> Result<CompValue, LocalsError> {
         match self.values.get(index) {
-            None => Err(LocalsError::IndexOutOfBounds),
+            None => Err(LocalsError::IndexOutOfBounds {
+                index,
+                size: self.values.len()
+            }),
             Some(Slot::Undefined) => {
                 Err(LocalsError::InvalidIndex)
             }
@@ -53,10 +55,13 @@ impl Locals {
 
     pub fn store_value(&mut self, index: usize, value: CompValue) -> Result<(), LocalsError> {
         if index >= self.values.len() {
-            return Err(LocalsError::IndexOutOfBounds);
+            return Err(LocalsError::IndexOutOfBounds {
+                index,
+                size: self.values.len()
+            });
         }
 
-        if index + value.category().size() > self.values.len() {
+        if index + value.value_type().category().size() > self.values.len() {
             return Err(LocalsError::InvalidIndex);
         }
 
@@ -64,7 +69,7 @@ impl Locals {
         if index != 0 {
             if let Slot::Undefined = self.values[index] {
                 if let Slot::Value(prev_value) = &self.values[index - 1] {
-                    if prev_value.category() == ValueCategory::Double {
+                    if prev_value.value_type().category() == ValueCategory::Double {
                         self.values[index - 1] = Slot::Undefined;
                     }
                 }
@@ -72,7 +77,7 @@ impl Locals {
         }
 
         // check if the value is of double category and invalidate the next one eventually
-        if value.category() == ValueCategory::Double {
+        if value.value_type().category() == ValueCategory::Double {
             self.values[index + 1] = Slot::Undefined;
         }
 

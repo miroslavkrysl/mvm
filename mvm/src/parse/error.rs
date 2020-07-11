@@ -4,9 +4,7 @@ use std::num::{ParseIntError, ParseFloatError};
 
 use thiserror::Error;
 
-use crate::class::error::{DescriptorError, NameError, ClassError, MethodError, FieldError, CodeError};
-use crate::class::method::Method;
-use crate::class::name::{MethodName, FieldName};
+use crate::class::error::{DescriptorError, NameError, ClassError, MethodError, CodeError, SignatureError};
 
 
 #[derive(Error, Debug)]
@@ -51,14 +49,17 @@ pub enum ParseClassErrorKind {
     InvalidInstructionDefinition(String),
     #[error("invalid instruction definition: {0}")]
     InvalidMethodDefinition(String),
-    #[error("invalid array descriptor: {0}")]
-    InvalidArrayDescriptor(String),
     #[error("type descriptor is empty")]
     EmptyTypeDescriptor,
     #[error(transparent)]
     Descriptor {
         #[from]
         source: DescriptorError
+    },
+    #[error(transparent)]
+    Signature {
+        #[from]
+        source: SignatureError
     },
     #[error(transparent)]
     Name {
@@ -110,13 +111,13 @@ pub enum CreateClassError {
         source: MethodError
     },
     #[error(transparent)]
-    Field {
-        #[from]
-        source: FieldError
-    },
-    #[error(transparent)]
     Code {
         #[from]
         source: CodeError
+    },
+    #[error(transparent)]
+    Signature {
+        #[from]
+        source: SignatureError
     },
 }

@@ -71,15 +71,6 @@ pub enum Instruction {
     ALOAD_2,
     ALOAD_3,
 
-    // load from array and push
-    IALOAD,
-    LALOAD,
-    FALOAD,
-    DALOAD,
-    AALOAD,
-    BALOAD,
-    SALOAD,
-
     // pop and store in locals
     ISTORE(u8),
     LSTORE(u8),
@@ -106,15 +97,6 @@ pub enum Instruction {
     ASTORE_1,
     ASTORE_2,
     ASTORE_3,
-
-    // pop and store in array
-    IASTORE,
-    LASTORE,
-    FASTORE,
-    DASTORE,
-    AASTORE,
-    BASTORE,
-    SASTORE,
 
     // stack manipulation
     POP,
@@ -222,9 +204,7 @@ pub enum Instruction {
     INVOKEVIRTUAL(MethodRef),
     INVOKESPECIAL(MethodRef),
     INVOKESTATIC(MethodRef),
-    ARRAYLENGTH,
 
     // object creation
     NEW(ClassName),
-    NEWARRAY(TypeDesc),
 }

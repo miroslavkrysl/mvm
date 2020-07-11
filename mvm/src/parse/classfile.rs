@@ -8,6 +8,7 @@ use crate::class::method::Method;
 use crate::class::code::Code;
 use crate::class::field::Field;
 use std::sync::Arc;
+use crate::class::signature::{FieldSig, MethodSig};
 
 
 #[derive(Debug, Clone)]
@@ -28,14 +29,14 @@ impl ClassInfo {
 #[derive(Debug, Clone)]
 pub struct FieldInfo {
     name: FieldName,
-    descriptor: TypeDesc,
+    type_dec: TypeDesc,
     is_static: bool,
 }
 
 
 impl FieldInfo {
     pub fn new(name: FieldName, descriptor: TypeDesc, is_static: bool) -> Self {
-        FieldInfo { name, descriptor, is_static }
+        FieldInfo { name, type_dec: descriptor, is_static }
     }
 }
 
@@ -78,12 +79,12 @@ impl TryInto<Class> for ClassInfo {
     fn try_into(self) -> Result<Class, Self::Error> {
         let mut fields = Vec::new();
         for field_info in self.fields {
-            fields.push(Arc::new(field_info.try_into()?));
+            fields.push(field_info.try_into()?);
         }
 
         let mut methods = Vec::new();
         for method_info in self.methods {
-            methods.push(Arc::new(method_info.try_into()?));
+            methods.push(method_info.try_into()?);
         }
 
         Ok(Class::new(
@@ -99,9 +100,7 @@ impl TryInto<Method> for MethodInfo {
 
     fn try_into(self) -> Result<Method, Self::Error> {
         Ok(Method::new(
-            self.name,
-            self.return_desc,
-            self.params_desc,
+            MethodSig::new(self.return_desc, self.name, self.params_desc)?,
             self.is_static,
             Code::new(self.locals as usize, self.instructions)?,
         )?)
@@ -113,8 +112,7 @@ impl TryInto<Field> for FieldInfo {
 
     fn try_into(self) -> Result<Field, Self::Error> {
         Ok(Field::new(
-            self.descriptor,
-            self.name,
+            FieldSig::new(self.type_dec, self.name),
             self.is_static
         ))
     }

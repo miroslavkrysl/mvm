@@ -1,19 +1,20 @@
 use thiserror::Error;
 
 use crate::class::descriptor::{ParamsDesc, ReturnDesc};
-use crate::class::name::{MethodName, ClassName};
-use crate::class::signature::{MethodSig, FieldSig};
-use crate::types::value::Value;
+use crate::class::name::{ClassName, MethodName};
+use crate::class::signature::{FieldSig, MethodSig};
+use crate::types::int::Int;
+use crate::types::value::{Value, ValueType};
 
 
 /// An error that can occur while creating a class, field or method name.
 #[derive(Error, Debug)]
 pub enum NameError {
-    #[error("class name \"{0:?}\" is invalid")]
+    #[error("class name {0:?} is invalid")]
     InvalidClassName(String),
-    #[error("method name \"{0:?}\" is invalid")]
+    #[error("method name {0:?} is invalid")]
     InvalidMethodName(String),
-    #[error("field name \"{0:?}\" is invalid")]
+    #[error("field name {0:?} is invalid")]
     InvalidFieldName(String),
 }
 
@@ -82,18 +83,9 @@ pub enum ClassError {
     DuplicateField(FieldSig),
     #[error("multiple definitions of the same method \"{0}\"")]
     DuplicateMethod(MethodSig),
-    #[error("can not assign {1} to field \"{0}\"")]
+    #[error("can not assign value {1} of type {} to field \"{0}\"", .1.value_type())]
     FieldValueTypeMismatch(FieldSig, Value),
     #[error("class \"{0}\" of instance is not a subclass of of \"{1}\"")]
     NotInstanceOf(ClassName, ClassName),
 }
 
-
-/// An error caused by the inappropriate Array manipulation.
-#[derive(Error, Debug)]
-pub enum ArrayError {
-    #[error("array type mismatch")]
-    TypeMismatch,
-    #[error("index is out of bounds")]
-    IndexOutOfBounds,
-}

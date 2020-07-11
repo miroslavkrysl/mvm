@@ -22,8 +22,11 @@ pub enum OperandStackError {
 /// An error caused by the inappropriate Variables manipulation.
 #[derive(Error, Debug)]
 pub enum LocalsError {
-    #[error("index out of bounds")]
-    IndexOutOfBounds,
+    #[error("index {} is out of bounds, locals size is {size}")]
+    IndexOutOfBounds {
+        index: usize,
+        size: usize
+    },
     #[error("locals was accessed on invalid index")]
     InvalidIndex,
     #[error(transparent)]

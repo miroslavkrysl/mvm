@@ -4,8 +4,6 @@ use crate::types::error::DivisionByZero;
 use crate::types::int::Int;
 use crate::types::float::Float;
 use crate::types::double::Double;
-use crate::types::category::{ValueCategory, Categorize, Describe};
-use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -119,12 +117,6 @@ impl From<Long> for i64 {
     }
 }
 
-impl Categorize for Long {
-    fn category() -> ValueCategory {
-        ValueCategory::Double
-    }
-}
-
 impl fmt::Display for Long {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
@@ -134,11 +126,5 @@ impl fmt::Display for Long {
 impl Default for Long {
     fn default() -> Self {
         Self::new(0)
-    }
-}
-
-impl Describe for Long {
-    fn descriptor() -> TypeDesc {
-        TypeDesc::Simple(SimpleDescriptor::Long)
     }
 }

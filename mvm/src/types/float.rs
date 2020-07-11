@@ -3,8 +3,6 @@ use std::fmt;
 use crate::types::int::Int;
 use crate::types::long::Long;
 use crate::types::double::Double;
-use crate::types::category::{Categorize, ValueCategory, Describe};
-use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -74,12 +72,6 @@ impl Float {
     }
 }
 
-impl Categorize for Float {
-    fn category() -> ValueCategory {
-        ValueCategory::Single
-    }
-}
-
 impl fmt::Display for Float {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
@@ -89,11 +81,5 @@ impl fmt::Display for Float {
 impl Default for Float {
     fn default() -> Self {
         Self::new(0.0)
-    }
-}
-
-impl Describe for Float {
-    fn descriptor() -> TypeDesc {
-        TypeDesc::Simple(SimpleDescriptor::Float)
     }
 }

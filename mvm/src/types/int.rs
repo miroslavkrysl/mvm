@@ -4,8 +4,6 @@ use crate::types::error::DivisionByZero;
 use crate::types::long::Long;
 use crate::types::float::Float;
 use crate::types::double::Double;
-use crate::types::category::{ValueCategory, Categorize, Describe};
-use crate::class::descriptor::{TypeDesc, SimpleDescriptor};
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -133,15 +131,21 @@ impl Int {
     }
 }
 
-impl From<Int> for i32 {
-    fn from(int: Int) -> Self {
-        int.0
+impl AsRef<i32> for Int {
+    fn as_ref(&self) -> &i32 {
+        &self.0
     }
 }
 
-impl Categorize for Int {
-    fn category() -> ValueCategory {
-        ValueCategory::Single
+impl From<i32> for Int {
+    fn from(int: i32) -> Self {
+        Int::new(int)
+    }
+}
+
+impl From<Int> for i32 {
+    fn from(int: Int) -> Self {
+        int.0
     }
 }
 
@@ -154,11 +158,5 @@ impl fmt::Display for Int {
 impl Default for Int {
     fn default() -> Self {
         Self::new(0)
-    }
-}
-
-impl Describe for Int {
-    fn descriptor() -> TypeDesc {
-        TypeDesc::Simple(SimpleDescriptor::Int)
     }
 }

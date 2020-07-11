@@ -69,7 +69,7 @@ impl MethodSig {
 
     /// Returns true if this signature can be an instance initialization method, false otherwise.
     pub fn is_clinit(&self) -> bool {
-        self.name.is_init() && self.return_desc.is_void()
+        self.name.is_clinit() && self.return_desc.is_void()
     }
 }
 

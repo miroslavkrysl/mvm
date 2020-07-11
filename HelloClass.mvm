@@ -1,13 +1,13 @@
-HelloClas
+HelloClass
 
 FIELD
 static float jello
 
 FIELD
-[heloo;12] jello
+Jello jello
 
 METHOD
-int helloMethod () 4
+void <init> (long,long,byte,short,Hello) 7
     BIPUSH 121      // push
     DCONST_0
     NEW Class

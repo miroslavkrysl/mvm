@@ -8,4 +8,4 @@ pub mod field;
 pub mod method;
 pub mod code;
 pub mod class;
-pub mod object;
+pub mod instance;

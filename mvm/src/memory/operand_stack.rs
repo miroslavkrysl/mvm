@@ -1,7 +1,6 @@
 use std::convert::TryFrom;
 use crate::memory::error::OperandStackError;
-use crate::types::comp_value::CompValue;
-use crate::types::category::ValueCategory;
+use crate::types::value::{CompValue, ValueCategory};
 
 
 #[derive(Debug, Clone)]
@@ -57,7 +56,7 @@ impl OperandStack {
             }
 
             dup_count += 1;
-            values_size += self.values[self.values.len() - dup_count].category().size();
+            values_size += self.values[self.values.len() - dup_count].value_type().category().size();
         };
 
         // compute number of values to skip
@@ -73,7 +72,7 @@ impl OperandStack {
             }
 
             skip_count += 1;
-            values_size += self.values[self.values.len() - skip_count].category().size();
+            values_size += self.values[self.values.len() - skip_count].value_type().category().size();
         };
 
         // remove skip + dup values
@@ -163,7 +162,7 @@ impl OperandStack {
             }
 
             new_len -= 1;
-            values_size += self.values[new_len].category().size();
+            values_size += self.values[new_len].value_type().category().size();
         };
 
         self.values.truncate(new_len);
@@ -216,7 +215,8 @@ impl OperandStack {
         let value0 = self.peek(0)?;
         let value1 = self.peek(1)?;
 
-        if value0.category() != ValueCategory::Single || value1.category() != ValueCategory::Single {
+        if value0.value_type().category() != ValueCategory::Single
+            || value1.value_type().category() != ValueCategory::Single {
             return Err(OperandStackError::InvalidType);
         }
 
@@ -242,7 +242,7 @@ impl OperandStack {
         match self.values.pop() {
             None => Err(OperandStackError::Underflow),
             Some(value) => {
-                self.size -= value.category().size();
+                self.size -= value.value_type().category().size();
                 Ok(value)
             },
         }
@@ -253,9 +253,9 @@ impl OperandStack {
     }
 
     pub fn push_value(&mut self, value: CompValue) -> Result<(), OperandStackError> {
-        self.check_overflow(value.category().size())?;
+        self.check_overflow(value.value_type().category().size())?;
 
-        self.size += value.category().size();
+        self.size += value.value_type().category().size();
         self.values.push(value);
 
         Ok(())
