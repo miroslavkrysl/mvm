@@ -6,3 +6,12 @@
     font-size: 20;
     font-weight: bold;
 }
+
+.frame-name {
+    font-weight: bold;
+}
+
+.placeholder-text {
+    font-style: italic;
+    color: gray;
+}

@@ -1,11 +1,15 @@
 use super::{
-    frame_stack::{FrameInfo, FrameStackEvent, FrameStackView},
+    frame_stack::{FrameStackEvent, FrameStackView},
     header::AppHeaderEvent,
     header::AppHeaderView,
     landing::LandingPage,
 };
 use crate::vm::{
-    class::name::{ClassName, MethodName},
+    class::{
+        descriptor::{ParamsDesc, ReturnDesc, TypeDesc},
+        name::{ClassName, MethodName},
+        signature::MethodSig,
+    },
     ItemEvent, VirtualMachine,
 };
 use gdk::Screen;
@@ -60,11 +64,15 @@ impl Update for AppWindow {
                 // self.window.maximize();
                 // self.content.set_visible_child_name("vm");
                 // println!("Load request");
-                self.frame_stack.emit(FrameStackEvent::Push(FrameInfo {
-                    class: ClassName::new("hello").unwrap(),
-                    method: MethodName::new("hello").unwrap(),
-                    pc: 12,
-                }))
+                self.frame_stack.emit(FrameStackEvent::Push(
+                    ClassName::new("hello").unwrap(),
+                    MethodSig::new(
+                        ReturnDesc::Void,
+                        MethodName::new("hello").unwrap(),
+                        [TypeDesc::Byte, TypeDesc::Int].iter().cloned().collect(),
+                    )
+                    .unwrap(),
+                ));
             }
             AppEvent::NextInstruction => {}
             AppEvent::RestartVm => {}

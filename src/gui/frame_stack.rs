@@ -1,60 +1,48 @@
-use crate::vm::class::name::{ClassName, MethodName};
+use super::frame::FrameView;
+use crate::vm::class::{
+    name::{ClassName, MethodName},
+    signature::MethodSig,
+};
 use gtk::{
     Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
     ListBoxExt, ListBoxRow, ListBoxRowExt, Orientation, ScrolledWindow, Separator, ShadowType,
-    StyleContextExt, Viewport, ViewportExt, WidgetExt, NONE_ADJUSTMENT,
+    StyleContextExt, Viewport, WidgetExt, NONE_ADJUSTMENT,
 };
-use relm::{Relm, Update, Widget};
+use relm::{create_component, init, Component, Relm, Update, Widget};
 use relm_derive::Msg;
 use std::boxed::Box as StdBox;
 
-pub struct FrameStackModel {
-    frames: Vec<FrameInfo>,
-}
-
 #[derive(Msg)]
 pub enum FrameStackEvent {
-    Push(FrameInfo),
+    Push(ClassName, MethodSig),
     Pop,
-    ChangePc(usize),
 }
 
 pub struct FrameStackView {
-    model: FrameStackModel,
+    model: (),
     root: Box,
     list: ListBox,
-    frames: Vec<Box>,
+    frames: Vec<Component<FrameView>>,
 }
 
 impl Update for FrameStackView {
-    type Model = FrameStackModel;
+    type Model = ();
     type ModelParam = ();
     type Msg = FrameStackEvent;
 
-    fn model(_: &Relm<Self>, _: ()) -> FrameStackModel {
-        FrameStackModel { frames: Vec::new() }
-    }
+    fn model(_: &Relm<Self>, _: ()) -> () {}
 
     fn update(&mut self, event: FrameStackEvent) {
         match event {
-            FrameStackEvent::Push(info) => {
-                self.model.frames.push(info);
-                let frame = Box::new(Orientation::Horizontal, 0);
-                let label = Label::new(Some("hello"));
-                label.set_visible(true);
-                frame.pack_start(&label, false, false, 5);
-                frame.set_visible(true);
-                self.list.add(&frame);
-                self.frames.push(frame);
+            FrameStackEvent::Push(class, method) => {
+                println!("push");
+                let row = create_component::<FrameView>((class, method));
+                self.list.add(row.widget());
+                self.frames.push(row);
             }
             FrameStackEvent::Pop => {
-                if let Some(f) = self.model.frames.pop() {
-                    self.list.remove(&self.frames.pop().unwrap());
-                }
-            }
-            FrameStackEvent::ChangePc(pc) => {
-                if let Some(f) = self.frames.last() {
-                    // f.set_label(&pc.to_string());
+                if let Some(f) = self.frames.pop() {
+                    self.list.remove(f.widget());
                 }
             }
         }
@@ -77,6 +65,14 @@ impl Widget for FrameStackView {
                 }
             },
         )));
+
+        let placeholder = Label::new(Some("EMPTY"));
+        placeholder
+            .get_style_context()
+            .add_class("placeholder-text");
+        placeholder.set_property_margin(5);
+        placeholder.show_all();
+        list.set_placeholder(Some(&placeholder));
 
         let frame = Frame::new(None);
         frame.set_shadow_type(ShadowType::In);
@@ -106,10 +102,4 @@ impl Widget for FrameStackView {
             frames: Vec::new(),
         }
     }
-}
-
-pub struct FrameInfo {
-    pub class: ClassName,
-    pub method: MethodName,
-    pub pc: usize,
 }
