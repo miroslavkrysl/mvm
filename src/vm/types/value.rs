@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 use std::fmt;
+use std::fmt::Debug;
 
 use crate::vm::types::byte::Byte;
 use crate::vm::types::double::Double;
@@ -9,7 +10,6 @@ use crate::vm::types::int::Int;
 use crate::vm::types::long::Long;
 use crate::vm::types::reference::Reference;
 use crate::vm::types::short::Short;
-use std::fmt::Debug;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -40,6 +40,7 @@ pub enum ValueType {
     Reference,
 }
 
+
 impl fmt::Display for ValueType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -53,6 +54,7 @@ impl fmt::Display for ValueType {
         }
     }
 }
+
 
 impl ValueType {
     pub fn category(&self) -> ValueCategory {
@@ -277,7 +279,7 @@ impl fmt::Display for Value {
 }
 
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum CompValue {
     Int(Int),
     Long(Long),
@@ -434,30 +436,6 @@ impl fmt::Display for CompValue {
         }
     }
 }
-
-
-
-
-
-// fn try_into_reference(self, class_name: &ClassName) -> Result<Reference, ValueError> {
-//     match self {
-//         CompValue::Reference(r @ Reference::Null) => {
-//             Ok(r)
-//         }
-//         CompValue::Reference(r @ Reference::Instance(ref i))
-//         if i.class().name() == class_name => {
-//             Ok(r)
-//         }
-//         _ => {
-//             Err(ValueError::TypeMismatch {
-//                 expected: ValueType::Reference(class_name.clone()),
-//                 found: self.value_type(),
-//             })
-//         }
-//     }
-// }
-
-
 
 
 // pub fn is_byte(&self) -> bool {

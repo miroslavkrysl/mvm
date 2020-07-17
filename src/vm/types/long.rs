@@ -1,13 +1,14 @@
-
 use std::fmt;
-use crate::vm::types::error::DivisionByZero;
-use crate::vm::types::int::Int;
-use crate::vm::types::float::Float;
+
 use crate::vm::types::double::Double;
+use crate::vm::types::error::ValueError;
+use crate::vm::types::float::Float;
+use crate::vm::types::int::Int;
 
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Long(i64);
+
 
 impl Long {
     pub fn new(value: i64) -> Self {
@@ -29,9 +30,9 @@ impl Long {
         Long::new(result)
     }
 
-    pub fn div(&self, other: Long) -> Result<Long, DivisionByZero> {
+    pub fn div(&self, other: Long) -> Result<Long, ValueError> {
         if other.0 == 0 {
-            return Err(DivisionByZero);
+            return Err(ValueError::DivisionByZero);
         }
         let result = self.0.wrapping_div(other.0);
         Ok(Long::new(result))
@@ -86,6 +87,16 @@ impl Long {
         Long::new(result)
     }
 
+    pub fn cmp(&self, other: Long) -> Int {
+        if self.0 > other.0 {
+            Int::new(1)
+        } else if self.0 == other.0 {
+            Int::new(0)
+        } else {
+            Int::new(-1)
+        }
+    }
+
     pub fn to_int(&self) -> Int {
         Int::new(self.0 as i32)
     }
@@ -97,31 +108,29 @@ impl Long {
     pub fn to_double(&self) -> Double {
         Double::new(self.0 as f64)
     }
-
-    pub fn eq(&self, other: Long) -> bool {
-        self.0 == other.0
-    }
-
-    pub fn lt(&self, other: Long) -> bool {
-        self.0 < other.0
-    }
-
-    pub fn gt(&self, other: Long) -> bool {
-        self.0 > other.0
-    }
 }
+
 
 impl From<Long> for i64 {
-    fn from(int: Long) -> Self {
-        int.0
+    fn from(value: Long) -> Self {
+        value.0
     }
 }
+
+
+impl From<i64> for Long {
+    fn from(value: i64) -> Self {
+        Long::new(value)
+    }
+}
+
 
 impl fmt::Display for Long {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
+
 
 impl Default for Long {
     fn default() -> Self {

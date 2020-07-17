@@ -1,13 +1,19 @@
 use std::fmt;
 
+use crate::vm::types::int::Int;
 
-#[derive(Debug, Copy, Clone)]
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Byte(i8);
 
 
 impl Byte {
     pub fn new(value: i8) -> Self {
         Byte(value)
+    }
+
+    pub fn to_int(&self) -> Int {
+        Int::new(self.0 as i32)
     }
 }
 
@@ -31,3 +37,4 @@ impl fmt::Display for Byte {
         write!(f, "{}", self.0)
     }
 }
+

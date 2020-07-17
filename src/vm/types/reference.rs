@@ -21,24 +21,21 @@ impl Reference {
         Reference::Instance(ptr)
     }
 
-    pub fn is_null(&self) -> bool { 
+    pub fn is_null(&self) -> bool {
         match self {
             Reference::Null => true,
             Reference::Instance(_) => false,
         }
     }
 
-    pub fn instance(self) -> Result<Arc<Instance>, ValueError> {
+    pub fn to_instance(self) -> Result<Arc<Instance>, ValueError> {
         match self {
             Reference::Null => Err(ValueError::NullPointer),
             Reference::Instance(instance) => Ok(instance),
         }
     }
-}
 
-
-impl PartialEq for Reference {
-    fn eq(&self, other: &Self) -> bool {
+    pub fn eq(&self, other: &Reference) -> bool {
         match (self, other) {
             (Reference::Null, Reference::Null) => true,
             (Reference::Instance(ptr1), Reference::Instance(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
@@ -46,9 +43,6 @@ impl PartialEq for Reference {
         }
     }
 }
-
-
-impl Eq for Reference {}
 
 
 impl fmt::Display for Reference {
@@ -67,5 +61,15 @@ impl fmt::Display for Reference {
 impl Default for Reference {
     fn default() -> Self {
         Self::null()
+    }
+}
+
+impl PartialEq for Reference {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Reference::Null, Reference::Null) => true,
+            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
+            _ => false
+        }
     }
 }
