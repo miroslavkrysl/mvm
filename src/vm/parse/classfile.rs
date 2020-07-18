@@ -1,14 +1,14 @@
-use crate::vm::class::descriptor::{ReturnDesc, TypeDesc, ParamsDesc};
-use crate::vm::class::name::{ClassName, FieldName, MethodName};
-use crate::vm::instruction::Instruction;
-use crate::vm::class::class::Class;
-use crate::vm::parse::error::CreateClassError;
 use std::convert::TryInto;
-use crate::vm::class::method::Method;
+
+use crate::vm::class::class::Class;
 use crate::vm::class::code::Code;
+use crate::vm::class::descriptor::{ParamsDesc, ReturnDesc, TypeDesc};
 use crate::vm::class::field::Field;
-use std::sync::Arc;
+use crate::vm::class::method::Method;
+use crate::vm::class::name::{ClassName, FieldName, MethodName};
 use crate::vm::class::signature::{FieldSig, MethodSig};
+use crate::vm::parse::error::CreateClassError;
+use crate::vm::bytecode::instruction::Instruction;
 
 
 #[derive(Debug, Clone)]
@@ -90,10 +90,11 @@ impl TryInto<Class> for ClassInfo {
         Ok(Class::new(
             self.name,
             fields,
-            methods
+            methods,
         )?)
     }
 }
+
 
 impl TryInto<Method> for MethodInfo {
     type Error = CreateClassError;
@@ -107,13 +108,14 @@ impl TryInto<Method> for MethodInfo {
     }
 }
 
+
 impl TryInto<Field> for FieldInfo {
     type Error = CreateClassError;
 
     fn try_into(self) -> Result<Field, Self::Error> {
         Ok(Field::new(
             FieldSig::new(self.type_dec, self.name),
-            self.is_static
+            self.is_static,
         ))
     }
 }

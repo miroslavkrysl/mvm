@@ -3,26 +3,30 @@ use crate::vm::class::name::ClassName;
 use crate::vm::class::descriptor::{TypeDesc};
 
 
-#[derive(Debug, Clone, PartialEq)]
+/// Argument for `LDC` instruction.
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum LdcArg {
     Int(i32),
     Float(f32),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+/// Argument for `LDC2` and `LDC2_W` instructions.
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Ldc2Arg {
     Long(i64),
     Double(f64),
 }
 
+/// Enum of bytecode instructions.
 #[derive(Debug, Clone, PartialEq)]
+#[non_exhaustive]
 #[allow(non_camel_case_types)]
 pub enum Instruction {
     NOP,
 
     // push constants
-    ACONST_NULL,
     ICONST_M1,
+    ACONST_NULL,
     ICONST_0,
     ICONST_1,
     ICONST_2,
@@ -40,7 +44,7 @@ pub enum Instruction {
     // push constant args
     BIPUSH(i8),
     SIPUSH(i16),
-    LDC(LdcArg),
+    LDC(LdcArg), 
     LDC_W(LdcArg),
     LDC2_W(Ldc2Arg),
 
@@ -146,7 +150,7 @@ pub enum Instruction {
     LOR,
     IXOR,
     LXOR,
-    IINC (i8, i8),
+    IINC (u8, i8),
 
     // conversions
     I2L,
@@ -161,8 +165,6 @@ pub enum Instruction {
     D2I,
     D2L,
     D2F,
-    I2B,
-    I2S,
 
     // comparisons
     LCMP,
@@ -171,6 +173,7 @@ pub enum Instruction {
     DCMPL,
     DCMPG,
     IFEQ(i16),
+    IFNE(i16),
     IFLT(i16),
     IFGE(i16),
     IFGT(i16),
@@ -202,7 +205,6 @@ pub enum Instruction {
     GETFIELD(FieldRef),
     PUTFIELD(FieldRef),
     INVOKEVIRTUAL(MethodRef),
-    INVOKESPECIAL(MethodRef),
     INVOKESTATIC(MethodRef),
 
     // object creation

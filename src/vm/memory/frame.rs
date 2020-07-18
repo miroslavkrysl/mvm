@@ -1,56 +1,85 @@
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use crate::vm::class::method::Method;
 use crate::vm::memory::operand_stack::OperandStack;
 use crate::vm::memory::locals::Locals;
-use crate::vm::types::value::Value;
+use crate::vm::memory::error::FrameError;
+use crate::vm::class::class::Class;
 
 
 pub struct Frame {
+    class: Arc<Class>,
     method: Arc<Method>,
     stack: OperandStack,
     locals: Locals,
-    pc: usize,
+    pc: RwLock<isize>,
 }
 
 impl Frame {
-    pub fn new<I: IntoIterator<Item=Value>>(method: Arc<Method>, args: I) -> Self {
+    pub const MAX_STACK: usize = 255;
+
+    /// Create a new frame for method.
+    pub fn new(class: Arc<Class>, method: Arc<Method>) -> Self {
+        let mut locals = Locals::new(method.code().locals_size());
+
+        Frame {
+            class,
+            method,
+            stack: OperandStack::new(Self::MAX_STACK),
+            locals,
+            pc: RwLock::new(0),
+        }
+    }
+
+    /// Create a new frame for method, pop arguments from stack
+    /// and load them to locals of the new frame.
+    pub fn new_from_call(class: Arc<Class>, method: Arc<Method>, stack: &OperandStack) -> Result<Self, FrameError> {
         let locals = Locals::new(method.code().locals_size());
 
-        unimplemented!()
+        // pop arguments from stack and load them to locals
+        let mut index = 0;
+        for type_desc in method.signature().params_desc().type_descs() {
+            if !type_desc.is_assignable_with( &stack.peek_value(0)?) {
+                return Err(FrameError::IncompatibleArgumentType {
+                    expected: type_desc.clone()
+                });
+            }
 
-        // Ok(Frame {
-        //     method,
-        //     stack: OperandStack::new(method.code().max_stack()),
-        //     locals,
-        //     pc: 0,
-        // })
+            let value = stack.pop_value().unwrap();
+            let size = value.value_type().category().size();
+            locals.store_value(index, value).unwrap();
+            index += size;
+        }
+
+        Ok(Frame {
+            class,
+            method,
+            stack: OperandStack::new(Self::MAX_STACK),
+            locals,
+            pc: RwLock::new(0),
+        })
     }
 
     pub fn stack(&self) -> &OperandStack {
         &self.stack
     }
 
-    pub fn stack_mut(&mut self) -> &mut OperandStack {
-        &mut self.stack
-    }
-
     pub fn locals(&self) -> &Locals {
         &self.locals
-    }
-
-    pub fn locals_mut(&mut self) -> &mut Locals {
-        &mut self.locals
     }
 
     pub fn method(&self) -> &Arc<Method> {
         &self.method
     }
 
-    pub fn pc(&self) -> usize {
-        self.pc
+    pub fn pc(&self) -> isize {
+        self.pc.read().unwrap().clone()
     }
 
-    pub fn inc_pc(&mut self) {
-        self.pc += 1
+    pub fn inc_pc(&self) {
+        *self.pc.write().unwrap() += 1
+    }
+
+    pub fn offset_pc(&self, offset: i16) {
+        *self.pc.write().unwrap() += offset as isize;
     }
 }

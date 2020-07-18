@@ -1,14 +1,14 @@
 use std::fmt;
 use std::intrinsics::transmute;
 use std::sync::Arc;
-use crate::vm::class::instance::Instance;
+use crate::vm::class::instance::InstancePtr;
 use crate::vm::types::error::ValueError;
 
 
 #[derive(Debug, Clone)]
 pub enum Reference {
     Null,
-    Instance(Arc<Instance>),
+    Instance(InstancePtr),
 }
 
 
@@ -17,7 +17,7 @@ impl Reference {
         Reference::Null
     }
 
-    pub fn new(ptr: Arc<Instance>) -> Self {
+    pub fn new(ptr: InstancePtr) -> Self {
         Reference::Instance(ptr)
     }
 
@@ -28,7 +28,14 @@ impl Reference {
         }
     }
 
-    pub fn to_instance(self) -> Result<Arc<Instance>, ValueError> {
+    pub fn to_instance(self) -> Result<InstancePtr, ValueError> {
+        match self {
+            Reference::Null => Err(ValueError::NullPointer),
+            Reference::Instance(instance) => Ok(instance),
+        }
+    }
+
+    pub fn as_instance(&self) -> Result<&InstancePtr, ValueError> {
         match self {
             Reference::Null => Err(ValueError::NullPointer),
             Reference::Instance(instance) => Ok(instance),
@@ -38,7 +45,7 @@ impl Reference {
     pub fn eq(&self, other: &Reference) -> bool {
         match (self, other) {
             (Reference::Null, Reference::Null) => true,
-            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
+            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => ptr1.id() == ptr2.id(),
             _ => false
         }
     }
@@ -68,7 +75,7 @@ impl PartialEq for Reference {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Reference::Null, Reference::Null) => true,
-            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => Arc::ptr_eq(ptr1, ptr2),
+            (Reference::Instance(ptr1), Reference::Instance(ptr2)) => ptr1.id() == ptr2.id(),
             _ => false
         }
     }

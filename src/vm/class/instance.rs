@@ -1,20 +1,27 @@
-use std::sync::Arc;
+use std::fmt::Display;
+use std::sync::{Arc, Mutex, RwLock};
 
 use crate::vm::class::class::Class;
 use crate::vm::types::value::Value;
+use crate::vm::class::field::Field;
 
 
-/// A class instance object with `usize` indexable fields.
-/// Newly created is marked uninitialized, can be marked initialized.
+/// A class instance pointer - wrapper around the data pointer.
 #[derive(Debug, Clone)]
-pub struct Instance {
-    class: Arc<Class>,
-    is_initialized: bool,
-    fields: Vec<Value>,
+pub struct InstancePtr {
+    data: Arc<InstanceData>
 }
 
 
-impl Instance {
+/// A class instance data.
+#[derive(Debug)]
+struct InstanceData {
+    class: Arc<Class>,
+    fields: Mutex<Vec<Value>>,
+}
+
+
+impl InstancePtr {
     pub fn new(class: Arc<Class>) -> Self {
         let fields = class.fields()
                           .filter(|field| !field.is_static())
@@ -25,36 +32,25 @@ impl Instance {
                                    .default_value())
                           .collect();
 
-        Instance {
-            class,
-            is_initialized: false,
-            fields,
+        InstancePtr {
+            data: Arc::new(InstanceData {
+                class,
+                fields: Mutex::new(fields)
+            })
         }
     }
 
     pub fn class(&self) -> &Arc<Class> {
-        &self.class
+        &self.data.class
     }
 
-    pub fn is_initialized(&self) -> bool {
-        self.is_initialized
-    }
-
-    pub fn set_initialized(&mut self) {
-        self.is_initialized = true;
-    }
-}
-
-
-/// Field access.
-impl Instance {
     /// Get the field value.
     ///
     /// # Panics
     ///
     /// Will panic if the index is out of bounds.
     pub fn field(&self, index: usize) -> Value {
-        self.fields[index].clone()
+        self.data.fields.lock().unwrap()[index].clone()
     }
 
     /// Set the field value.
@@ -62,7 +58,23 @@ impl Instance {
     /// # Panics
     ///
     /// Will panic if the index is out of bounds.
-    pub fn set_field(&mut self, index: usize, value: Value) {
-        self.fields[index] = value
+    pub fn set_field(&self, index: usize, value: Value) {
+        self.data.fields.lock().unwrap()[index] = value
+    }
+
+    /// Get the instance id.
+    pub fn id(&self) -> InstanceId {
+        InstanceId(Arc::as_ptr(&self.data) as usize)
+    }
+}
+
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct InstanceId(usize);
+
+
+impl Display for InstanceId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:X}", self.0)
     }
 }

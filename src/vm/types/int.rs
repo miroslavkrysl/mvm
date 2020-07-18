@@ -48,22 +48,17 @@ impl Int {
         Int::new(result)
     }
 
-    pub fn shl(&self, shift: Int) -> Int {
+    pub fn shl(&self, shift: &Int) -> Int {
         let result = self.0.wrapping_shl(shift.0 as u32);
         Int::new(result)
     }
 
-    pub fn shr(&self, shift: Int) -> Int {
+    pub fn shr(&self, shift: &Int) -> Int {
         let result = self.0.wrapping_shr(shift.0 as u32);
         Int::new(result)
     }
 
-    pub fn ushl(&self, shift: Int) -> Int {
-        let result = (self.0 as u32).wrapping_shl(shift.0 as u32);
-        Int::new(result as i32)
-    }
-
-    pub fn ushr(&self, shift: Int) -> Int {
+    pub fn ushr(&self, shift: &Int) -> Int {
         let result = (self.0 as u32).wrapping_shr(shift.0 as u32);
         Int::new(result as i32)
     }
@@ -117,14 +112,6 @@ impl Int {
 
     pub fn to_double(&self) -> Double {
         Double::new(self.0 as f64)
-    }
-
-    pub fn to_byte(&self) -> Int {
-        Int::new(self.0 as i8 as i32)
-    }
-
-    pub fn to_short(&self) -> Int {
-        Int::new(self.0 as i16 as i32)
     }
 }
 

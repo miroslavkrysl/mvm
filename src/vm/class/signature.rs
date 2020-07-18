@@ -30,11 +30,11 @@ impl MethodSig {
     /// and the return type is not void.
     pub fn new(return_desc: ReturnDesc, name: MethodName, params_desc: ParamsDesc) -> Result<Self, SignatureError> {
         if name.is_init() && !return_desc.is_void() {
-            return Err(SignatureError::InitIsNonVoid);
+            return Err(SignatureError::InvalidInitSignature);
         }
 
-        if name.is_clinit() && !return_desc.is_void() {
-            return Err(SignatureError::ClinitIsNonVoid);
+        if name.is_clinit() && (!return_desc.is_void() || params_desc.len() != 0) {
+            return Err(SignatureError::InvalidClinitSignature);
         }
 
         Ok(MethodSig {

@@ -1,28 +1,29 @@
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 
 use crate::vm::memory::error::OperandStackError;
-use crate::vm::types::value::{CompValue, ValueCategory};
+use crate::vm::types::value::{Value, ValueCategory};
+use std::sync::RwLock;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct OperandStack {
-    values: Vec<CompValue>,
-    size: usize,
-    capacity: usize,
+    values: RwLock<Vec<Value>>,
+    size: RwLock<usize>,
+    capacity: RwLock<usize>,
 }
 
 
 impl OperandStack {
     pub fn new(capacity: usize) -> Self {
         OperandStack {
-            values: Vec::with_capacity(capacity),
-            size: 0,
-            capacity,
+            values: RwLock::new(Vec::with_capacity(capacity)),
+            size: RwLock::new(0),
+            capacity: RwLock::new(capacity),
         }
     }
 
     pub fn check_overflow(&self, size: usize) -> Result<(), OperandStackError> {
-        if self.size + size > self.capacity {
+        if *self.size.read().unwrap() + size > *self.capacity.read().unwrap() {
             Err(OperandStackError::Overflow)
         } else {
             Ok(())
@@ -30,20 +31,22 @@ impl OperandStack {
     }
 
     pub fn check_underflow(&self, size: usize) -> Result<(), OperandStackError> {
-        if size > self.size {
+        if size > *self.size.read().unwrap() {
             Err(OperandStackError::Underflow)
         } else {
             Ok(())
         }
     }
 
-    pub fn dup_skip(&mut self, dup: usize, skip: usize) -> Result<(), OperandStackError> {
+    pub fn dup_skip(&self, dup: usize, skip: usize) -> Result<(), OperandStackError> {
         if dup == 0 {
             return Ok(());
         }
 
         self.check_underflow(dup + skip)?;
         self.check_overflow(dup)?;
+
+        let mut values = self.values.write().unwrap();
 
         // compute number of values to duplicate
         let mut values_size = 0;
@@ -58,7 +61,7 @@ impl OperandStack {
             }
 
             dup_count += 1;
-            values_size += self.values[self.values.len() - dup_count].value_type().category().size();
+            values_size += values[values.len() - dup_count].value_type().category().size();
         };
 
         // compute number of values to skip
@@ -74,27 +77,30 @@ impl OperandStack {
             }
 
             skip_count += 1;
-            values_size += self.values[self.values.len() - skip_count].value_type().category().size();
+            values_size += values[values.len() - skip_count].value_type().category().size();
         };
 
         // remove skip + dup values
-        let to_dup: Vec<_> = self.values.drain((self.values.len() - dup_count - skip_count)..).collect();
+        let len = values.len();
+        let to_dup: Vec<_> = values.drain((len - dup_count - skip_count)..).collect();
 
         // append dup values
-        self.values.extend_from_slice(&to_dup[(to_dup.len() - dup_count)..]);
+        values.extend_from_slice(&to_dup[(to_dup.len() - dup_count)..]);
         // append skip + dup values to the end
-        self.values.extend(to_dup);
+        values.extend(to_dup);
 
-        self.size += dup;
+        *self.size.write().unwrap() += dup;
+
         Ok(())
     }
 
-    pub fn pop_discard(&mut self, size: usize) -> Result<(), OperandStackError> {
+    pub fn pop_discard(&self, size: usize) -> Result<(), OperandStackError> {
         self.check_underflow(size)?;
+        let mut values = self.values.write().unwrap();
 
         // compute new length of values after pop
         let mut values_size = 0;
-        let mut new_len = self.values.len();
+        let mut new_len = values.len();
         loop {
             if values_size == size {
                 break;
@@ -105,101 +111,118 @@ impl OperandStack {
             }
 
             new_len -= 1;
-            values_size += self.values[new_len].value_type().category().size();
+            values_size += values[new_len].value_type().category().size();
         };
 
-        self.values.truncate(new_len);
-        self.size -= size;
+        values.truncate(new_len);
+        *self.size.write().unwrap() -= size;
 
         Ok(())
     }
 
-    pub fn peek(&self, index: usize) -> Result<&CompValue, OperandStackError> {
-        if index >= self.values.len() {
+    pub fn peek_value(&self, index: usize) -> Result<Value, OperandStackError> {
+        let values = self.values.write().unwrap();
+        if index >= values.len() {
             return Err(OperandStackError::Underflow);
         }
 
-        Ok(&self.values[self.values.len() - index - 1])
+        Ok(values[values.len() - index - 1].clone())
     }
 
-    pub fn dup1(&mut self) -> Result<(), OperandStackError> {
+    pub fn peek<T>(&self, index: usize) -> Result<T, OperandStackError>
+                   where T: TryFrom<Value>,
+                         OperandStackError: From<<T as TryFrom<Value>>::Error> {
+        let values = self.values.write().unwrap();
+        if index >= values.len() {
+            return Err(OperandStackError::Underflow);
+        }
+
+        Ok(values[values.len() - index - 1].clone().try_into()?)
+    }
+
+    pub fn dup1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 0)
     }
 
-    pub fn dup1_skip1(&mut self) -> Result<(), OperandStackError> {
+    pub fn dup1_skip1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 1)
     }
 
-    pub fn dup1_skip2(&mut self) -> Result<(), OperandStackError> {
+    pub fn dup1_skip2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 2)
     }
 
-    pub fn dup2(&mut self) -> Result<(), OperandStackError> {
+    pub fn dup2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 0)
     }
 
-    pub fn dup2_skip1(&mut self) -> Result<(), OperandStackError> {
+    pub fn dup2_skip1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 1)
     }
 
-    pub fn dup2_skip2(&mut self) -> Result<(), OperandStackError> {
+    pub fn dup2_skip2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 2)
     }
 
-    pub fn pop_discard1(&mut self) -> Result<(), OperandStackError> {
+    pub fn pop_discard1(&self) -> Result<(), OperandStackError> {
         self.pop_discard(1)
     }
 
-    pub fn pop_discard2(&mut self) -> Result<(), OperandStackError> {
+    pub fn pop_discard2(&self) -> Result<(), OperandStackError> {
         self.pop_discard(2)
     }
 
-    pub fn swap(&mut self) -> Result<(), OperandStackError> {
-        let value0 = self.peek(0)?;
-        let value1 = self.peek(1)?;
+    pub fn swap(&self) -> Result<(), OperandStackError> {
+        let value0 = self.peek_value(0)?;
+        let value1 = self.peek_value(1)?;
+
+        let mut values = self.values.write().unwrap();
 
         if value0.value_type().category() != ValueCategory::Single
             || value1.value_type().category() != ValueCategory::Single {
             return Err(OperandStackError::InvalidType);
         }
 
-        let len = self.values.len();
-        self.values.swap(len - 1, len - 2);
+        let len = values.len();
+        values.swap(len - 1, len - 2);
+
         Ok(())
     }
 
-    pub fn pop<T>(&mut self) -> Result<T, OperandStackError>
-                  where T: TryFrom<CompValue>,
-                        OperandStackError: From<<T as TryFrom<CompValue>>::Error> {
-        match self.values.last() {
+    pub fn pop<T>(&self) -> Result<T, OperandStackError>
+                  where T: TryFrom<Value>,
+                        OperandStackError: From<<T as TryFrom<Value>>::Error> {
+        let mut values = self.values.write().unwrap();
+        match values.last() {
             None => Err(OperandStackError::Underflow),
             Some(comp_value) => {
                 let value = T::try_from(comp_value.clone())?;
-                self.values.pop();
+                values.pop();
                 Ok(value)
             }
         }
     }
 
-    pub fn pop_value(&mut self) -> Result<CompValue, OperandStackError> {
-        match self.values.pop() {
+    pub fn pop_value(&self) -> Result<Value, OperandStackError> {
+        let mut values = self.values.write().unwrap();
+        match values.pop() {
             None => Err(OperandStackError::Underflow),
             Some(value) => {
-                self.size -= value.value_type().category().size();
+                *self.size.write().unwrap() -= value.value_type().category().size();
                 Ok(value)
             }
         }
     }
 
-    pub fn push<T: Into<CompValue>>(&mut self, value: T) -> Result<(), OperandStackError> {
+    pub fn push<T: Into<Value>>(&self, value: T) -> Result<(), OperandStackError> {
         self.push_value(value.into())
     }
 
-    pub fn push_value(&mut self, value: CompValue) -> Result<(), OperandStackError> {
+    pub fn push_value(&self, value: Value) -> Result<(), OperandStackError> {
         self.check_overflow(value.value_type().category().size())?;
 
-        self.size += value.value_type().category().size();
-        self.values.push(value);
+        *self.size.write().unwrap() += value.value_type().category().size();
+        self.values.write().unwrap().push(value);
 
         Ok(())
     }
@@ -218,7 +241,7 @@ mod test {
 
     #[test]
     fn push_and_pop() {
-        let mut stack = OperandStack::new(32);
+        let stack = OperandStack::new(32);
 
         stack.push(Int::new(1)).unwrap();
         stack.push(Long::new(2)).unwrap();
@@ -236,7 +259,7 @@ mod test {
 
     #[test]
     fn overflow() {
-        let mut stack = OperandStack::new(6);
+        let stack = OperandStack::new(6);
 
         stack.push(Int::new(1)).unwrap();
         stack.push(Long::new(2)).unwrap();
@@ -248,7 +271,7 @@ mod test {
 
     #[test]
     fn underflow() {
-        let mut stack = OperandStack::new(32);
+        let stack = OperandStack::new(32);
         stack.pop_value().expect_err("pop on empty stack should return underflow error");
 
         stack.push(Int::new(1)).unwrap();

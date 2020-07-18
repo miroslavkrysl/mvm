@@ -15,22 +15,22 @@ impl Long {
         Long(value)
     }
 
-    pub fn add(&self, other: Long) -> Long {
+    pub fn add(&self, other: &Long) -> Long {
         let result = self.0.wrapping_add(other.0);
         Long::new(result)
     }
 
-    pub fn sub(&self, other: Long) -> Long {
+    pub fn sub(&self, other: &Long) -> Long {
         let result = self.0.wrapping_sub(other.0);
         Long::new(result)
     }
 
-    pub fn mul(&self, other: Long) -> Long {
+    pub fn mul(&self, other: &Long) -> Long {
         let result = self.0.wrapping_mul(other.0);
         Long::new(result)
     }
 
-    pub fn div(&self, other: Long) -> Result<Long, ValueError> {
+    pub fn div(&self, other: &Long) -> Result<Long, ValueError> {
         if other.0 == 0 {
             return Err(ValueError::DivisionByZero);
         }
@@ -38,7 +38,7 @@ impl Long {
         Ok(Long::new(result))
     }
 
-    pub fn rem(&self, other: Long) -> Long {
+    pub fn rem(&self, other: &Long) -> Long {
         let result = self.0.wrapping_rem(other.0);
         Long::new(result)
     }
@@ -48,46 +48,40 @@ impl Long {
         Long::new(result)
     }
 
-    pub fn shl(&self, shift: Int) -> Long {
-        let shift: i32 = shift.into();
+    pub fn shl(&self, shift: &Int) -> Long {
+        let shift: i32 = shift.clone().into();
         let result = self.0.wrapping_shl(shift as u32);
         Long::new(result)
     }
 
-    pub fn shr(&self, shift: Int) -> Long {
-        let shift: i32 = shift.into();
+    pub fn shr(&self, shift: &Int) -> Long {
+        let shift: i32 = shift.clone().into();
         let result = self.0.wrapping_shr(shift as u32);
         Long::new(result)
     }
 
-    pub fn ushl(&self, shift: Int) -> Long {
-        let shift: i32 = shift.into();
-        let result = (self.0 as u64).wrapping_shl(shift as u32);
-        Long::new(result as i64)
-    }
-
-    pub fn ushr(&self, shift: Int) -> Long {
-        let shift: i32 = shift.into();
+    pub fn ushr(&self, shift: &Int) -> Long {
+        let shift: i32 = shift.clone().into();
         let result = (self.0 as u64).wrapping_shr(shift as u32);
         Long::new(result as i64)
     }
 
-    pub fn and(&self, other: Long) -> Long {
+    pub fn and(&self, other: &Long) -> Long {
         let result = self.0 & other.0;
         Long::new(result)
     }
 
-    pub fn or(&self, other: Long) -> Long {
+    pub fn or(&self, other: &Long) -> Long {
         let result = self.0 | other.0;
         Long::new(result)
     }
 
-    pub fn xor(&self, other: Long) -> Long {
+    pub fn xor(&self, other: &Long) -> Long {
         let result = self.0 ^ other.0;
         Long::new(result)
     }
 
-    pub fn cmp(&self, other: Long) -> Int {
+    pub fn cmp(&self, other: &Long) -> Int {
         if self.0 > other.0 {
             Int::new(1)
         } else if self.0 == other.0 {

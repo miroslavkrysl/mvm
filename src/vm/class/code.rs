@@ -1,6 +1,6 @@
 use crate::vm::class::error::CodeError;
-use crate::vm::instruction::Instruction;
 use crate::vm::memory::locals::Locals;
+use crate::vm::bytecode::instruction::Instruction;
 
 
 /// A method code.
@@ -50,10 +50,14 @@ impl Code {
     /// # Errors
     ///
     /// Returns `CodeError::InstructionOutOfBounds` if the index is greater than the last instruction index.
-    pub fn instruction(&self, index: usize) -> Result<&Instruction, CodeError> {
-        match self.instructions.get(index) {
+    pub fn instruction(&self, index: isize) -> Result<Instruction, CodeError> {
+        if index < 0 {
+            return Err(CodeError::IndexOutOfBounds { max: self.instructions.len(), index });
+        }
+
+        match self.instructions.get(index as usize) {
             None => Err(CodeError::IndexOutOfBounds { max: self.instructions.len(), index }),
-            Some(instruction) => Ok(instruction),
+            Some(instruction) => Ok(instruction.clone()),
         }
     }
 }

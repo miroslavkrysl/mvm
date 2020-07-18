@@ -23,19 +23,19 @@ impl Method {
     /// `MethodError::InitIsStatic` if the method signature is of instance initialization method
     /// or `MethodError::ClinitIsNonStatic` if the method signature is of class initialization method.
     pub fn new(signature: MethodSig, is_static: bool, code: Code) -> Result<Self, MethodError> {
-        if code.locals_size() < signature.params_desc().size() {
-            return Err(MethodError::TooFewLocalsEntries {
-                locals_size: code.locals_size(),
-                params_size: signature.params_desc().size(),
-            });
-        }
-
         if signature.is_init() && is_static {
             return Err(MethodError::InitIsStatic);
         }
 
         if signature.is_clinit() && !is_static {
             return Err(MethodError::ClinitIsNonStatic);
+        }
+        
+        if code.locals_size() < signature.params_desc().size() {
+            return Err(MethodError::TooFewLocalsEntries {
+                locals_size: code.locals_size(),
+                params_size: signature.params_desc().size(),
+            });
         }
 
         Ok(Method {

@@ -1,8 +1,9 @@
-use gui::AppWindow;
-use relm::Widget;
+// use gui::AppWindow;
+// use relm::Widget;
 
-pub mod gui;
+// pub mod gui;
 pub mod vm;
+// pub mod observe;
 
 fn main() {
     // let application = Application::new(
@@ -24,5 +25,5 @@ fn main() {
     // }
 
     // let vm = VirtualMachine::new();
-    AppWindow::run(()).unwrap();
+    // AppWindow::run(()).unwrap();
 }

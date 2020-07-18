@@ -14,27 +14,27 @@ impl Double {
         Double(value)
     }
 
-    pub fn add(&self, other: Double) -> Double {
+    pub fn add(&self, other: &Double) -> Double {
         let result = self.0 + other.0;
         Double::new(result)
     }
 
-    pub fn sub(&self, other: Double) -> Double {
+    pub fn sub(&self, other: &Double) -> Double {
         let result = self.0 - other.0;
         Double::new(result)
     }
 
-    pub fn mul(&self, other: Double) -> Double {
+    pub fn mul(&self, other: &Double) -> Double {
         let result = self.0 * other.0;
         Double::new(result)
     }
 
-    pub fn div(&self, other: Double) -> Double {
+    pub fn div(&self, other: &Double) -> Double {
         let result = self.0 / other.0;
         Double::new(result)
     }
 
-    pub fn rem(&self, other: Double) -> Double {
+    pub fn rem(&self, other: &Double) -> Double {
         let result = self.0 % other.0;
         Double::new(result)
     }
@@ -44,7 +44,7 @@ impl Double {
         Double::new(result)
     }
 
-    pub fn cmpl(&self, other: Double) -> Int {
+    pub fn cmpl(&self, other: &Double) -> Int {
         if self.0 > other.0 {
             Int::new(1)
         } else if self.0 == other.0 {
@@ -56,7 +56,7 @@ impl Double {
         }
     }
 
-    pub fn cmpg(&self, other: Double) -> Int {
+    pub fn cmpg(&self, other: &Double) -> Int {
         if self.0 > other.0 {
             Int::new(1)
         } else if self.0 == other.0 {

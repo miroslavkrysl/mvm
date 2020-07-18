@@ -22,10 +22,10 @@ pub enum NameError {
 /// An error that can occur while creating a field or method signature.
 #[derive(Error, Debug)]
 pub enum SignatureError {
-    #[error("instance initialization method must return void")]
-    InitIsNonVoid,
-    #[error("class initialization method must return void")]
-    ClinitIsNonVoid,
+    #[error("invalid instance initialization method signature")]
+    InvalidInitSignature,
+    #[error("invalid class initialization method signature")]
+    InvalidClinitSignature,
 }
 
 
@@ -47,7 +47,7 @@ pub enum CodeError {
     #[error("instruction index is out of bounds: the length is {max} but the index is {index}]")]
     IndexOutOfBounds {
         max: usize,
-        index: usize,
+        index: isize,
     },
     #[error("the size of locals {size} is too big, max is {max}")]
     TooBigLocalsSize {

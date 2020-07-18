@@ -10,7 +10,7 @@ use crate::vm::{
         name::{ClassName, MethodName},
         signature::MethodSig,
     },
-    ItemEvent, VirtualMachine,
+    VirtualMachine,
 };
 use gdk::Screen;
 use gtk::{
@@ -24,6 +24,7 @@ use relm::{
 };
 use relm_derive::Msg;
 
+
 pub struct AppState {
     vm: Option<VirtualMachine>,
     ended: bool,
@@ -32,6 +33,7 @@ pub struct AppState {
 #[derive(Msg)]
 pub enum AppEvent {
     LoadRequest,
+    FrameSelected(usize),
     NextInstruction,
     RestartVm,
     Quit,
@@ -77,6 +79,9 @@ impl Update for AppWindow {
             AppEvent::NextInstruction => {}
             AppEvent::RestartVm => {}
             AppEvent::Quit => gtk::main_quit(),
+            AppEvent::FrameSelected(i) => {
+                println!("{}", i);
+            }
         }
     }
 }
@@ -117,14 +122,6 @@ impl Widget for AppWindow {
         let landing_page = create_component::<LandingPage>(());
         content.add_named(landing_page.widget(), "landing");
 
-        // interval(frame_stack.stream(), 3000, || {
-        //     FrameStackEvent::Push(FrameInfo {
-        //         class: ClassName::new("hello").unwrap(),
-        //         method: MethodName::new("hello").unwrap(),
-        //         pc: 12,
-        //     })
-        // });
-
         window.add(&content);
 
         let s = header.stream();
@@ -132,6 +129,12 @@ impl Widget for AppWindow {
             s@AppHeaderEvent::Load,
             relm.stream(),
             AppEvent::LoadRequest
+        );
+        let s = frame_stack.stream();
+        connect_stream!(
+            s@FrameStackEvent::FrameSelected(i),
+            relm.stream(),
+            AppEvent::FrameSelected(i)
         );
 
         // let l = label.clone();

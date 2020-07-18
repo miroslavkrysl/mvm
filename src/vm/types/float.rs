@@ -14,27 +14,27 @@ impl Float {
         Float(value)
     }
 
-    pub fn add(&self, other: Float) -> Float {
+    pub fn add(&self, other: &Float) -> Float {
         let result = self.0 + other.0;
         Float::new(result)
     }
 
-    pub fn sub(&self, other: Float) -> Float {
+    pub fn sub(&self, other: &Float) -> Float {
         let result = self.0 - other.0;
         Float::new(result)
     }
 
-    pub fn mul(&self, other: Float) -> Float {
+    pub fn mul(&self, other: &Float) -> Float {
         let result = self.0 * other.0;
         Float::new(result)
     }
 
-    pub fn div(&self, other: Float) -> Float {
+    pub fn div(&self, other: &Float) -> Float {
         let result = self.0 / other.0;
         Float::new(result)
     }
 
-    pub fn rem(&self, other: Float) -> Float {
+    pub fn rem(&self, other: &Float) -> Float {
         let result = self.0 % other.0;
         Float::new(result)
     }
@@ -56,7 +56,7 @@ impl Float {
         Double::new(self.0 as f64)
     }
 
-    pub fn cmpl(&self, other: Float) -> Int {
+    pub fn cmpl(&self, other: &Float) -> Int {
         if self.0 > other.0 {
             Int::new(1)
         } else if self.0 == other.0 {
@@ -68,7 +68,7 @@ impl Float {
         }
     }
 
-    pub fn cmpg(&self, other: Float) -> Int {
+    pub fn cmpg(&self, other: &Float) -> Int {
         if self.0 > other.0 {
             Int::new(1)
         } else if self.0 == other.0 {

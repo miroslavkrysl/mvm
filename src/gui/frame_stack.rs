@@ -1,14 +1,11 @@
 use super::frame::FrameView;
-use crate::vm::class::{
-    name::{ClassName, MethodName},
-    signature::MethodSig,
-};
+use crate::vm::class::{name::ClassName, signature::MethodSig};
 use gtk::{
     Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
     ListBoxExt, ListBoxRow, ListBoxRowExt, Orientation, ScrolledWindow, Separator, ShadowType,
     StyleContextExt, Viewport, WidgetExt, NONE_ADJUSTMENT,
 };
-use relm::{create_component, init, Component, Relm, Update, Widget};
+use relm::{connect, create_component, Component, Relm, Update, Widget};
 use relm_derive::Msg;
 use std::boxed::Box as StdBox;
 
@@ -16,10 +13,12 @@ use std::boxed::Box as StdBox;
 pub enum FrameStackEvent {
     Push(ClassName, MethodSig),
     Pop,
+    _RowSelected(Option<ListBoxRow>),
+    FrameSelected(usize),
 }
 
 pub struct FrameStackView {
-    model: (),
+    relm: Relm<Self>,
     root: Box,
     list: ListBox,
     frames: Vec<Component<FrameView>>,
@@ -35,7 +34,6 @@ impl Update for FrameStackView {
     fn update(&mut self, event: FrameStackEvent) {
         match event {
             FrameStackEvent::Push(class, method) => {
-                println!("push");
                 let row = create_component::<FrameView>((class, method));
                 self.list.add(row.widget());
                 self.frames.push(row);
@@ -45,6 +43,14 @@ impl Update for FrameStackView {
                     self.list.remove(f.widget());
                 }
             }
+            FrameStackEvent::_RowSelected(r) => match r {
+                Some(r) => self
+                    .relm
+                    .stream()
+                    .emit(FrameStackEvent::FrameSelected(r.get_index() as usize)),
+                None => {}
+            },
+            FrameStackEvent::FrameSelected(_) => {}
         }
     }
 }
@@ -65,6 +71,12 @@ impl Widget for FrameStackView {
                 }
             },
         )));
+        connect!(
+            relm,
+            list,
+            connect_row_selected(_, row),
+            FrameStackEvent::_RowSelected(row.cloned())
+        );
 
         let placeholder = Label::new(Some("EMPTY"));
         placeholder
@@ -96,7 +108,7 @@ impl Widget for FrameStackView {
         root.set_size_request(250, -1);
 
         FrameStackView {
-            model,
+            relm: relm.clone(),
             root,
             list,
             frames: Vec::new(),

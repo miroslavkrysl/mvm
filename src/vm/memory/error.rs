@@ -1,5 +1,8 @@
 use thiserror::Error;
+
+use crate::vm::class::name::ClassName;
 use crate::vm::types::error::ValueError;
+use crate::vm::class::descriptor::TypeDesc;
 
 
 /// An error caused by the inappropriate OperandStack manipulation.
@@ -25,7 +28,7 @@ pub enum LocalsError {
     #[error("index {} is out of bounds, locals size is {size}")]
     IndexOutOfBounds {
         index: usize,
-        size: usize
+        size: usize,
     },
     #[error("locals was accessed on invalid index")]
     InvalidIndex,
@@ -39,12 +42,20 @@ pub enum LocalsError {
 
 #[derive(Error, Debug)]
 pub enum FrameError {
-    #[error("incompatible arguments")]
-    IncompatibleArguments
+    #[error("expected argument of type {expected}")]
+    IncompatibleArgumentType {
+        expected: TypeDesc
+    },
+    #[error(transparent)]
+    OperandStack {
+        #[from]
+        source: OperandStackError
+    },
 }
 
 
 #[derive(Error, Debug)]
 pub enum HeapError {
-    
+    #[error("there no class of name {0} on the heap")]
+    NoSuchClass(ClassName)
 }

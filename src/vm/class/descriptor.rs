@@ -5,15 +5,13 @@ use std::iter::FromIterator;
 use crate::vm::class::name::ClassName;
 use crate::vm::types::value::{ValueType, Value};
 use crate::vm::types::reference::Reference;
-use crate::vm::class::instance::Instance;
+use crate::vm::class::instance::InstancePtr;
 use itertools::join;
 
 
 /// A MVM type descriptor.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum TypeDesc {
-    Byte,
-    Short,
     Int,
     Long,
     Float,
@@ -25,8 +23,6 @@ impl TypeDesc {
     /// Returns the default value of the `MvmValue` type described by this descriptor.
     pub fn value_type(&self) -> ValueType {
         match self {
-            TypeDesc::Byte => ValueType::Byte,
-            TypeDesc::Short => ValueType::Short,
             TypeDesc::Int => ValueType::Int,
             TypeDesc::Long => ValueType::Long,
             TypeDesc::Float => ValueType::Float,
@@ -38,8 +34,6 @@ impl TypeDesc {
     /// Returns the true if the given value can be assigned into field of this descriptor.
     pub fn is_assignable_with(&self, value: &Value) -> bool {
         match value {
-            Value::Byte(_) => self.is_byte(),
-            Value::Short(_) => self.is_short(),
             Value::Int(_) => self.is_int(),
             Value::Long(_) => self.is_long(),
             Value::Float(_) => self.is_float(),
@@ -50,22 +44,6 @@ impl TypeDesc {
                     Reference::Instance(instance) => self.is_reference_to_instance(instance),
                 }
             }
-        }
-    }
-
-    /// Returns the true if this descriptor describes a byte value.
-    pub fn is_byte(&self) -> bool {
-        match self {
-            TypeDesc::Byte => true,
-            _ => false
-        }
-    }
-
-    /// Returns the true if this descriptor describes a short value.
-    pub fn is_short(&self) -> bool {
-        match self {
-            TypeDesc::Short => true,
-            _ => false
         }
     }
 
@@ -110,7 +88,7 @@ impl TypeDesc {
     }
 
     /// Returns the true if this descriptor references the given instance.
-    pub fn is_reference_to_instance(&self, instance: &Instance) -> bool {
+    pub fn is_reference_to_instance(&self, instance: &InstancePtr) -> bool {
         match self {
             TypeDesc::Reference(class_name) => class_name == instance.class().name(),
             _ => false
@@ -123,8 +101,6 @@ impl TypeDesc {
 impl fmt::Display for TypeDesc {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TypeDesc::Byte => write!(f, "byte"),
-            TypeDesc::Short => write!(f, "short"),
             TypeDesc::Int => write!(f, "int"),
             TypeDesc::Long => write!(f, "long"),
             TypeDesc::Float => write!(f, "float"),
@@ -188,10 +164,19 @@ impl ParamsDesc {
         self.params_desc.len()
     }
 
+    /// Checks if the descriptor has no params.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Returns the total size of the parameters according to the value category
     /// of their type descriptors.
     pub fn size(&self) -> usize {
         self.params_desc.iter().map(|d| d.value_type().category().size()).sum()
+    }
+
+    pub fn type_descs(&self) -> &Vec<TypeDesc> {
+        &self.params_desc
     }
 }
 
