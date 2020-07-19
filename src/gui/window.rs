@@ -23,6 +23,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use crate::gui::locals::{LocalsView, LocalsMsg};
 use crate::gui::operand_stack::{OperandStackView, OperandStackMsg};
+use crate::gui::fields::{FieldsView, FieldsMsg, Viewed};
 
 
 pub struct AppState {
@@ -43,7 +44,7 @@ pub struct AppWindow {
     window: Window,
     header: Component<AppHeaderView>,
     content: Stack,
-    locals: Component<OperandStackView>
+    locals: Component<FieldsView>
     // frame_stack: Component<FrameStackView>,
 }
 
@@ -135,7 +136,7 @@ impl Widget for AppWindow {
         // let frame_stack = create_component::<FrameStackView>(());
         // content.add_nam
 
-        let locals = create_component::<OperandStackView>(());
+        let locals = create_component::<FieldsView>(());
         content.add_named(locals.widget(), "locals");
 
         // let landing_page = create_component::<LandingPage>(());
@@ -160,11 +161,12 @@ impl Widget for AppWindow {
             //     Some(frame.locals().values())
             // }).or(Some(Vec::new())).unwrap();
 
-            let values = frames.last().and_then(|frame| {
-                Some(frame.stack().values())
-            }).or(Some(Vec::new())).unwrap();
+            // let values = frames.last().and_then(|frame| {
+            //     Some(frame.stack().values())
+            // }).or(Some(Vec::new())).unwrap();
+            l.emit(FieldsMsg::ChangeViewed(Viewed::Class(frames.last().unwrap().class().clone())));
 
-            l.emit(OperandStackMsg::Update(values));
+            l.emit(FieldsMsg::Update);
         });
 
         vm.set_update_callback(Some(Box::new(move |vm: &Vm| {

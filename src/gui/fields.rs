@@ -6,49 +6,90 @@ use gtk::prelude::{GtkListStoreExtManual, StaticType};
 use relm::{Component, connect, Relm, Update, Widget};
 use relm_derive::Msg;
 
-use crate::vm::memory::locals::Slot;
-use crate::vm::types::value::Value;
+use crate::vm::class::instance::{InstanceId, Instance};
+use crate::vm::class::class::Class;
+use crate::vm::class::field::Field;
 
 
 #[derive(Msg)]
-pub enum OperandStackMsg {
-    Update(Vec<Value>)
+pub enum FieldsMsg {
+    Update,
+    ChangeViewed(Viewed)
 }
 
+pub enum Viewed {
+    Class(Arc<Class>),
+    Instance(Instance),
+    None
+}
 
-pub struct OperandStackView {
+pub struct FieldsModel {
+    viewed: Viewed,
+}
+
+pub struct FieldsView {
     root: Box,
+    model: FieldsModel,
+    relm: Relm<FieldsView>,
     list_store: ListStore,
     tree_view: TreeView,
 }
 
 
-impl Update for OperandStackView {
-    type Model = ();
+impl Update for FieldsView {
+    type Model = FieldsModel;
     type ModelParam = ();
-    type Msg = OperandStackMsg;
+    type Msg = FieldsMsg;
 
-    fn model(_: &Relm<Self>, _: ()) -> () {}
+    fn model(_: &Relm<Self>, _: ()) -> FieldsModel {
+        FieldsModel {
+            viewed: Viewed::None
+        }
+    }
 
-    fn update(&mut self, event: OperandStackMsg) {
+    fn update(&mut self, event: FieldsMsg) {
         match event {
-            OperandStackMsg::Update(values) => {
+            FieldsMsg::Update => {
+                let fields = match &self.model.viewed {
+                    Viewed::Class(class) => {
+                        class.fields()
+                            .filter(|f| f.is_static())
+                            .map(|f: &Arc<Field>| {
+                                let sig = f.signature();
+                                (sig, class.static_field_value(sig).unwrap())
+                            }).collect::<Vec<_>>()
+                    },
+                    Viewed::Instance(instance) => {
+                        instance.class().fields()
+                             .filter(|f| !f.is_static())
+                             .map(|f: &Arc<Field>| {
+                                 let sig = f.signature();
+                                 (sig, instance.class().instance_field_value(&instance, sig).unwrap())
+                             }).collect::<Vec<_>>()
+                    },
+                    Viewed::None => Vec::new(),
+                };
+
                 self.list_store.clear();
 
-                for value in values {
+                for (sig, value) in fields {
                     self.list_store.insert_with_values(None,
                                                        &[0, 1, 2],
-                                                       &[&value.value_type().category().size().to_string(),
-                                                           &value.value_type().to_string(),
+                                                       &[&sig.type_desc().to_string(),
+                                                           &sig.name().to_string(),
                                                            &value.to_string()]);
                 }
-            }
+            },
+            FieldsMsg::ChangeViewed(viewed) => {
+                self.model.viewed = viewed;
+                self.relm.stream().emit(FieldsMsg::Update);
+            },
         }
     }
 }
 
 
-impl Widget for OperandStackView {
+impl Widget for FieldsView {
     type Root = Box;
 
     fn root(&self) -> Self::Root {
@@ -58,21 +99,21 @@ impl Widget for OperandStackView {
     fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
         let tree_view = gtk::TreeView::new();
 
-        let size_column = gtk::TreeViewColumn::new();
-        size_column.set_title("size");
-        let size_cell = gtk::CellRendererText::new();
-        size_column.pack_start(&size_cell, true);
-        size_column.set_resizable(true);
-        size_column.add_attribute(&size_cell, "text", 0);
-        tree_view.append_column(&size_column);
-
         let type_column = gtk::TreeViewColumn::new();
         type_column.set_title("type");
         let type_cell = gtk::CellRendererText::new();
         type_column.pack_start(&type_cell, true);
         type_column.set_resizable(true);
-        type_column.add_attribute(&type_cell, "text", 1);
+        type_column.add_attribute(&type_cell, "text", 0);
         tree_view.append_column(&type_column);
+
+        let name_column = gtk::TreeViewColumn::new();
+        name_column.set_title("name");
+        let name_cell = gtk::CellRendererText::new();
+        name_column.pack_start(&name_cell, true);
+        name_column.set_resizable(true);
+        name_column.add_attribute(&name_cell, "text", 1);
+        tree_view.append_column(&name_column);
 
         let value_column = gtk::TreeViewColumn::new();
         value_column.set_title("value");
@@ -99,7 +140,7 @@ impl Widget for OperandStackView {
         let scrolled = ScrolledWindow::new(NONE_ADJUSTMENT, NONE_ADJUSTMENT);
         scrolled.add(&viewport);
 
-        let label = Label::new(Some("Operand Stack"));
+        let label = Label::new(Some("Fields"));
         label.get_style_context().add_class("panel-heading");
         label.set_justify(Justification::Center);
 
@@ -108,8 +149,10 @@ impl Widget for OperandStackView {
         root.pack_start(&scrolled, true, true, 0);
         root.set_size_request(250, -1);
 
-        OperandStackView {
+        FieldsView {
             root,
+            model,
+            relm: relm.clone(),
             list_store,
             tree_view,
         }
