@@ -23,12 +23,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/gui/classes.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/gui/fields.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/gui/instances.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/operand_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/operand_stack.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/classes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/classes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/frame_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/frame_stack.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/instances.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/instances.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gui/window.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/window.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -267,7 +265,7 @@
       <workItem from="1594895516478" duration="9535000" />
       <workItem from="1594925019544" duration="9536000" />
       <workItem from="1594973114404" duration="19383000" />
-      <workItem from="1595053227046" duration="79364000" />
+      <workItem from="1595053227046" duration="82468000" />
     </task>
     <task id="LOCAL-00001" summary="switch to intellij">
       <created>1588666952605</created>
@@ -416,7 +414,14 @@
       <option name="project" value="LOCAL" />
       <updated>1595192278261</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="fieldsview">
+      <created>1595195116001</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1595195116001</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -465,7 +470,8 @@
     <MESSAGE value="vm done" />
     <MESSAGE value="local and frame_stack" />
     <MESSAGE value="operand stack view" />
-    <option name="LAST_COMMIT_MESSAGE" value="operand stack view" />
+    <MESSAGE value="fieldsview" />
+    <option name="LAST_COMMIT_MESSAGE" value="fieldsview" />
   </component>
   <component name="WindowStateProjectService">
     <state x="831" y="419" width="248" height="276" key="#Notifications" timestamp="1593930860848">
@@ -504,10 +510,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1595170978565" />
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595192278141">
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595195115904">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595192278141" />
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595195115904" />
     <state x="182" y="121" width="1536" height="879" key="DiffContextDialog" timestamp="1593459391453">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -516,22 +522,22 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1594407598553" />
-    <state width="1874" height="250" key="GridCell.Tab.0.bottom" timestamp="1595195056399">
+    <state width="1874" height="373" key="GridCell.Tab.0.bottom" timestamp="1595198162006">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="250" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595195056399" />
-    <state width="1874" height="250" key="GridCell.Tab.0.center" timestamp="1595195056398">
+    <state width="1874" height="373" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
+    <state width="1874" height="373" key="GridCell.Tab.0.center" timestamp="1595198162006">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="250" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595195056398" />
-    <state width="1874" height="250" key="GridCell.Tab.0.left" timestamp="1595195056397">
+    <state width="1874" height="373" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
+    <state width="1874" height="373" key="GridCell.Tab.0.left" timestamp="1595198162006">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="250" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595195056397" />
-    <state width="1874" height="250" key="GridCell.Tab.0.right" timestamp="1595195056398">
+    <state width="1874" height="373" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
+    <state width="1874" height="373" key="GridCell.Tab.0.right" timestamp="1595198162006">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="250" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595195056398" />
+    <state width="1874" height="373" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
     <state x="543" y="299" width="824" height="515" key="IDE.errors.dialog" timestamp="1592204678605">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -548,10 +554,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="449" y="188" width="1218" height="737" key="SettingsEditor/0.27.1920.1053@0.27.1920.1053" timestamp="1595077871654" />
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1595192280734">
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1595195118411">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1595192280734" />
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1595195118411" />
     <state x="734" y="234" width="442" height="646" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1593605680971">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>

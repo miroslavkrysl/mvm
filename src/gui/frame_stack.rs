@@ -15,40 +15,55 @@ use crate::vm::memory::frame::Frame as VmFrame;
 #[derive(Msg)]
 pub enum FrameStackMsg {
     Update(Vec<Arc<VmFrame>>),
-    FrameActivated(usize),
-    SelectFrame(usize),
+    FrameActivated(Arc<VmFrame>),
+    RowActivated(usize),
+    SelectTopFrame,
+}
+
+pub struct FrameStackModel {
+    frames: Vec<Arc<VmFrame>>,
 }
 
 pub struct FrameStackView {
     root: Box,
+    relm: Relm<FrameStackView>,
+    model: FrameStackModel,
     list_view: ListBox,
 }
 
 impl Update for FrameStackView {
-    type Model = ();
+    type Model = FrameStackModel;
     type ModelParam = ();
     type Msg = FrameStackMsg;
 
-    fn model(_: &Relm<Self>, _: ()) -> () {}
+    fn model(_: &Relm<Self>, _: ()) -> FrameStackModel {
+        FrameStackModel {
+            frames: Vec::new()
+        }
+    }
 
     fn update(&mut self, event: FrameStackMsg) {
         match event {
             FrameStackMsg::Update(frames) => {
-                println!("update");
                 for row in self.list_view.get_children() {
                     self.list_view.remove(&row);
                 }
+                self.model.frames.clear();
 
                 for frame in frames {
                     let row = FrameStackRow::new(&frame);
                     self.list_view.add(&row.root);
+                    self.model.frames.push(frame);
                 }
             },
-            FrameStackMsg::FrameActivated(index) => {
+            FrameStackMsg::FrameActivated(frame) => {
                 // just to notify listeners
             },
-            FrameStackMsg::SelectFrame(index) => {
-                if let Some(row) = self.list_view.get_row_at_index(index as i32) {
+            FrameStackMsg::RowActivated(index) => {
+                self.relm.stream().emit(FrameStackMsg::FrameActivated(self.model.frames[index].clone()));
+            },
+            FrameStackMsg::SelectTopFrame => {
+                if let Some(row) = self.list_view.get_row_at_index(0) {
                     self.list_view.select_row(Some(&row));
                 }
             },
@@ -76,7 +91,7 @@ impl Widget for FrameStackView {
             relm,
             list,
             connect_row_activated(_, row),
-            FrameStackMsg::FrameActivated(row.get_index() as usize)
+            FrameStackMsg::RowActivated(row.get_index() as usize)
         );
 
         let placeholder = Label::new(Some("EMPTY"));
@@ -110,6 +125,8 @@ impl Widget for FrameStackView {
 
         FrameStackView {
             root,
+            model,
+            relm: relm.clone(),
             list_view: list,
         }
     }
