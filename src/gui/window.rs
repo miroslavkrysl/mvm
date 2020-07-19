@@ -1,5 +1,5 @@
 use super::{
-    frame_stack::{FrameStackEvent, FrameStackView},
+    frame_stack::{FrameStackMsg, FrameStackView},
     header::AppHeaderEvent,
     header::AppHeaderView,
     landing::LandingPage,
@@ -12,22 +12,20 @@ use crate::vm::{
     },
 };
 use gdk::Screen;
-use gtk::{
-    Button, ContainerExt, CssProviderExt, Entry, GtkWindowExt, Inhibit, Label, Orientation, Stack,
-    StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType,
-    STYLE_PROVIDER_PRIORITY_APPLICATION,
-};
+use gtk::{Button, ContainerExt, CssProviderExt, Entry, GtkWindowExt, Inhibit, Label, Orientation, Stack, StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType, STYLE_PROVIDER_PRIORITY_APPLICATION, SpinnerExt};
 use relm::{
     connect, connect_stream, create_component, init, interval, Channel, Component, Relm, Update,
     Widget,
 };
 use relm_derive::Msg;
 use crate::vm::exec::vm::Vm;
+use std::path::PathBuf;
+use std::sync::Arc;
+use crate::gui::locals::{LocalsView, LocalsMsg};
 
 
 pub struct AppState {
-    vm: Option<Vm>,
-    ended: bool,
+    vm: Arc<Vm>
 }
 
 #[derive(Msg)]
@@ -44,7 +42,8 @@ pub struct AppWindow {
     window: Window,
     header: Component<AppHeaderView>,
     content: Stack,
-    frame_stack: Component<FrameStackView>,
+    locals: Component<LocalsView>
+    // frame_stack: Component<FrameStackView>,
 }
 
 impl Update for AppWindow {
@@ -53,9 +52,9 @@ impl Update for AppWindow {
     type Msg = AppEvent;
 
     fn model(_: &Relm<Self>, _: ()) -> AppState {
+        let vm = Vm::new(vec!["./".into()]);
         AppState {
-            vm: None,
-            ended: false,
+            vm: Arc::new(vm)
         }
     }
 
@@ -83,15 +82,17 @@ impl Update for AppWindow {
                 //
                 // vm.clone().start(class_name);
 
-                self.frame_stack.emit(FrameStackEvent::Push(
-                    ClassName::new("hello").unwrap(),
-                    MethodSig::new(
-                        ReturnDesc::Void,
-                        MethodName::new("hello").unwrap(),
-                        [TypeDesc::Int].iter().cloned().collect(),
-                    )
-                    .unwrap(),
-                ));
+                // self.frame_stack.emit(FrameStackMsg::Push(
+                //     ClassName::new("hello").unwrap(),
+                //     MethodSig::new(
+                //         ReturnDesc::Void,
+                //         MethodName::new("hello").unwrap(),
+                //         [TypeDesc::Int].iter().cloned().collect(),
+                //     )
+                //     .unwrap(),
+                // ));
+                self.model.vm.next();
+                println!("next");
             }
             AppEvent::NextInstruction => {}
             AppEvent::RestartVm => {}
@@ -130,45 +131,53 @@ impl Widget for AppWindow {
 
         let content = Stack::new();
 
-        let frame_stack = create_component::<FrameStackView>(());
-        content.add_named(frame_stack.widget(), "vm");
+        // let frame_stack = create_component::<FrameStackView>(());
+        // content.add_nam
+
+        let locals = create_component::<LocalsView>(());
+        content.add_named(locals.widget(), "locals");
 
         let landing_page = create_component::<LandingPage>(());
         content.add_named(landing_page.widget(), "landing");
 
         window.add(&content);
 
-        let s = header.stream();
-        connect_stream!(
-            s@AppHeaderEvent::Load,
-            relm.stream(),
+        connect!(
+            header@AppHeaderEvent::Load,
+            relm,
             AppEvent::LoadRequest
         );
-        let s = frame_stack.stream();
-        connect_stream!(
-            s@FrameStackEvent::FrameSelected(i),
-            relm.stream(),
-            AppEvent::FrameSelected(i)
-        );
-
-        // let l = label.clone();
-        // let (channel, sender) = Channel::new(move |string: String| {
-        //     l.set_label(&string);
-        // });
-        // model.vm.watch(move |event| {
-        //     if let ItemEvent::EventA(s) = event {
-        //         sender.send(s).expect("send message");
-        //     }
-        // });
 
         window.show_all();
+
+        let vm = model.vm.clone();
+        let vm0 = vm.clone();
+        let l = locals.clone();
+        let (channel, sender) = Channel::new(move |_| {
+            let frames = vm0.frames().unwrap();
+            let locals = frames.last().and_then(|frame| {
+                Some(frame.locals().values())
+            }).or(Some(Vec::new())).unwrap();
+
+            l.emit(LocalsMsg::Update(locals));
+        });
+
+        vm.set_update_callback(Some(Box::new(move |vm: &Vm| {
+            sender.send(());
+        })));
+        vm.set_error_callback(Some(Box::new(move |vm: &Vm, error| {
+            println!("{}", error);
+        })));
+
+        vm.clone().start(ClassName::new("geometry.shape.Circle").unwrap());
 
         AppWindow {
             model,
             window,
             header,
             content,
-            frame_stack,
+            locals
+            // frame_stack,
         }
     }
 }

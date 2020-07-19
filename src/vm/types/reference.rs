@@ -56,8 +56,7 @@ impl fmt::Display for Reference {
         match self {
             Reference::Null => write!(f, "null"),
             Reference::Instance(instance) => {
-                let ptr = unsafe { transmute::<_, usize>(instance) };
-                write!(f, "{}@{:x}", instance.class().name(), ptr)
+                write!(f, "{}", instance.id())
             }
         }
     }

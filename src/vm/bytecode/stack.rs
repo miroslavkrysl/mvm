@@ -8,6 +8,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().pop_discard1()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -15,6 +16,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().pop_discard2()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -22,6 +24,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup1()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -29,6 +32,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup1_skip1()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -36,6 +40,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup1_skip2()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -43,6 +48,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup2()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -50,6 +56,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup2_skip1()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -57,6 +64,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().dup2_skip2()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 
@@ -64,6 +72,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         frame.stack().swap()?;
         frame.locals();
+        frame.inc_pc();
         Ok(())
     }
 }

@@ -75,9 +75,9 @@ pub enum MethodError {
 
 #[derive(Error, Debug)]
 pub enum ClassError {
-    #[error("no such field was found in class")]
+    #[error("no field {0} was found in class")]
     NoSuchField(FieldSig),
-    #[error("no such method was found in class")]
+    #[error("no method {0} was found in class")]
     NoSuchMethod(MethodSig),
     #[error("multiple definitions of the same field \"{0}\"")]
     DuplicateField(FieldSig),

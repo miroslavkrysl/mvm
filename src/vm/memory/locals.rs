@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 use std::slice;
 use crate::vm::types::value::{ValueCategory, Value};
 use crate::vm::memory::error::LocalsError;
-use std::sync::RwLock;
+use std::sync::{RwLock, Mutex};
 
 
 #[derive(Debug, Clone)]
@@ -14,7 +14,7 @@ pub enum Slot {
 
 #[derive(Debug)]
 pub struct Locals {
-    values: RwLock<Vec<Slot>>
+    values: Mutex<Vec<Slot>>
 }
 
 impl Locals {
@@ -23,7 +23,7 @@ impl Locals {
     
     pub fn new(size: usize) -> Self {
         Locals {
-            values: RwLock::new(vec![Slot::Undefined; size])
+            values: Mutex::new(vec![Slot::Undefined; size])
         }
     }
 
@@ -36,7 +36,7 @@ impl Locals {
     }
 
     pub fn load_value(&self, index: usize) -> Result<Value, LocalsError> {
-        let values = self.values.read().unwrap();
+        let values = self.values.lock().unwrap();
         match values.get(index) {
             None => Err(LocalsError::IndexOutOfBounds {
                 index,
@@ -56,7 +56,7 @@ impl Locals {
     }
 
     pub fn store_value(&self, index: usize, value: Value) -> Result<(), LocalsError> {
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
         if index >= values.len() {
             return Err(LocalsError::IndexOutOfBounds {
                 index,
@@ -88,30 +88,14 @@ impl Locals {
 
         return Ok(());
     }
+
+    pub fn values(&self) -> Vec<Slot> {
+        self.values.lock().unwrap().clone()
+    }
 }
 
 
 #[derive(Clone)]
 pub enum LocalsEvent {
     Change(usize, Slot)
-}
-
-#[derive(Debug, Clone)]
-pub struct LocalsIter<'a> {
-    inner: slice::Iter<'a, Slot>
-}
-
-
-impl<'a> Iterator for LocalsIter<'a> {
-    type Item = &'a Slot;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next()
-    }
-}
-
-impl<'a> ExactSizeIterator for LocalsIter<'a> {
-    fn len(&self) -> usize {
-        self.inner.len()
-    }
 }

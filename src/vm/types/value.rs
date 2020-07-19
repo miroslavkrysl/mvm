@@ -8,6 +8,7 @@ use crate::vm::types::float::Float;
 use crate::vm::types::int::Int;
 use crate::vm::types::long::Long;
 use crate::vm::types::reference::Reference;
+use crate::vm::class::name::ClassName;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -33,7 +34,10 @@ pub enum ValueType {
     Long,
     Float,
     Double,
-    Reference,
+    Null,
+    Reference(ClassName),
+    AnyReference,
+    Void,
 }
 
 
@@ -44,7 +48,10 @@ impl fmt::Display for ValueType {
             ValueType::Long => write!(f, "long"),
             ValueType::Float => write!(f, "float"),
             ValueType::Double => write!(f, "double"),
-            ValueType::Reference => write!(f, "reference"),
+            ValueType::Null => write!(f, "null"),
+            ValueType::Reference(class_name) => write!(f, "{}", class_name),
+            ValueType::AnyReference => write!(f, "reference"),
+            ValueType::Void => write!(f, "void"),
         }
     }
 }
@@ -57,7 +64,10 @@ impl ValueType {
             ValueType::Long => ValueCategory::Double,
             ValueType::Float => ValueCategory::Single,
             ValueType::Double => ValueCategory::Double,
-            ValueType::Reference => ValueCategory::Single,
+            ValueType::Null => ValueCategory::Single,
+            ValueType::Reference(_) => ValueCategory::Single,
+            ValueType::AnyReference => ValueCategory::Single,
+            ValueType::Void => unimplemented!()
         }
     }
 
@@ -67,7 +77,10 @@ impl ValueType {
             ValueType::Long => Long::default().into(),
             ValueType::Float => Float::default().into(),
             ValueType::Double => Double::default().into(),
-            ValueType::Reference => Reference::default().into(),
+            ValueType::Null => Reference::default().into(),
+            ValueType::Reference(_) => Reference::default().into(),
+            ValueType::AnyReference => Reference::default().into(),
+            ValueType::Void => unimplemented!()
         }
     }
 }
@@ -90,7 +103,8 @@ impl Value {
             Value::Long(_) => ValueType::Long,
             Value::Float(_) => ValueType::Float,
             Value::Double(_) => ValueType::Double,
-            Value::Reference(_) => ValueType::Reference
+            Value::Reference(Reference::Null) => ValueType::Null,
+            Value::Reference(Reference::Instance(instance)) => ValueType::Reference(instance.class().name().clone())
         }
     }
 }
@@ -163,7 +177,7 @@ impl TryFrom<Value> for Reference {
         match value {
             Value::Reference(v) => Ok(v),
             _ => Err(ValueError::TypeMismatch {
-                expected: ValueType::Reference,
+                expected: ValueType::AnyReference,
                 found: value.value_type(),
             }),
         }

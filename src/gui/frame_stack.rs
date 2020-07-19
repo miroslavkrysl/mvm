@@ -1,4 +1,3 @@
-use super::frame::FrameView;
 use crate::vm::class::{name::ClassName, signature::MethodSig};
 use gtk::{
     Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
@@ -8,49 +7,51 @@ use gtk::{
 use relm::{connect, create_component, Component, Relm, Update, Widget};
 use relm_derive::Msg;
 use std::boxed::Box as StdBox;
+use std::sync::Arc;
+
+use crate::vm::memory::frame::Frame as VmFrame;
+
 
 #[derive(Msg)]
-pub enum FrameStackEvent {
-    Push(ClassName, MethodSig),
-    Pop,
-    _RowSelected(Option<ListBoxRow>),
-    FrameSelected(usize),
+pub enum FrameStackMsg {
+    Update(Vec<Arc<VmFrame>>),
+    FrameActivated(usize),
+    SelectFrame(usize),
 }
 
 pub struct FrameStackView {
-    relm: Relm<Self>,
     root: Box,
-    list: ListBox,
-    frames: Vec<Component<FrameView>>,
+    list_view: ListBox,
 }
 
 impl Update for FrameStackView {
     type Model = ();
     type ModelParam = ();
-    type Msg = FrameStackEvent;
+    type Msg = FrameStackMsg;
 
     fn model(_: &Relm<Self>, _: ()) -> () {}
 
-    fn update(&mut self, event: FrameStackEvent) {
+    fn update(&mut self, event: FrameStackMsg) {
         match event {
-            FrameStackEvent::Push(class, method) => {
-                let row = create_component::<FrameView>((class, method));
-                self.list.add(row.widget());
-                self.frames.push(row);
-            }
-            FrameStackEvent::Pop => {
-                if let Some(f) = self.frames.pop() {
-                    self.list.remove(f.widget());
+            FrameStackMsg::Update(frames) => {
+                println!("update");
+                for row in self.list_view.get_children() {
+                    self.list_view.remove(&row);
                 }
-            }
-            FrameStackEvent::_RowSelected(r) => match r {
-                Some(r) => self
-                    .relm
-                    .stream()
-                    .emit(FrameStackEvent::FrameSelected(r.get_index() as usize)),
-                None => {}
+
+                for frame in frames {
+                    let row = FrameStackRow::new(&frame);
+                    self.list_view.add(&row.root);
+                }
             },
-            FrameStackEvent::FrameSelected(_) => {}
+            FrameStackMsg::FrameActivated(index) => {
+                // just to notify listeners
+            },
+            FrameStackMsg::SelectFrame(index) => {
+                if let Some(row) = self.list_view.get_row_at_index(index as i32) {
+                    self.list_view.select_row(Some(&row));
+                }
+            },
         }
     }
 }
@@ -74,8 +75,8 @@ impl Widget for FrameStackView {
         connect!(
             relm,
             list,
-            connect_row_selected(_, row),
-            FrameStackEvent::_RowSelected(row.cloned())
+            connect_row_activated(_, row),
+            FrameStackMsg::FrameActivated(row.get_index() as usize)
         );
 
         let placeholder = Label::new(Some("EMPTY"));
@@ -99,7 +100,7 @@ impl Widget for FrameStackView {
         scrolled.add(&viewport);
 
         let label = Label::new(Some("Frame stack"));
-        label.get_style_context().add_class("section-heading");
+        label.get_style_context().add_class("panel-heading");
         label.set_justify(Justification::Center);
 
         let root = Box::new(Orientation::Vertical, 0);
@@ -108,10 +109,54 @@ impl Widget for FrameStackView {
         root.set_size_request(250, -1);
 
         FrameStackView {
-            relm: relm.clone(),
             root,
-            list,
-            frames: Vec::new(),
+            list_view: list,
         }
+    }
+}
+
+struct FrameStackRow {
+    root: ListBoxRow
+}
+
+impl FrameStackRow {
+    fn new(frame: &VmFrame) -> FrameStackRow {
+        let method = frame.method();
+        let method_ret_str = method.signature().return_desc().to_string();
+        let method_name_str = method.signature().name().to_string();
+        let method_params_str = method.signature().params_desc().to_string();
+        let class_name_str = frame.class().name().to_string();
+
+        let ret = Label::new(Some(&method_ret_str));
+        ret.set_halign(Align::Start);
+
+        let class = Label::new(Some(&class_name_str));
+        class.get_style_context().add_class("frame-name");
+
+        let colon = Label::new(Some(":"));
+        colon.get_style_context().add_class("frame-name");
+
+        let method = Label::new(Some(&method_name_str));
+        method.get_style_context().add_class("frame-name");
+
+        let name_box = Box::new(Orientation::Horizontal, 3);
+        name_box.pack_start(&class, false, false, 0);
+        name_box.pack_start(&colon, false, false, 0);
+        name_box.pack_start(&method, false, false, 0);
+
+        let params = Label::new(Some(&method_params_str));
+        params.set_halign(Align::Start);
+
+        let frame = Box::new(Orientation::Vertical, 5);
+        frame.set_property_margin(5);
+        frame.pack_start(&ret, false, false, 0);
+        frame.pack_start(&name_box, false, false, 0);
+        frame.pack_start(&params, false, false, 0);
+
+        let root = ListBoxRow::new();
+        root.add(&frame);
+        root.show_all();
+
+        FrameStackRow { root }
     }
 }

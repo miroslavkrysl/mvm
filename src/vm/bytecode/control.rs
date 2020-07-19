@@ -96,9 +96,9 @@ impl Instruction {
                 let instance = value.as_instance().unwrap();
 
                 if *instance.class().name() != *class_name {
-                    return Err(ExecError::InvalidReturnReference {
-                        expected: class_name.clone(),
-                        found: instance.class().name().clone()
+                    return Err(ExecError::InvalidReturnType {
+                        expected: expected_type.clone(),
+                        called: ValueType::Reference(instance.class().name().clone())
                     })
                 }
 
@@ -111,7 +111,7 @@ impl Instruction {
         } else {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Reference
+                called: ValueType::AnyReference
             })
         }
     }
@@ -123,7 +123,7 @@ impl Instruction {
         if *expected_type != ReturnDesc::Void {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Double
+                called: ValueType::Void
             })
         }
 

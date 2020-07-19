@@ -73,15 +73,10 @@ pub enum ExecError {
         #[from]
         source: ValueError
     },
-    #[error("invalid return type, expected {expected}, return for {called}")]
+    #[error("invalid return call, expected return of {expected}, called {called}")]
     InvalidReturnType {
         expected: ReturnDesc,
         called: ValueType
-    },
-    #[error("invalid return reference type, expected instance of {expected}, returned {found}")]
-    InvalidReturnReference {
-        expected: ClassName,
-        found: ClassName
     },
 }
 

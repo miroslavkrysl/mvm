@@ -96,6 +96,7 @@ impl Thread {
         let frame = Frame::new(class.clone(), method.clone());
         
         self.stack.push(frame);
+        self.runtime.notify_update();
 
         loop {
             match self.cmd_rx.lock().unwrap().recv() {
@@ -126,6 +127,8 @@ impl Thread {
                     }
                 }
             };
+
+            println!("{:?}", &instruction);
 
             if let Err(error) = instruction.execute(&self) {
                 // error while executing instruction

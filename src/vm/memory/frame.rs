@@ -76,6 +76,10 @@ impl Frame {
     pub fn method(&self) -> &Arc<Method> {
         &self.method
     }
+    
+    pub fn class(&self) -> &Arc<Class> {
+        &self.class
+    }
 
     pub fn pc(&self) -> isize {
         self.pc.read().unwrap().clone()

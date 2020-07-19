@@ -22,12 +22,12 @@ RETURN
 END
 
 METHOD
-static float computeArea () 1
+float computeArea () 1
 GETSTATIC   double geometry.shape.Circle pi
 ALOAD_0
 GETFIELD    float geometry.shape.Circle radius
 F2D
-DUP
+DUP2
 DMUL
 DMUL
 D2F
@@ -38,5 +38,11 @@ METHOD
 static void main () 1
 INVOKESTATIC    void geometry.shape.Circle <clinit> ()
 NEW             geometry.shape.Circle
+ASTORE_0
+ALOAD_0
+LDC             12.0
+INVOKEVIRTUAL   void geometry.shape.Circle <init> (float)
+ALOAD_0
+INVOKEVIRTUAL   float geometry.shape.Circle computeArea ()
 RETURN
 END

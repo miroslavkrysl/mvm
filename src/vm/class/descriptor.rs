@@ -20,14 +20,14 @@ pub enum TypeDesc {
 }
 
 impl TypeDesc {
-    /// Returns the default value of the `MvmValue` type described by this descriptor.
+    /// Returns the value type of the `MvmValue` type described by this descriptor.
     pub fn value_type(&self) -> ValueType {
         match self {
             TypeDesc::Int => ValueType::Int,
             TypeDesc::Long => ValueType::Long,
             TypeDesc::Float => ValueType::Float,
             TypeDesc::Double => ValueType::Double,
-            TypeDesc::Reference(_) => ValueType::Reference,
+            TypeDesc::Reference(class_name) => ValueType::Reference(class_name.clone())
         }
     }
 
