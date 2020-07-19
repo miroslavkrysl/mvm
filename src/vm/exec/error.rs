@@ -2,10 +2,10 @@ use std::io;
 
 use thiserror::Error;
 
-use crate::vm::class::error::CodeError;
+use crate::vm::class::error::{CodeError, ClassError};
 use crate::vm::class::name::ClassName;
 use crate::vm::parse::error::{CreateClassError, ParseClassError};
-use crate::vm::memory::error::{OperandStackError, LocalsError};
+use crate::vm::memory::error::{OperandStackError, LocalsError, FrameError};
 use crate::vm::class::descriptor::ReturnDesc;
 use crate::vm::types::value::ValueType;
 use crate::vm::types::error::ValueError;
@@ -48,11 +48,11 @@ pub enum ExecError {
         #[from]
         source: LocalsError
     },
-    // #[error(transparent)]
-    // Class {
-    //     #[from]
-    //     source: ClassError
-    // },
+    #[error(transparent)]
+    Class {
+        #[from]
+        source: ClassError
+    },
     #[error(transparent)]
     ClassLoad {
         #[from]
@@ -63,11 +63,11 @@ pub enum ExecError {
         #[from]
         source: CodeError
     },
-    // #[error(transparent)]
-    // Frame {
-    //     #[from]
-    //     source: FrameError
-    // },
+    #[error(transparent)]
+    Frame {
+        #[from]
+        source: FrameError
+    },
     #[error(transparent)]
     Value {
         #[from]

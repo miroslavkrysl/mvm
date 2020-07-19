@@ -1,29 +1,28 @@
-// use gui::AppWindow;
-// use relm::Widget;
+use gui::AppWindow;
+use relm::Widget;
+use gtk::{CssProviderExt, StyleContext, STYLE_PROVIDER_PRIORITY_APPLICATION};
+use gdk::Screen;
 
-// pub mod gui;
+
+pub mod gui;
 pub mod vm;
-// pub mod observe;
 
 fn main() {
-    // let application = Application::new(
-    //     Some("cz.mkrysl.mvm"),
-    //     Default::default(),
-    // );
+    gtk::init().expect("Can not initialize GTK application. Probably missing GTK dependencies.");
+    load_css();
+    AppWindow::run(()).unwrap();
+}
 
-    // match application {
-    //     Ok(application) => {
-    //         application.connect_startup(|app| {
-    //             let window = MainWindow::new();
-    //             app.add_window(window.window());
+fn load_css() {
+    let css_data = include_bytes!("gui/style.css");
+    let provider = gtk::CssProvider::new();
+    provider
+        .load_from_data(css_data)
+        .expect("Failed to load CSS");
 
-    //         });
-
-    //         application.run(&args().collect::<Vec<_>>());
-    //     }
-    //     Err(_) => {}
-    // }
-
-    // let vm = VirtualMachine::new();
-    // AppWindow::run(()).unwrap();
+    StyleContext::add_provider_for_screen(
+        &Screen::get_default().expect("Error initializing gtk css provider."),
+        &provider,
+        STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 }

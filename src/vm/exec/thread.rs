@@ -3,14 +3,12 @@ use std::sync::mpsc::{channel, Receiver, RecvError, Sender};
 use std::thread;
 use std::thread::JoinHandle;
 
-use crate::vm::class::class::Class;
-use crate::vm::class::error::CodeError;
-use crate::vm::class::method::Method;
-use crate::vm::exec::runtime::Runtime;
-use crate::vm::exec::vm::VmEvent;
+use crate::vm::exec::vm::Vm;
 use crate::vm::memory::frame::Frame;
 use crate::vm::memory::frame_stack::FrameStack;
-use crate::vm::exec::error::RuntimeError;
+use crate::vm::exec::error::{RuntimeError, ExecError};
+use crate::vm::class::signature::MethodSig;
+use crate::vm::class::name::ClassName;
 
 
 enum ThreadCmd {
@@ -20,8 +18,8 @@ enum ThreadCmd {
 
 
 pub struct Thread {
-    start_method: (Arc<Class>, Arc<Method>),
-    runtime: Arc<Runtime>,
+    start_method: (ClassName, MethodSig),
+    runtime: Arc<Vm>,
     stack: FrameStack,
     join_handle: Mutex<Option<JoinHandle<()>>>,
     cmd_rx: Mutex<Receiver<ThreadCmd>>,
@@ -30,16 +28,12 @@ pub struct Thread {
 
 
 impl Thread {
-    pub fn new(runtime: Arc<Runtime>, class: Arc<Class>, method: Arc<Method>) -> Arc<Self> {
-        assert!(method.is_static());
-        assert!(method.signature().params_desc().is_empty());
-        assert!(method.signature().return_desc().is_void());
-
+    pub fn new(runtime: Arc<Vm>, class_name: ClassName, method_sig: MethodSig) -> Arc<Self> {
         let (tx, rx) = channel();
 
         let mut thread = Arc::new(Thread {
             runtime,
-            start_method: (class, method),
+            start_method: (class_name, method_sig),
             stack: FrameStack::new(),
             join_handle: Mutex::new(None),
             cmd_rx: Mutex::new(rx),
@@ -77,11 +71,31 @@ impl Thread {
     }
 
     fn run(&self) {
-        let (class, method) = self.start_method.clone();
+        let (class_name, method_sig) = self.start_method.clone();
+
+        let class = match self.runtime.resolve_class(&class_name) {
+            Ok(class) => class,
+            Err(error) => {
+                self.runtime.notify_error(error.into());
+                return;
+            },
+        };
+
+        let method = match class.static_method(&method_sig) {
+            Ok(class) => class.clone(),
+            Err(error) => {
+                self.runtime.notify_error(error.into());
+                return;
+            },
+        };
+
+        assert!(method.is_static());
+        assert!(method.signature().params_desc().is_empty());
+        assert!(method.signature().return_desc().is_void());
+
         let frame = Frame::new(class.clone(), method.clone());
         
         self.stack.push(frame);
-        self.runtime.emit_event(VmEvent::FramePush);
 
         loop {
             match self.cmd_rx.lock().unwrap().recv() {
@@ -106,8 +120,8 @@ impl Thread {
                         }
                         Err(error) => {
                             // probably pc out of bounds
-                            self.runtime.emit_event(VmEvent::Error(error.into()));
-                            break;
+                            self.runtime.notify_error(error.into());
+                            return;
                         }
                     }
                 }
@@ -115,9 +129,13 @@ impl Thread {
 
             if let Err(error) = instruction.execute(&self) {
                 // error while executing instruction
-                self.runtime.emit_event(VmEvent::Error(error.into()));
+                self.runtime.notify_error(error.into());
+                return;
             }
+
+            self.runtime.notify_update();
         }
+        self.runtime.notify_end();
     }
 }
 
@@ -127,7 +145,7 @@ impl Thread {
         &self.stack
     }
     
-    pub fn runtime(&self) -> &Arc<Runtime> {
+    pub fn runtime(&self) -> &Arc<Vm> {
         &self.runtime
     }
 }

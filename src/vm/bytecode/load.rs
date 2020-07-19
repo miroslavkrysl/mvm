@@ -6,15 +6,12 @@ use crate::vm::types::float::Float;
 use crate::vm::types::long::Long;
 use crate::vm::types::double::Double;
 use crate::vm::types::reference::Reference;
-use crate::vm::exec::vm::VmEvent;
-
 
 impl Instruction {
     pub(super) fn iload(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.locals().load::<Int>(index as usize)?;
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -23,7 +20,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = frame.locals().load::<Long>(index as usize)?;
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -32,7 +28,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = frame.locals().load::<Float>(index as usize)?;
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -41,7 +36,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = frame.locals().load::<Double>(index as usize)?;
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -50,7 +44,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = frame.locals().load::<Reference>(index as usize)?;
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }

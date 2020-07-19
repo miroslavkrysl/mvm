@@ -8,7 +8,7 @@ use crate::vm::class::field::Field;
 
 /// A class instance pointer - wrapper around the data pointer.
 #[derive(Debug, Clone)]
-pub struct InstancePtr {
+pub struct Instance {
     data: Arc<InstanceData>
 }
 
@@ -21,7 +21,7 @@ struct InstanceData {
 }
 
 
-impl InstancePtr {
+impl Instance {
     pub fn new(class: Arc<Class>) -> Self {
         let fields = class.fields()
                           .filter(|field| !field.is_static())
@@ -32,7 +32,7 @@ impl InstancePtr {
                                    .default_value())
                           .collect();
 
-        InstancePtr {
+        Instance {
             data: Arc::new(InstanceData {
                 class,
                 fields: Mutex::new(fields)
@@ -69,7 +69,7 @@ impl InstancePtr {
 }
 
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct InstanceId(usize);
 
 

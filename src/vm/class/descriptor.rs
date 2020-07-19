@@ -5,7 +5,7 @@ use std::iter::FromIterator;
 use crate::vm::class::name::ClassName;
 use crate::vm::types::value::{ValueType, Value};
 use crate::vm::types::reference::Reference;
-use crate::vm::class::instance::InstancePtr;
+use crate::vm::class::instance::Instance;
 use itertools::join;
 
 
@@ -88,7 +88,7 @@ impl TypeDesc {
     }
 
     /// Returns the true if this descriptor references the given instance.
-    pub fn is_reference_to_instance(&self, instance: &InstancePtr) -> bool {
+    pub fn is_reference_to_instance(&self, instance: &Instance) -> bool {
         match self {
             TypeDesc::Reference(class_name) => class_name == instance.class().name(),
             _ => false

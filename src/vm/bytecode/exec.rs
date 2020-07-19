@@ -1,7 +1,6 @@
 use crate::vm::bytecode::instruction::Instruction;
 use crate::vm::exec::error::ExecError;
 use crate::vm::exec::thread::Thread;
-use crate::vm::exec::vm::VmEvent;
 
 
 impl Instruction {
@@ -164,17 +163,15 @@ impl Instruction {
             Instruction::DRETURN => self.dreturn(thread)?,
             Instruction::ARETURN => self.areturn(thread)?,
             Instruction::RETURN => self.vreturn(thread)?,
-            // Instruction::GETSTATIC(field_ref) => self.getstatic(thread, field_ref)?,
-            // Instruction::PUTSTATIC(field_ref) => self.putstatic(thread, field_ref)?,
-            // Instruction::GETFIELD(field_ref) => self.getfield(thread, field_ref)?,
-            // Instruction::PUTFIELD(field_ref) => self.putfield(thread, field_ref)?,
-            // Instruction::INVOKEVIRTUAL(method_ref) => self.invokevirtual(thread, method_ref)?,
-            // Instruction::INVOKESTATIC(method_ref) => self.invokestatic(thread, method_ref)?,
-            // Instruction::NEW(class_name) => self.new(thread, class_name)?,
-            _ => unimplemented!()
+            Instruction::GETSTATIC(field_ref) => self.getstatic(thread, field_ref)?,
+            Instruction::PUTSTATIC(field_ref) => self.putstatic(thread, field_ref)?,
+            Instruction::GETFIELD(field_ref) => self.getfield(thread, field_ref)?,
+            Instruction::PUTFIELD(field_ref) => self.putfield(thread, field_ref)?,
+            Instruction::INVOKEVIRTUAL(method_ref) => self.invokevirtual(thread, method_ref)?,
+            Instruction::INVOKESTATIC(method_ref) => self.invokestatic(thread, method_ref)?,
+            Instruction::NEW(class_name) => self.new(thread, class_name)?,
+            _ => unreachable!()
         }
-        
-        thread.runtime().emit_event(VmEvent::PcChange);
         Ok(())
     }
 }

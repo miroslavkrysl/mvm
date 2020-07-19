@@ -8,8 +8,6 @@ use crate::vm::types::long::Long;
 use crate::vm::types::float::Float;
 use crate::vm::types::double::Double;
 use crate::vm::types::reference::Reference;
-use crate::vm::exec::vm::VmEvent;
-
 
 impl Instruction {
     pub(super) fn ireturn(&self, thread: &Thread) -> Result<(), ExecError> {
@@ -25,11 +23,9 @@ impl Instruction {
 
         let value = frame.stack().pop::<Int>()?;
         thread.stack().pop().expect("frame stack should not be empty");
-        thread.runtime().emit_event(VmEvent::FramePop);
 
         let frame = thread.stack().current().unwrap();
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         Ok(())
     }
 
@@ -46,11 +42,9 @@ impl Instruction {
 
         let value = frame.stack().pop::<Long>()?;
         thread.stack().pop().expect("frame stack should not be empty");
-        thread.runtime().emit_event(VmEvent::FramePop);
 
         let frame = thread.stack().current().unwrap();
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         Ok(())
     }
 
@@ -67,11 +61,9 @@ impl Instruction {
 
         let value = frame.stack().pop::<Float>()?;
         thread.stack().pop().expect("frame stack should not be empty");
-        thread.runtime().emit_event(VmEvent::FramePop);
 
         let frame = thread.stack().current().unwrap();
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         Ok(())
     }
 
@@ -88,10 +80,8 @@ impl Instruction {
 
         let value = frame.stack().pop::<Double>()?;
         thread.stack().pop().expect("frame stack should not be empty");
-        thread.runtime().emit_event(VmEvent::FramePop);
         let frame = thread.stack().current().unwrap();
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         Ok(())
     }
 
@@ -101,20 +91,22 @@ impl Instruction {
 
         if let ReturnDesc::NonVoid(TypeDesc::Reference(class_name)) = expected_type {
             let value = frame.stack().pop::<Reference>()?;
-            let instance = value.as_instance().unwrap();
 
-            if !value.is_null() && *instance.class().name() != *class_name {
-                return Err(ExecError::InvalidReturnReference {
-                    expected: class_name.clone(),
-                    found: instance.class().name().clone()
-                })
+            if !value.is_null() {
+                let instance = value.as_instance().unwrap();
+
+                if *instance.class().name() != *class_name {
+                    return Err(ExecError::InvalidReturnReference {
+                        expected: class_name.clone(),
+                        found: instance.class().name().clone()
+                    })
+                }
+
             }
 
             thread.stack().pop().expect("frame stack should not be empty");
-            thread.runtime().emit_event(VmEvent::FramePop);
             let frame = thread.stack().current().unwrap();
             frame.stack().push(value)?;
-            thread.runtime().emit_event(VmEvent::OperandStackChange);
             Ok(())
         } else {
             return Err(ExecError::InvalidReturnType {
@@ -128,7 +120,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let expected_type = frame.method().signature().return_desc();
 
-        if *expected_type != ReturnDesc::NonVoid(TypeDesc::Double) {
+        if *expected_type != ReturnDesc::Void {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
                 called: ValueType::Double
@@ -136,7 +128,6 @@ impl Instruction {
         }
 
         thread.stack().pop().expect("frame stack should not be empty");
-        thread.runtime().emit_event(VmEvent::FramePop);
         Ok(())
     }
 }

@@ -23,4 +23,8 @@ impl FrameStack {
     pub fn pop(&self) -> Option<Arc<Frame>> {
         self.frames.lock().unwrap().pop()
     }
+
+    pub fn frames(&self) -> Vec<Arc<Frame>> {
+        self.frames.lock().unwrap().clone()
+    }
 }

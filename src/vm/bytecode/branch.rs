@@ -1,7 +1,6 @@
 use crate::vm::bytecode::instruction::Instruction;
 use crate::vm::exec::error::ExecError;
 use crate::vm::exec::thread::Thread;
-use crate::vm::exec::vm::VmEvent;
 use crate::vm::types::double::Double;
 use crate::vm::types::float::Float;
 use crate::vm::types::int::Int;
@@ -16,7 +15,6 @@ impl Instruction {
         let value1 = frame.stack().pop::<Long>()?;
         let result = value1.cmp(&value2);
         frame.stack().push(result)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -27,7 +25,6 @@ impl Instruction {
         let value1 = frame.stack().pop::<Float>()?;
         let result = value1.cmpl(&value2);
         frame.stack().push(result)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -38,7 +35,6 @@ impl Instruction {
         let value1 = frame.stack().pop::<Float>()?;
         let result = value1.cmpg(&value2);
         frame.stack().push(result)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -49,7 +45,6 @@ impl Instruction {
         let value1 = frame.stack().pop::<Double>()?;
         let result = value1.cmpl(&value2);
         frame.stack().push(result)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -60,7 +55,6 @@ impl Instruction {
         let value1 = frame.stack().pop::<Double>()?;
         let result = value1.cmpg(&value2);
         frame.stack().push(result)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }

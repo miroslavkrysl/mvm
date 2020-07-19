@@ -52,10 +52,3 @@ pub enum FrameError {
         source: OperandStackError
     },
 }
-
-
-#[derive(Error, Debug)]
-pub enum HeapError {
-    #[error("there no class of name {0} on the heap")]
-    NoSuchClass(ClassName)
-}

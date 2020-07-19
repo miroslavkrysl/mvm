@@ -4,6 +4,8 @@ use crate::vm::memory::operand_stack::OperandStack;
 use crate::vm::memory::locals::Locals;
 use crate::vm::memory::error::FrameError;
 use crate::vm::class::class::Class;
+use crate::vm::types::reference::Reference;
+use crate::vm::exec::error::ExecError;
 
 
 pub struct Frame {
@@ -36,7 +38,7 @@ impl Frame {
         let locals = Locals::new(method.code().locals_size());
 
         // pop arguments from stack and load them to locals
-        let mut index = 0;
+        let mut index = if method.is_static() {0} else {1};
         for type_desc in method.signature().params_desc().type_descs() {
             if !type_desc.is_assignable_with( &stack.peek_value(0)?) {
                 return Err(FrameError::IncompatibleArgumentType {
@@ -48,6 +50,10 @@ impl Frame {
             let size = value.value_type().category().size();
             locals.store_value(index, value).unwrap();
             index += size;
+        }
+        if !method.is_static() {
+            let this = stack.pop::<Reference>()?;
+            locals.store(0, this).unwrap();
         }
 
         Ok(Frame {

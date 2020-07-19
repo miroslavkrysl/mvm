@@ -6,16 +6,13 @@ use crate::vm::types::float::Float;
 use crate::vm::types::double::Double;
 use crate::vm::types::long::Long;
 use crate::vm::types::reference::Reference;
-use crate::vm::exec::vm::VmEvent;
 
 
 impl Instruction {
     pub(super) fn istore(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.stack().pop::<Int>()?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.locals().store(index as usize, value)?;
-        thread.runtime().emit_event(VmEvent::LocalsChange);
         frame.inc_pc();
         Ok(())
     }
@@ -23,9 +20,7 @@ impl Instruction {
     pub(super) fn lstore(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.stack().pop::<Long>()?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.locals().store(index as usize, value)?;
-        thread.runtime().emit_event(VmEvent::LocalsChange);
         frame.inc_pc();
         Ok(())
     }
@@ -33,9 +28,7 @@ impl Instruction {
     pub(super) fn fstore(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.stack().pop::<Float>()?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.locals().store(index as usize, value)?;
-        thread.runtime().emit_event(VmEvent::LocalsChange);
         frame.inc_pc();
         Ok(())
     }
@@ -43,9 +36,7 @@ impl Instruction {
     pub(super) fn dstore(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.stack().pop::<Double>()?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.locals().store(index as usize, value)?;
-        thread.runtime().emit_event(VmEvent::LocalsChange);
         frame.inc_pc();
         Ok(())
     }
@@ -53,9 +44,7 @@ impl Instruction {
     pub(super) fn astore(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let value = frame.stack().pop::<Reference>()?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.locals().store(index as usize, value)?;
-        thread.runtime().emit_event(VmEvent::LocalsChange);
         frame.inc_pc();
         Ok(())
     }

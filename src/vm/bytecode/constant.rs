@@ -1,7 +1,6 @@
 use crate::vm::bytecode::instruction::{Instruction, Ldc2Arg, LdcArg};
 use crate::vm::exec::error::ExecError;
 use crate::vm::exec::thread::Thread;
-use crate::vm::exec::vm::VmEvent;
 use crate::vm::types::double::Double;
 use crate::vm::types::float::Float;
 use crate::vm::types::int::Int;
@@ -15,7 +14,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Reference::null();
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -25,7 +23,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(-1);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -35,7 +32,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -45,7 +41,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(1);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -55,7 +50,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(2);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -65,7 +59,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(3);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -75,7 +68,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(4);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -85,7 +77,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(5);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -95,7 +86,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Long::new(0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -105,7 +95,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Long::new(1);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -115,7 +104,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Float::new(0.0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -125,7 +113,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Float::new(1.0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -135,7 +122,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Float::new(2.0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -145,7 +131,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Double::new(0.0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -155,7 +140,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Double::new(1.0);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -165,7 +149,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(byte as i32);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -175,7 +158,6 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let value = Int::new(short as i32);
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -187,7 +169,6 @@ impl Instruction {
             LdcArg::Float(float) => Float::new(float).into()
         };
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }
@@ -203,7 +184,6 @@ impl Instruction {
             Ldc2Arg::Double(double) => Double::new(double).into()
         };
         frame.stack().push(value)?;
-        thread.runtime().emit_event(VmEvent::OperandStackChange);
         frame.inc_pc();
         Ok(())
     }

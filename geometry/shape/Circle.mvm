@@ -1,0 +1,42 @@
+geometry.shape.Circle
+
+FIELD
+static double pi
+
+FIELD
+float radius
+
+METHOD
+static void <clinit> () 0
+LDC2_W      3.14159
+PUTSTATIC   double geometry.shape.Circle pi
+RETURN
+END
+
+METHOD
+void <init> (float) 2
+ALOAD_0
+FLOAD_1
+PUTFIELD    float geometry.shape.Circle radius
+RETURN
+END
+
+METHOD
+static float computeArea () 1
+GETSTATIC   double geometry.shape.Circle pi
+ALOAD_0
+GETFIELD    float geometry.shape.Circle radius
+F2D
+DUP
+DMUL
+DMUL
+D2F
+FRETURN
+END
+
+METHOD
+static void main () 1
+INVOKESTATIC    void geometry.shape.Circle <clinit> ()
+NEW             geometry.shape.Circle
+RETURN
+END

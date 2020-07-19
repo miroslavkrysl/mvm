@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use crate::vm::class::error::ClassError;
 use crate::vm::class::field::Field;
-use crate::vm::class::instance::InstancePtr;
+use crate::vm::class::instance::Instance;
 use crate::vm::class::method::Method;
 use crate::vm::class::name::ClassName;
 use crate::vm::class::signature::{FieldSig, MethodSig};
@@ -220,7 +220,7 @@ impl Class {
     ///
     /// Returns a `ClassError::NoSuchField` if there is not a static field of the given signature.
     /// Returns a `ClassError::NotInstanceOf` if the given instance is not an instance of this class.
-    pub fn instance_field_value(&self, instance: &InstancePtr, signature: &FieldSig) -> Result<Value, ClassError> {
+    pub fn instance_field_value(&self, instance: &Instance, signature: &FieldSig) -> Result<Value, ClassError> {
         if self.name != instance.class().name {
             return Err(ClassError::NotInstanceOf(instance.class().name.clone(), self.name.clone()));
         }
@@ -235,7 +235,7 @@ impl Class {
     ///
     /// Returns a `ClassError::NoSuchField` if there is not a instance field of the given signature.
     /// Returns a `ClassError::NotInstanceOf` if the given instance is not an instance of this class.
-    pub fn set_instance_field_value(&self, instance: &InstancePtr, signature: &FieldSig, value: Value) -> Result<(), ClassError> {
+    pub fn set_instance_field_value(&self, instance: &Instance, signature: &FieldSig, value: Value) -> Result<(), ClassError> {
         if self.name != instance.class().name {
             return Err(ClassError::NotInstanceOf(instance.class().name.clone(), self.name.clone()));
         }

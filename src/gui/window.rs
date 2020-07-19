@@ -10,7 +10,6 @@ use crate::vm::{
         name::{ClassName, MethodName},
         signature::MethodSig,
     },
-    VirtualMachine,
 };
 use gdk::Screen;
 use gtk::{
@@ -23,10 +22,11 @@ use relm::{
     Widget,
 };
 use relm_derive::Msg;
+use crate::vm::exec::vm::Vm;
 
 
 pub struct AppState {
-    vm: Option<VirtualMachine>,
+    vm: Option<Vm>,
     ended: bool,
 }
 
@@ -66,12 +66,29 @@ impl Update for AppWindow {
                 // self.window.maximize();
                 // self.content.set_visible_child_name("vm");
                 // println!("Load request");
+
+                // vm.set_update_callback(Some(Box::new(|vm| {
+                //     println!("hello");
+                // })));
+                // let e = ended.clone();
+                // vm.set_error_callback(Some(Box::new(move |vm, error| {
+                //     println!("{:?}", error);
+                //     e.store(true, Ordering::SeqCst);
+                // })));
+                // let e = ended.clone();
+                // vm.set_end_callback(Some(Box::new(move |vm| {
+                //     println!("end");
+                //     e.store(true, Ordering::SeqCst);
+                // })));
+                //
+                // vm.clone().start(class_name);
+
                 self.frame_stack.emit(FrameStackEvent::Push(
                     ClassName::new("hello").unwrap(),
                     MethodSig::new(
                         ReturnDesc::Void,
                         MethodName::new("hello").unwrap(),
-                        [TypeDesc::Byte, TypeDesc::Int].iter().cloned().collect(),
+                        [TypeDesc::Int].iter().cloned().collect(),
                     )
                     .unwrap(),
                 ));
@@ -107,9 +124,6 @@ impl Widget for AppWindow {
             connect_delete_event(_, _),
             return (Some(AppEvent::Quit), Inhibit(false))
         );
-
-        // load CSS
-        Self::load_css();
 
         let header = create_component::<AppHeaderView>(());
         window.set_titlebar(Some(header.widget()));
@@ -164,21 +178,6 @@ struct VmParams {
     class_path: Vec<String>,
 }
 
-impl AppWindow {
-    fn load_css() {
-        let css_data = include_bytes!("style.css");
-        let provider = gtk::CssProvider::new();
-        provider
-            .load_from_data(css_data)
-            .expect("Failed to load CSS");
-
-        StyleContext::add_provider_for_screen(
-            &Screen::get_default().expect("Error initializing gtk css provider."),
-            &provider,
-            STYLE_PROVIDER_PRIORITY_APPLICATION,
-        );
-    }
-}
 
 fn show_load_dialog(parent: &Window) -> Option<VmParams> {
     // let mut file = None;

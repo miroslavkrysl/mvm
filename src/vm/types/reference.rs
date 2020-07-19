@@ -1,14 +1,13 @@
 use std::fmt;
 use std::intrinsics::transmute;
-use std::sync::Arc;
-use crate::vm::class::instance::InstancePtr;
+use crate::vm::class::instance::Instance;
 use crate::vm::types::error::ValueError;
 
 
 #[derive(Debug, Clone)]
 pub enum Reference {
     Null,
-    Instance(InstancePtr),
+    Instance(Instance),
 }
 
 
@@ -17,7 +16,7 @@ impl Reference {
         Reference::Null
     }
 
-    pub fn new(ptr: InstancePtr) -> Self {
+    pub fn new(ptr: Instance) -> Self {
         Reference::Instance(ptr)
     }
 
@@ -28,14 +27,14 @@ impl Reference {
         }
     }
 
-    pub fn to_instance(self) -> Result<InstancePtr, ValueError> {
+    pub fn to_instance(self) -> Result<Instance, ValueError> {
         match self {
             Reference::Null => Err(ValueError::NullPointer),
             Reference::Instance(instance) => Ok(instance),
         }
     }
 
-    pub fn as_instance(&self) -> Result<&InstancePtr, ValueError> {
+    pub fn as_instance(&self) -> Result<&Instance, ValueError> {
         match self {
             Reference::Null => Err(ValueError::NullPointer),
             Reference::Instance(instance) => Ok(instance),

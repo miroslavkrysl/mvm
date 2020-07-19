@@ -22,69 +22,39 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="parser">
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/arithmetic.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/branch.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/constant.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/control.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/convert.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/exec.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/load.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/object.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/stack.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/bytecode/store.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vm/exec/vm.rs" afterDir="false" />
+    <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/geometry/shape/Circle.mvm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/frame_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/frame_stack.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ui/content.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ui/frame_stack.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ui/main_window.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/ui/mod.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HelloClass.mvm" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gui/window.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/window.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/observe.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/observe.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/observe.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/arithmetic.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/arithmetic.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/branch.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/branch.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/constant.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/constant.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/control.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/control.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/convert.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/convert.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/exec.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/exec.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/load.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/load.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/object.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/object.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/stack.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/store.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/store.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/class/class.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/class.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/class/code.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/code.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/class/descriptor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/descriptor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/class/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/class/instance.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/instance.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/class/method.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/method.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/class/signature.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/signature.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/error.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/exec/class_loader.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/class_loader.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/exec/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/error.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/exec/interpreter.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/interpreter.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/exec/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/exec/resolver.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/exec/runtime.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/runtime.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/exec/runtime.rs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/exec/thread.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/thread.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/instruction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/instruction.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/exec/vm.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/exec/vm.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/memory/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/memory/frame.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/frame.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/memory/frame_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/frame_stack.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/memory/heap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/heap.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/memory/layout.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/memory/locals.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/locals.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/memory/operand_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/operand_stack.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/parse/classfile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/parse/classfile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/parse/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/parse/error.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/parse/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/parse/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/parse/parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/parse/parser.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/todo/opcode.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/byte.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/double.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/double.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/float.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/float.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/int.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/int.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/long.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/long.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/memory/heap.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/memory/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/memory/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/vm/types/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/reference.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/short.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vm/types/value.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/types/value.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,11 +117,11 @@
       <recent name="$PROJECT_DIR$/mvm/src/parsecombine" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/vm/exec" />
+      <recent name="$PROJECT_DIR$/geometry/shape" />
       <recent name="$PROJECT_DIR$/src/vm/instruction" />
       <recent name="$PROJECT_DIR$/src/gui" />
       <recent name="$PROJECT_DIR$/mvm/src/parse/parser" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/mvm/src/class" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -322,7 +292,7 @@
       <workItem from="1594895516478" duration="9535000" />
       <workItem from="1594925019544" duration="9536000" />
       <workItem from="1594973114404" duration="19383000" />
-      <workItem from="1595053227046" duration="41750000" />
+      <workItem from="1595053227046" duration="62049000" />
     </task>
     <task id="LOCAL-00001" summary="switch to intellij">
       <created>1588666952605</created>
@@ -443,7 +413,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594985344193</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="refactor">
+      <created>1595110445365</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1595110445365</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -488,7 +465,8 @@
     <MESSAGE value="refactor class related structs" />
     <MESSAGE value="get rid of arrays, refactor all" />
     <MESSAGE value="refactor types" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor types" />
+    <MESSAGE value="refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor" />
   </component>
   <component name="WindowStateProjectService">
     <state x="831" y="419" width="248" height="276" key="#Notifications" timestamp="1593930860848">
@@ -511,10 +489,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="684" y="354" width="608" height="413" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1594062408105" />
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1595078150617">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1595157022445">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1595078150617" />
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1595157022445" />
     <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588670385651">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -523,14 +501,14 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="626" y="465" width="667" height="184" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1592642153552" />
-    <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1595099961309">
+    <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1595170978565">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1595099961309" />
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595108959527">
+    <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1595170978565" />
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595110445136">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595108959527" />
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595110445136" />
     <state x="182" y="121" width="1536" height="879" key="DiffContextDialog" timestamp="1593459391453">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -539,22 +517,22 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1594407598553" />
-    <state width="1874" height="220" key="GridCell.Tab.0.bottom" timestamp="1595110427509">
+    <state width="1874" height="360" key="GridCell.Tab.0.bottom" timestamp="1595174077709">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="220" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595110427509" />
-    <state width="1874" height="220" key="GridCell.Tab.0.center" timestamp="1595110427508">
+    <state width="1874" height="360" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595174077709" />
+    <state width="1874" height="360" key="GridCell.Tab.0.center" timestamp="1595174077708">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="220" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595110427508" />
-    <state width="1874" height="220" key="GridCell.Tab.0.left" timestamp="1595110427507">
+    <state width="1874" height="360" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595174077708" />
+    <state width="1874" height="360" key="GridCell.Tab.0.left" timestamp="1595174077707">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="220" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595110427507" />
-    <state width="1874" height="220" key="GridCell.Tab.0.right" timestamp="1595110427508">
+    <state width="1874" height="360" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595174077707" />
+    <state width="1874" height="360" key="GridCell.Tab.0.right" timestamp="1595174077708">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="220" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595110427508" />
+    <state width="1874" height="360" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595174077708" />
     <state x="543" y="299" width="824" height="515" key="IDE.errors.dialog" timestamp="1592204678605">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -591,13 +569,13 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="288" y="279" width="1334" height="555" key="new project wizard/0.27.1920.1053@0.27.1920.1053" timestamp="1595080374011" />
-    <state x="624" y="252" width="672" height="677" key="run.anything.popup" timestamp="1595107334134">
+    <state x="624" y="252" width="672" height="677" key="run.anything.popup" timestamp="1595132121777">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="624" y="252" width="672" height="677" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595107334134" />
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1595106612481">
+    <state x="624" y="252" width="672" height="677" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595132121777" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1595173051798">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595106612481" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595173051798" />
   </component>
 </project>
