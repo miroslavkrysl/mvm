@@ -76,7 +76,7 @@ impl MethodSig {
 
 impl Display for MethodSig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}({})", self.return_desc, self.name, self.params_desc)
+        write!(f, "{} {} ({})", self.return_desc, self.name, self.params_desc)
     }
 }
 

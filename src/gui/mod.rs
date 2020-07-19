@@ -9,6 +9,7 @@ mod operand_stack;
 mod instances;
 mod classes;
 mod fields;
+mod instructions;
 mod vm;
 mod window;
 

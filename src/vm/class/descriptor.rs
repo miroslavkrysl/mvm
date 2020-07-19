@@ -192,6 +192,6 @@ impl FromIterator<TypeDesc> for ParamsDesc {
 
 impl fmt::Display for ParamsDesc {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", join(&self.params_desc, ", "))
+        write!(f, "{}", join(&self.params_desc, ","))
     }
 }

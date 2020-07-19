@@ -23,11 +23,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fa041007-1318-49bd-9a21-7030bacc02d5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/gui/instructions.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/classes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/classes.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/frame_stack.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/frame_stack.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/instances.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/instances.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/fields.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/fields.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gui/window.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/window.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/bytecode/instruction.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/bytecode/instruction.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/class/descriptor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/descriptor.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/class/signature.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/signature.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vm/class/symbolic.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/vm/class/symbolic.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,6 +110,18 @@
     </option>
   </component>
   <component name="RunManager" selected="Cargo Command.Run mvm (1)">
+    <configuration name="Expand mvm::vm::bytecode::instruction" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="expand --bin mvm --color=always --theme=GitHub --tests vm::bytecode::instruction" />
+      <option name="allFeatures" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Run mvm (1)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="run --package mvm --bin mvm" />
@@ -171,10 +188,12 @@
       <item itemvalue="Cargo Command.Run mvm-cli" />
       <item itemvalue="Cargo Command.Run mvm-gtk" />
       <item itemvalue="Cargo Command.Run mvm (1)" />
+      <item itemvalue="Cargo Command.Expand mvm::vm::bytecode::instruction" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Cargo Command.Run mvm (1)" />
+        <item itemvalue="Cargo Command.Expand mvm::vm::bytecode::instruction" />
         <item itemvalue="Cargo Command.Run mvm" />
         <item itemvalue="Cargo Command.Run mvm-gtk" />
         <item itemvalue="Cargo Command.Run mvm-cli" />
@@ -265,7 +284,7 @@
       <workItem from="1594895516478" duration="9535000" />
       <workItem from="1594925019544" duration="9536000" />
       <workItem from="1594973114404" duration="19383000" />
-      <workItem from="1595053227046" duration="82468000" />
+      <workItem from="1595053227046" duration="86127000" />
     </task>
     <task id="LOCAL-00001" summary="switch to intellij">
       <created>1588666952605</created>
@@ -421,7 +440,14 @@
       <option name="project" value="LOCAL" />
       <updated>1595195116001</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="classes and instances view">
+      <created>1595198224359</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1595198224359</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -471,7 +497,8 @@
     <MESSAGE value="local and frame_stack" />
     <MESSAGE value="operand stack view" />
     <MESSAGE value="fieldsview" />
-    <option name="LAST_COMMIT_MESSAGE" value="fieldsview" />
+    <MESSAGE value="classes and instances view" />
+    <option name="LAST_COMMIT_MESSAGE" value="classes and instances view" />
   </component>
   <component name="WindowStateProjectService">
     <state x="831" y="419" width="248" height="276" key="#Notifications" timestamp="1593930860848">
@@ -494,10 +521,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="684" y="354" width="608" height="413" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1594062408105" />
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1595157022445">
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser" timestamp="1595201105302">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1595157022445" />
+    <state x="768" y="272" width="374" height="569" key="#com.intellij.ide.util.MemberChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1595201105302" />
     <state x="767" y="216" width="652" height="682" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1588670385651">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -510,10 +537,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="693" y="302" width="524" height="510" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1595170978565" />
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595195115904">
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2" timestamp="1595198224242">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595195115904" />
+    <state x="505" y="90" width="900" height="934" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1595198224242" />
     <state x="182" y="121" width="1536" height="879" key="DiffContextDialog" timestamp="1593459391453">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -522,22 +549,22 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1594407598553" />
-    <state width="1874" height="373" key="GridCell.Tab.0.bottom" timestamp="1595198162006">
+    <state width="1874" height="373" key="GridCell.Tab.0.bottom" timestamp="1595201825731">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="373" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
-    <state width="1874" height="373" key="GridCell.Tab.0.center" timestamp="1595198162006">
+    <state width="1874" height="373" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1595201825731" />
+    <state width="1874" height="373" key="GridCell.Tab.0.center" timestamp="1595201825730">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="373" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
-    <state width="1874" height="373" key="GridCell.Tab.0.left" timestamp="1595198162006">
+    <state width="1874" height="373" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1595201825730" />
+    <state width="1874" height="373" key="GridCell.Tab.0.left" timestamp="1595201825730">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="373" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
-    <state width="1874" height="373" key="GridCell.Tab.0.right" timestamp="1595198162006">
+    <state width="1874" height="373" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1595201825730" />
+    <state width="1874" height="373" key="GridCell.Tab.0.right" timestamp="1595201825731">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="373" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595198162006" />
+    <state width="1874" height="373" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1595201825731" />
     <state x="543" y="299" width="824" height="515" key="IDE.errors.dialog" timestamp="1592204678605">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
@@ -554,18 +581,18 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="449" y="188" width="1218" height="737" key="SettingsEditor/0.27.1920.1053@0.27.1920.1053" timestamp="1595077871654" />
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1595195118411">
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1595198227435">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1595195118411" />
+    <state x="555" y="289" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1595198227435" />
     <state x="734" y="234" width="442" height="646" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1593605680971">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="734" y="234" width="442" height="646" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.27.1920.1053@0.27.1920.1053" timestamp="1593605680971" />
-    <state x="654" y="151" width="611" height="804" key="find.popup" timestamp="1595182942228">
+    <state x="654" y="151" width="611" height="804" key="find.popup" timestamp="1595200056787">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="654" y="151" width="611" height="804" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595182942228" />
+    <state x="654" y="151" width="611" height="804" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1595200056787" />
     <state x="747" y="452" width="415" height="210" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1591196905114">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>

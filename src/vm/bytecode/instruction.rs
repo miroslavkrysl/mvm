@@ -1,6 +1,7 @@
 use crate::vm::class::symbolic::{MethodRef, FieldRef};
 use crate::vm::class::name::ClassName;
 use crate::vm::class::descriptor::{TypeDesc};
+use std::fmt::{Display, Formatter};
 
 
 /// Argument for `LDC` instruction.
@@ -10,11 +11,29 @@ pub enum LdcArg {
     Float(f32),
 }
 
+impl Display for LdcArg {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LdcArg::Int(int) => write!(f, "{}", int),
+            LdcArg::Float(float) => write!(f, "{}", float),
+        }
+    }
+}
+
 /// Argument for `LDC2` and `LDC2_W` instructions.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Ldc2Arg {
     Long(i64),
     Double(f64),
+}
+
+impl Display for Ldc2Arg {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Ldc2Arg::Long(long) => write!(f, "{}", long),
+            Ldc2Arg::Double(double) => write!(f, "{}", double),
+        }
+    }
 }
 
 /// Enum of bytecode instructions.
@@ -209,4 +228,175 @@ pub enum Instruction {
 
     // object creation
     NEW(ClassName),
+}
+
+impl Display for Instruction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Instruction::NOP => write!(f, "{:15}", "NOP"),
+            Instruction::ICONST_M1 => write!(f, "{:15}", "ICONST_M1"),
+            Instruction::ACONST_NULL => write!(f, "{:15}", "ACONST_NULL"),
+            Instruction::ICONST_0 => write!(f, "{:15}", "ICONST_0"),
+            Instruction::ICONST_1 => write!(f, "{:15}", "ICONST_1"),
+            Instruction::ICONST_2 => write!(f, "{:15}", "ICONST_2"),
+            Instruction::ICONST_3 => write!(f, "{:15}", "ICONST_3"),
+            Instruction::ICONST_4 => write!(f, "{:15}", "ICONST_4"),
+            Instruction::ICONST_5 => write!(f, "{:15}", "ICONST_5"),
+            Instruction::LCONST_0 => write!(f, "{:15}", "LCONST_0"),
+            Instruction::LCONST_1 => write!(f, "{:15}", "LCONST_1"),
+            Instruction::FCONST_0 => write!(f, "{:15}", "FCONST_0"),
+            Instruction::FCONST_1 => write!(f, "{:15}", "FCONST_1"),
+            Instruction::FCONST_2 => write!(f, "{:15}", "FCONST_2"),
+            Instruction::DCONST_0 => write!(f, "{:15}", "DCONST_0"),
+            Instruction::DCONST_1 => write!(f, "{:15}", "DCONST_1"),
+            Instruction::BIPUSH(param) => write!(f, "{:15} {}", "BIPUSH", param),
+            Instruction::SIPUSH(param) => write!(f, "{:15} {}", "SIPUSH", param),
+            Instruction::LDC(param) => write!(f, "{:15} {}", "LDC", param),
+            Instruction::LDC_W(param) => write!(f, "{:15} {}", "LDC_W", param),
+            Instruction::LDC2_W(param) => write!(f, "{:15} {}", "LDC2_W", param),
+            Instruction::ILOAD(param) => write!(f, "{:15} {}", "ILOAD", param),
+            Instruction::LLOAD(param) => write!(f, "{:15} {}", "LLOAD", param),
+            Instruction::FLOAD(param) => write!(f, "{:15} {}", "FLOAD", param),
+            Instruction::DLOAD(param) => write!(f, "{:15} {}", "DLOAD", param),
+            Instruction::ALOAD(param) => write!(f, "{:15} {}", "ALOAD", param),
+            Instruction::ILOAD_0 => write!(f, "{:15}", "ILOAD_0"),
+            Instruction::ILOAD_1 => write!(f, "{:15}", "ILOAD_1"),
+            Instruction::ILOAD_2 => write!(f, "{:15}", "ILOAD_2"),
+            Instruction::ILOAD_3 => write!(f, "{:15}", "ILOAD_3"),
+            Instruction::LLOAD_0 => write!(f, "{:15}", "LLOAD_0"),
+            Instruction::LLOAD_1 => write!(f, "{:15}", "LLOAD_1"),
+            Instruction::LLOAD_2 => write!(f, "{:15}", "LLOAD_2"),
+            Instruction::LLOAD_3 => write!(f, "{:15}", "LLOAD_3"),
+            Instruction::FLOAD_0 => write!(f, "{:15}", "FLOAD_0"),
+            Instruction::FLOAD_1 => write!(f, "{:15}", "FLOAD_1"),
+            Instruction::FLOAD_2 => write!(f, "{:15}", "FLOAD_2"),
+            Instruction::FLOAD_3 => write!(f, "{:15}", "FLOAD_3"),
+            Instruction::DLOAD_0 => write!(f, "{:15}", "DLOAD_0"),
+            Instruction::DLOAD_1 => write!(f, "{:15}", "DLOAD_1"),
+            Instruction::DLOAD_2 => write!(f, "{:15}", "DLOAD_2"),
+            Instruction::DLOAD_3 => write!(f, "{:15}", "DLOAD_3"),
+            Instruction::ALOAD_0 => write!(f, "{:15}", "ALOAD_0"),
+            Instruction::ALOAD_1 => write!(f, "{:15}", "ALOAD_1"),
+            Instruction::ALOAD_2 => write!(f, "{:15}", "ALOAD_2"),
+            Instruction::ALOAD_3 => write!(f, "{:15}", "ALOAD_3"),
+            Instruction::ISTORE(param) => write!(f, "{:15} {}", "ISTORE", param),
+            Instruction::LSTORE(param) => write!(f, "{:15} {}", "LSTORE", param),
+            Instruction::FSTORE(param) => write!(f, "{:15} {}", "FSTORE", param),
+            Instruction::DSTORE(param) => write!(f, "{:15} {}", "DSTORE", param),
+            Instruction::ASTORE(param) => write!(f, "{:15} {}", "ASTORE", param),
+            Instruction::ISTORE_0 => write!(f, "{:15}", "ISTORE_0"),
+            Instruction::ISTORE_1 => write!(f, "{:15}", "ISTORE_1"),
+            Instruction::ISTORE_2 => write!(f, "{:15}", "ISTORE_2"),
+            Instruction::ISTORE_3 => write!(f, "{:15}", "ISTORE_3"),
+            Instruction::LSTORE_0 => write!(f, "{:15}", "LSTORE_0"),
+            Instruction::LSTORE_1 => write!(f, "{:15}", "LSTORE_1"),
+            Instruction::LSTORE_2 => write!(f, "{:15}", "LSTORE_2"),
+            Instruction::LSTORE_3 => write!(f, "{:15}", "LSTORE_3"),
+            Instruction::FSTORE_0 => write!(f, "{:15}", "FSTORE_0"),
+            Instruction::FSTORE_1 => write!(f, "{:15}", "FSTORE_1"),
+            Instruction::FSTORE_2 => write!(f, "{:15}", "FSTORE_2"),
+            Instruction::FSTORE_3 => write!(f, "{:15}", "FSTORE_3"),
+            Instruction::DSTORE_0 => write!(f, "{:15}", "DSTORE_0"),
+            Instruction::DSTORE_1 => write!(f, "{:15}", "DSTORE_1"),
+            Instruction::DSTORE_2 => write!(f, "{:15}", "DSTORE_2"),
+            Instruction::DSTORE_3 => write!(f, "{:15}", "DSTORE_3"),
+            Instruction::ASTORE_0 => write!(f, "{:15}", "ASTORE_0"),
+            Instruction::ASTORE_1 => write!(f, "{:15}", "ASTORE_1"),
+            Instruction::ASTORE_2 => write!(f, "{:15}", "ASTORE_2"),
+            Instruction::ASTORE_3 => write!(f, "{:15}", "ASTORE_3"),
+            Instruction::POP => write!(f, "{:15}", "POP"),
+            Instruction::POP2 => write!(f, "{:15}", "POP2"),
+            Instruction::DUP => write!(f, "{:15}", "DUP"),
+            Instruction::DUP_X1 => write!(f, "{:15}", "DUP_X1"),
+            Instruction::DUP_X2 => write!(f, "{:15}", "DUP_X2"),
+            Instruction::DUP2 => write!(f, "{:15}", "DUP2"),
+            Instruction::DUP2_X1 => write!(f, "{:15}", "DUP2_X1"),
+            Instruction::DUP2_X2 => write!(f, "{:15}", "DUP2_X2"),
+            Instruction::SWAP => write!(f, "{:15}", "SWAP"),
+            Instruction::IADD => write!(f, "{:15}", "IADD"),
+            Instruction::LADD => write!(f, "{:15}", "LADD"),
+            Instruction::FADD => write!(f, "{:15}", "FADD"),
+            Instruction::DADD => write!(f, "{:15}", "DADD"),
+            Instruction::ISUB => write!(f, "{:15}", "ISUB"),
+            Instruction::LSUB => write!(f, "{:15}", "LSUB"),
+            Instruction::FSUB => write!(f, "{:15}", "FSUB"),
+            Instruction::DSUB => write!(f, "{:15}", "DSUB"),
+            Instruction::IMUL => write!(f, "{:15}", "IMUL"),
+            Instruction::LMUL => write!(f, "{:15}", "LMUL"),
+            Instruction::FMUL => write!(f, "{:15}", "FMUL"),
+            Instruction::DMUL => write!(f, "{:15}", "DMUL"),
+            Instruction::IDIV => write!(f, "{:15}", "IDIV"),
+            Instruction::LDIV => write!(f, "{:15}", "LDIV"),
+            Instruction::FDIV => write!(f, "{:15}", "FDIV"),
+            Instruction::DDIV => write!(f, "{:15}", "DDIV"),
+            Instruction::IREM => write!(f, "{:15}", "IREM"),
+            Instruction::LREM => write!(f, "{:15}", "LREM"),
+            Instruction::FREM => write!(f, "{:15}", "FREM"),
+            Instruction::DREM => write!(f, "{:15}", "DREM"),
+            Instruction::INEG => write!(f, "{:15}", "INEG"),
+            Instruction::LNEG => write!(f, "{:15}", "LNEG"),
+            Instruction::FNEG => write!(f, "{:15}", "FNEG"),
+            Instruction::DNEG => write!(f, "{:15}", "DNEG"),
+            Instruction::ISHL => write!(f, "{:15}", "ISHL"),
+            Instruction::LSHL => write!(f, "{:15}", "LSHL"),
+            Instruction::ISHR => write!(f, "{:15}", "ISHR"),
+            Instruction::LSHR => write!(f, "{:15}", "LSHR"),
+            Instruction::IUSHR => write!(f, "{:15}", "IUSHR"),
+            Instruction::LUSHR => write!(f, "{:15}", "LUSHR"),
+            Instruction::IAND => write!(f, "{:15}", "IAND"),
+            Instruction::LAND => write!(f, "{:15}", "LAND"),
+            Instruction::IOR => write!(f, "{:15}", "IOR"),
+            Instruction::LOR => write!(f, "{:15}", "LOR"),
+            Instruction::IXOR => write!(f, "{:15}", "IXOR"),
+            Instruction::LXOR => write!(f, "{:15}", "LXOR"),
+            Instruction::IINC(param1, param2) => write!(f, "{:15} {} {}", "IINC", param1, param2),
+            Instruction::I2L => write!(f, "{:15}", "I2L"),
+            Instruction::I2F => write!(f, "{:15}", "I2F"),
+            Instruction::I2D => write!(f, "{:15}", "I2D"),
+            Instruction::L2I => write!(f, "{:15}", "L2I"),
+            Instruction::L2F => write!(f, "{:15}", "L2F"),
+            Instruction::L2D => write!(f, "{:15}", "L2D"),
+            Instruction::F2I => write!(f, "{:15}", "F2I"),
+            Instruction::F2L => write!(f, "{:15}", "F2L"),
+            Instruction::F2D => write!(f, "{:15}", "F2D"),
+            Instruction::D2I => write!(f, "{:15}", "D2I"),
+            Instruction::D2L => write!(f, "{:15}", "D2L"),
+            Instruction::D2F => write!(f, "{:15}", "D2F"),
+            Instruction::LCMP => write!(f, "{:15}", "LCMP"),
+            Instruction::FCMPL => write!(f, "{:15}", "FCMPL"),
+            Instruction::FCMPG => write!(f, "{:15}", "FCMPG"),
+            Instruction::DCMPL => write!(f, "{:15}", "DCMPL"),
+            Instruction::DCMPG => write!(f, "{:15}", "DCMPG"),
+            Instruction::IFEQ(param) => write!(f, "{:15} {}", "IFEQ", param),
+            Instruction::IFNE(param) => write!(f, "{:15} {}", "IFNE", param),
+            Instruction::IFLT(param) => write!(f, "{:15} {}", "IFLT", param),
+            Instruction::IFGE(param) => write!(f, "{:15} {}", "IFGE", param),
+            Instruction::IFGT(param) => write!(f, "{:15} {}", "IFGT", param),
+            Instruction::IFLE(param) => write!(f, "{:15} {}", "IFLE", param),
+            Instruction::IF_ICMPEQ(param) => write!(f, "{:15} {}", "IF_ICMPEQ", param),
+            Instruction::IF_ICMPNE(param) => write!(f, "{:15} {}", "IF_ICMPNE", param),
+            Instruction::IF_ICMPLT(param) => write!(f, "{:15} {}", "IF_ICMPLT", param),
+            Instruction::IF_ICMPGE(param) => write!(f, "{:15} {}", "IF_ICMPGE", param),
+            Instruction::IF_ICMPGT(param) => write!(f, "{:15} {}", "IF_ICMPGT", param),
+            Instruction::IF_ICMPLE(param) => write!(f, "{:15} {}", "IF_ICMPLE", param),
+            Instruction::IF_ACMPEQ(param) => write!(f, "{:15} {}", "IF_ACMPEQ", param),
+            Instruction::IF_ACMPNE(param) => write!(f, "{:15} {}", "IF_ACMPNE", param),
+            Instruction::GOTO(param) => write!(f, "{:15} {}", "GOTO", param),
+            Instruction::IFNULL(param) => write!(f, "{:15} {}", "IFNULL", param),
+            Instruction::IFNONNULL(param) => write!(f, "{:15} {}", "IFNONNULL", param),
+            Instruction::IRETURN => write!(f, "{:15}", "IRETURN"),
+            Instruction::LRETURN => write!(f, "{:15}", "LRETURN"),
+            Instruction::FRETURN => write!(f, "{:15}", "FRETURN"),
+            Instruction::DRETURN => write!(f, "{:15}", "DRETURN"),
+            Instruction::ARETURN => write!(f, "{:15}", "ARETURN"),
+            Instruction::RETURN => write!(f, "{:15}", "RETURN"),
+            Instruction::GETSTATIC(param) => write!(f, "{:15} {}", "GETSTATIC", param),
+            Instruction::PUTSTATIC(param) => write!(f, "{:15} {}", "PUTSTATIC", param),
+            Instruction::GETFIELD(param) => write!(f, "{:15} {}", "GETFIELD", param),
+            Instruction::PUTFIELD(param) => write!(f, "{:15} {}", "PUTFIELD", param),
+            Instruction::INVOKEVIRTUAL(param) => write!(f, "{:15} {}", "INVOKEVIRTUAL", param),
+            Instruction::INVOKESTATIC(param) => write!(f, "{:15} {}", "INVOKESTATIC", param),
+            Instruction::NEW(param) => write!(f, "{:15} {}", "NEW", param),
+        }
+    }
 }

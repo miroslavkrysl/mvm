@@ -37,7 +37,7 @@ impl FieldRef {
 
 impl fmt::Display for FieldRef {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}:{}", self.signature.type_desc(), self.class_name, self.signature.name())
+        write!(f, "{} {} {}", self.signature.type_desc(), self.class_name, self.signature.name())
     }
 }
 
@@ -73,7 +73,7 @@ impl MethodRef {
 
 impl fmt::Display for MethodRef {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}:{}({})",
+        write!(f, "{} {} {} ({})",
                self.signature.return_desc(),
                self.class_name, self.signature.name(),
                self.signature.params_desc())

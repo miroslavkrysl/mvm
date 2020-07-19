@@ -33,6 +33,7 @@ pub struct FieldsView {
     relm: Relm<FieldsView>,
     list_store: ListStore,
     tree_view: TreeView,
+    heading: Label
 }
 
 
@@ -52,6 +53,8 @@ impl Update for FieldsView {
             FieldsMsg::Update => {
                 let fields = match &self.model.viewed {
                     Viewed::Class(class) => {
+                        self.heading.set_label(&format!("Fields of {}", class.name()));
+
                         class.fields()
                             .filter(|f| f.is_static())
                             .map(|f: &Arc<Field>| {
@@ -60,6 +63,8 @@ impl Update for FieldsView {
                             }).collect::<Vec<_>>()
                     },
                     Viewed::Instance(instance) => {
+                        self.heading.set_label(&format!("Fields of {}@{}", instance.class().name(), instance.id()));
+
                         instance.class().fields()
                              .filter(|f| !f.is_static())
                              .map(|f: &Arc<Field>| {
@@ -67,7 +72,10 @@ impl Update for FieldsView {
                                  (sig, instance.class().instance_field_value(&instance, sig).unwrap())
                              }).collect::<Vec<_>>()
                     },
-                    Viewed::None => Vec::new(),
+                    Viewed::None => {
+                        self.heading.set_label("Fields");
+                        Vec::new()
+                    },
                 };
 
                 self.list_store.clear();
@@ -155,6 +163,7 @@ impl Widget for FieldsView {
             relm: relm.clone(),
             list_store,
             tree_view,
+            heading: label
         }
     }
 }

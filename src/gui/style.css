@@ -5,6 +5,12 @@
 .panel-heading {
     font-size: 20px;
     font-weight: bold;
+    font-family: monospace;
+}
+
+.instruction {
+    font-size: 16px;
+    font-family: monospace;
 }
 
 .frame-name {
