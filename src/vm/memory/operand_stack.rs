@@ -2,28 +2,28 @@ use std::convert::{TryFrom, TryInto};
 
 use crate::vm::memory::error::OperandStackError;
 use crate::vm::types::value::{Value, ValueCategory};
-use std::sync::RwLock;
+use std::sync::Mutex;
 
 
 #[derive(Debug)]
 pub struct OperandStack {
-    values: RwLock<Vec<Value>>,
-    size: RwLock<usize>,
-    capacity: RwLock<usize>,
+    values: Mutex<Vec<Value>>,
+    size: Mutex<usize>,
+    capacity: Mutex<usize>,
 }
 
 
 impl OperandStack {
     pub fn new(capacity: usize) -> Self {
         OperandStack {
-            values: RwLock::new(Vec::with_capacity(capacity)),
-            size: RwLock::new(0),
-            capacity: RwLock::new(capacity),
+            values: Mutex::new(Vec::with_capacity(capacity)),
+            size: Mutex::new(0),
+            capacity: Mutex::new(capacity),
         }
     }
 
     pub fn check_overflow(&self, size: usize) -> Result<(), OperandStackError> {
-        if *self.size.read().unwrap() + size > *self.capacity.read().unwrap() {
+        if *self.size.lock().unwrap() + size > *self.capacity.lock().unwrap() {
             Err(OperandStackError::Overflow)
         } else {
             Ok(())
@@ -31,7 +31,7 @@ impl OperandStack {
     }
 
     pub fn check_underflow(&self, size: usize) -> Result<(), OperandStackError> {
-        if size > *self.size.read().unwrap() {
+        if size > *self.size.lock().unwrap() {
             Err(OperandStackError::Underflow)
         } else {
             Ok(())
@@ -46,7 +46,7 @@ impl OperandStack {
         self.check_underflow(dup + skip)?;
         self.check_overflow(dup)?;
 
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
 
         // compute number of values to duplicate
         let mut values_size = 0;
@@ -89,14 +89,14 @@ impl OperandStack {
         // append skip + dup values to the end
         values.extend(to_dup);
 
-        *self.size.write().unwrap() += dup;
+        *self.size.lock().unwrap() += dup;
 
         Ok(())
     }
 
     pub fn pop_discard(&self, size: usize) -> Result<(), OperandStackError> {
         self.check_underflow(size)?;
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
 
         // compute new length of values after pop
         let mut values_size = 0;
@@ -115,13 +115,13 @@ impl OperandStack {
         };
 
         values.truncate(new_len);
-        *self.size.write().unwrap() -= size;
+        *self.size.lock().unwrap() -= size;
 
         Ok(())
     }
 
     pub fn peek_value(&self, index: usize) -> Result<Value, OperandStackError> {
-        let values = self.values.write().unwrap();
+        let values = self.values.lock().unwrap();
         if index >= values.len() {
             return Err(OperandStackError::Underflow);
         }
@@ -132,7 +132,7 @@ impl OperandStack {
     pub fn peek<T>(&self, index: usize) -> Result<T, OperandStackError>
                    where T: TryFrom<Value>,
                          OperandStackError: From<<T as TryFrom<Value>>::Error> {
-        let values = self.values.write().unwrap();
+        let values = self.values.lock().unwrap();
         if index >= values.len() {
             return Err(OperandStackError::Underflow);
         }
@@ -176,7 +176,7 @@ impl OperandStack {
         let value0 = self.peek_value(0)?;
         let value1 = self.peek_value(1)?;
 
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
 
         if value0.value_type().category() != ValueCategory::Single
             || value1.value_type().category() != ValueCategory::Single {
@@ -192,7 +192,7 @@ impl OperandStack {
     pub fn pop<T>(&self) -> Result<T, OperandStackError>
                   where T: TryFrom<Value>,
                         OperandStackError: From<<T as TryFrom<Value>>::Error> {
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
         match values.last() {
             None => Err(OperandStackError::Underflow),
             Some(comp_value) => {
@@ -204,11 +204,11 @@ impl OperandStack {
     }
 
     pub fn pop_value(&self) -> Result<Value, OperandStackError> {
-        let mut values = self.values.write().unwrap();
+        let mut values = self.values.lock().unwrap();
         match values.pop() {
             None => Err(OperandStackError::Underflow),
             Some(value) => {
-                *self.size.write().unwrap() -= value.value_type().category().size();
+                *self.size.lock().unwrap() -= value.value_type().category().size();
                 Ok(value)
             }
         }
@@ -221,10 +221,14 @@ impl OperandStack {
     pub fn push_value(&self, value: Value) -> Result<(), OperandStackError> {
         self.check_overflow(value.value_type().category().size())?;
 
-        *self.size.write().unwrap() += value.value_type().category().size();
-        self.values.write().unwrap().push(value);
+        *self.size.lock().unwrap() += value.value_type().category().size();
+        self.values.lock().unwrap().push(value);
 
         Ok(())
+    }
+
+    pub fn values(&self) -> Vec<Value> {
+        self.values.lock().unwrap().clone()
     }
 }
 

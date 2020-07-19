@@ -22,6 +22,7 @@ use crate::vm::exec::vm::Vm;
 use std::path::PathBuf;
 use std::sync::Arc;
 use crate::gui::locals::{LocalsView, LocalsMsg};
+use crate::gui::operand_stack::{OperandStackView, OperandStackMsg};
 
 
 pub struct AppState {
@@ -42,7 +43,7 @@ pub struct AppWindow {
     window: Window,
     header: Component<AppHeaderView>,
     content: Stack,
-    locals: Component<LocalsView>
+    locals: Component<OperandStackView>
     // frame_stack: Component<FrameStackView>,
 }
 
@@ -134,11 +135,11 @@ impl Widget for AppWindow {
         // let frame_stack = create_component::<FrameStackView>(());
         // content.add_nam
 
-        let locals = create_component::<LocalsView>(());
+        let locals = create_component::<OperandStackView>(());
         content.add_named(locals.widget(), "locals");
 
-        let landing_page = create_component::<LandingPage>(());
-        content.add_named(landing_page.widget(), "landing");
+        // let landing_page = create_component::<LandingPage>(());
+        // content.add_named(landing_page.widget(), "landing");
 
         window.add(&content);
 
@@ -155,11 +156,15 @@ impl Widget for AppWindow {
         let l = locals.clone();
         let (channel, sender) = Channel::new(move |_| {
             let frames = vm0.frames().unwrap();
-            let locals = frames.last().and_then(|frame| {
-                Some(frame.locals().values())
+            // let locals = frames.last().and_then(|frame| {
+            //     Some(frame.locals().values())
+            // }).or(Some(Vec::new())).unwrap();
+
+            let values = frames.last().and_then(|frame| {
+                Some(frame.stack().values())
             }).or(Some(Vec::new())).unwrap();
 
-            l.emit(LocalsMsg::Update(locals));
+            l.emit(OperandStackMsg::Update(values));
         });
 
         vm.set_update_callback(Some(Box::new(move |vm: &Vm| {

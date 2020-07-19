@@ -1,11 +1,11 @@
+pub use window::AppWindow;
+
+
 mod frame_stack;
 mod header;
 mod landing;
-
-// mod local;
 mod locals;
-// mod value;
+mod operand_stack;
 mod vm;
 mod window;
 
-pub use window::AppWindow;

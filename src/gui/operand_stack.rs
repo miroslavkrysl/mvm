@@ -1,55 +1,46 @@
 use std::boxed::Box as StdBox;
 use std::sync::Arc;
 
-use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator, ShadowType, StyleContextExt, TreeView, TreeViewExt, Viewport, WidgetExt, TreeViewColumn, CellRendererText, CellLayoutExt, ListStore, GtkListStoreExt, TreeViewColumnExt, TreeViewGridLines, TreeSelectionExt, SelectionMode};
+use gtk::{Align, Box, BoxExt, CellLayoutExt, CellRendererText, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, Separator, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumn, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
+use gtk::prelude::{GtkListStoreExtManual, StaticType};
 use relm::{Component, connect, Relm, Update, Widget};
 use relm_derive::Msg;
 
 use crate::vm::memory::locals::Slot;
-use gtk::prelude::{StaticType, GtkListStoreExtManual};
-use std::fs;
-use std::path::MAIN_SEPARATOR;
+use crate::vm::types::value::Value;
 
 
 #[derive(Msg)]
-pub enum LocalsMsg {
-    Update(Vec<Slot>)
+pub enum OperandStackMsg {
+    Update(Vec<Value>)
 }
 
 
-pub struct LocalsView {
+pub struct OperandStackView {
     root: Box,
     list_store: ListStore,
     tree_view: TreeView,
 }
 
 
-impl Update for LocalsView {
+impl Update for OperandStackView {
     type Model = ();
     type ModelParam = ();
-    type Msg = LocalsMsg;
+    type Msg = OperandStackMsg;
 
     fn model(_: &Relm<Self>, _: ()) -> () {}
 
-    fn update(&mut self, event: LocalsMsg) {
+    fn update(&mut self, event: OperandStackMsg) {
         match event {
-            LocalsMsg::Update(values) => {
+            OperandStackMsg::Update(values) => {
                 self.list_store.clear();
 
-                for (index, value) in values.iter().enumerate() {
-                    let index = index.to_string();
-                    match value {
-                        Slot::Undefined => {
-                            self.list_store.insert_with_values(None,
-                                                          &[0, 1, 2],
-                                                          &[&index, &"", &"UNDEFINED"]);
-                        },
-                        Slot::Value(value) => {
-                            self.list_store.insert_with_values(None,
-                                                               &[0, 1, 2],
-                                                               &[&index, &value.value_type().to_string(), &value.to_string()]);
-                        },
-                    }
+                for value in values {
+                    self.list_store.insert_with_values(None,
+                                                       &[0, 1, 2],
+                                                       &[&value.value_type().category().size().to_string(),
+                                                           &value.value_type().to_string(),
+                                                           &value.to_string()]);
                 }
             }
         }
@@ -57,7 +48,7 @@ impl Update for LocalsView {
 }
 
 
-impl Widget for LocalsView {
+impl Widget for OperandStackView {
     type Root = Box;
 
     fn root(&self) -> Self::Root {
@@ -68,7 +59,7 @@ impl Widget for LocalsView {
         let tree_view = gtk::TreeView::new();
 
         let index_column = gtk::TreeViewColumn::new();
-        index_column.set_title("index");
+        index_column.set_title("size");
         let index_cell = gtk::CellRendererText::new();
         index_column.pack_start(&index_cell, true);
         index_column.set_resizable(true);
@@ -108,7 +99,7 @@ impl Widget for LocalsView {
         let scrolled = ScrolledWindow::new(NONE_ADJUSTMENT, NONE_ADJUSTMENT);
         scrolled.add(&viewport);
 
-        let label = Label::new(Some("Local Variables"));
+        let label = Label::new(Some("Operand Stack"));
         label.get_style_context().add_class("panel-heading");
         label.set_justify(Justification::Center);
 
@@ -117,7 +108,7 @@ impl Widget for LocalsView {
         root.pack_start(&scrolled, true, true, 0);
         root.set_size_request(250, -1);
 
-        LocalsView {
+        OperandStackView {
             root,
             list_store,
             tree_view,
