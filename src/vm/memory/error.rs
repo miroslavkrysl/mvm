@@ -3,14 +3,15 @@ use thiserror::Error;
 use crate::vm::class::name::ClassName;
 use crate::vm::types::error::ValueError;
 use crate::vm::class::descriptor::TypeDesc;
+use crate::vm::types::value::ValueType;
 
 
 /// An error caused by the inappropriate OperandStack manipulation.
 #[derive(Error, Debug)]
 pub enum OperandStackError {
-    #[error("stack underflow")]
-    Overflow,
     #[error("stack overflow")]
+    Overflow,
+    #[error("stack underflow")]
     Underflow,
     #[error("unsupported type for operation")]
     InvalidType,
@@ -42,9 +43,10 @@ pub enum LocalsError {
 
 #[derive(Error, Debug)]
 pub enum FrameError {
-    #[error("expected argument of type {expected}")]
+    #[error("expected argument of type {expected}, got {}")]
     IncompatibleArgumentType {
-        expected: TypeDesc
+        expected: TypeDesc,
+        got: ValueType
     },
     #[error(transparent)]
     OperandStack {

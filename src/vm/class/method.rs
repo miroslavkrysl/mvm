@@ -1,6 +1,7 @@
 use crate::vm::class::code::Code;
 use crate::vm::class::error::MethodError;
 use crate::vm::class::signature::MethodSig;
+use crate::vm::types::value::ValueType;
 
 
 /// A field of a class.
@@ -30,11 +31,17 @@ impl Method {
         if signature.is_clinit() && !is_static {
             return Err(MethodError::ClinitIsNonStatic);
         }
-        
-        if code.locals_size() < signature.params_desc().size() {
+
+        let mut params_size = signature.params_desc().size();
+
+        if !is_static {
+            params_size += ValueType::AnyReference.category().size();
+        }
+
+        if code.locals_size() <  params_size {
             return Err(MethodError::TooFewLocalsEntries {
                 locals_size: code.locals_size(),
-                params_size: signature.params_desc().size(),
+                params_size,
             });
         }
 

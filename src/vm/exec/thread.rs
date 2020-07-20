@@ -129,8 +129,6 @@ impl Thread {
                 }
             }
 
-            println!("{:?}", &instruction);
-
             if let Err(error) = instruction.execute(&self) {
                 // error while executing instruction
                 self.runtime.notify_error(error.into());
