@@ -12,7 +12,7 @@ use crate::vm::{
     },
 };
 use gdk::Screen;
-use gtk::{Button, ContainerExt, CssProviderExt, Entry, GtkWindowExt, Inhibit, Label, Orientation, Stack, StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType, STYLE_PROVIDER_PRIORITY_APPLICATION, SpinnerExt};
+use gtk::{Button, GridExt, ContainerExt, CssProviderExt, Entry, GtkWindowExt, Inhibit, Label, Orientation, Stack, StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType, STYLE_PROVIDER_PRIORITY_APPLICATION, SpinnerExt, FileChooserDialog, FileFilter, FileChooserExt, FileChooserAction, DialogExt, ResponseType, FileChooserButton, Grid, Dialog, BoxExt, EditableSignals, StyleContextExt, false_, FileChooserButtonExt, EntryExt};
 use relm::{
     connect, connect_stream, create_component, init, interval, Channel, Component, Relm, Update,
     Widget,
@@ -25,79 +25,52 @@ use crate::gui::operand_stack::{OperandStackView, OperandStackMsg};
 use crate::gui::fields::{FieldsView, FieldsMsg, Viewed};
 use crate::gui::classes::{ClassesView, ClassesMsg};
 use crate::gui::instructions::{InstructionsView, InstructionsMsg};
-use crate::gui::vm::VmView;
+use crate::gui::vm::{VmView, VmMsg};
+use gtk::prelude::{WidgetExtManual, Cast};
+use std::path::PathBuf;
+use crate::vm::class::error::NameError;
 
-
-pub struct AppState {
-}
 
 #[derive(Msg)]
 pub enum AppEvent {
     LoadRequest,
-    FrameSelected(usize),
-    NextInstruction,
-    RestartVm,
     Quit,
 }
 
 pub struct AppWindow {
-    model: AppState,
     window: Window,
     header: Component<AppHeaderView>,
-    vm: Component<VmView>
+    load_dialog: LoadDialog,
+    vm: Option<Component<VmView>>,
+    landing_page: Component<LandingPage>
 }
 
 impl Update for AppWindow {
-    type Model = AppState;
+    type Model = ();
     type ModelParam = ();
     type Msg = AppEvent;
 
-    fn model(_: &Relm<Self>, _: ()) -> AppState {
-        AppState {
-        }
+    fn model(_: &Relm<Self>, _: ()) -> () {
     }
 
     fn update(&mut self, event: AppEvent) {
         match event {
             AppEvent::LoadRequest => {
-                // let params = show_load_dialog(&self.window);
-                // self.window.maximize();
-                // self.content.set_visible_child_name("vm");
-                // println!("Load request");
+                let result = self.load_dialog.run();
 
-                // vm.set_update_callback(Some(Box::new(|vm| {
-                //     println!("hello");
-                // })));
-                // let e = ended.clone();
-                // vm.set_error_callback(Some(Box::new(move |vm, error| {
-                //     println!("{:?}", error);
-                //     e.store(true, Ordering::SeqCst);
-                // })));
-                // let e = ended.clone();
-                // vm.set_end_callback(Some(Box::new(move |vm| {
-                //     println!("end");
-                //     e.store(true, Ordering::SeqCst);
-                // })));
-                //
-                // vm.clone().start(class_name);
-
-                // self.frame_stack.emit(FrameStackMsg::Push(
-                //     ClassName::new("hello").unwrap(),
-                //     MethodSig::new(
-                //         ReturnDesc::Void,
-                //         MethodName::new("hello").unwrap(),
-                //         [TypeDesc::Int].iter().cloned().collect(),
-                //     )
-                //     .unwrap(),
-                // ));
-                println!("next");
+                if let Some((class_name, path)) = result {
+                    if let Some(vm) = &self.vm {
+                        vm.emit(VmMsg::Load(class_name, vec![path]));
+                    } else {
+                        let vm = create_component::<VmView>((class_name, vec![path]));
+                        self.window.remove(self.landing_page.widget());
+                        self.window.add(vm.widget());
+                        self.vm = Some(vm);
+                        self.window.maximize();
+                    }
+                }
             }
-            AppEvent::NextInstruction => {}
-            AppEvent::RestartVm => {}
             AppEvent::Quit => gtk::main_quit(),
-            AppEvent::FrameSelected(i) => {
-                println!("{}", i);
-            }
         }
     }
 }
@@ -127,9 +100,8 @@ impl Widget for AppWindow {
         let header = create_component::<AppHeaderView>(());
         window.set_titlebar(Some(header.widget()));
 
-        let vm = create_component::<VmView>((ClassName::new("geometry.shape.Circle").unwrap(), vec!["./".into()]));
-        window.add(vm.widget());
-        window.maximize();
+        let landing_page = create_component::<LandingPage>(());
+        window.add(landing_page.widget());
 
         connect!(
             header@AppHeaderEvent::Load,
@@ -139,43 +111,105 @@ impl Widget for AppWindow {
 
         window.show_all();
 
+        let load_dialog = LoadDialog::new();
+
         AppWindow {
-            model,
             window,
             header,
-            vm
+            load_dialog,
+            vm: None,
+            landing_page
         }
     }
 }
 
-struct VmParams {
-    main_class: ClassName,
-    class_path: Vec<String>,
+struct LoadDialog {
+    dialog: Dialog,
+    path_chooser: FileChooserButton,
+    class_entry: Entry,
+    load_button: Button
 }
 
+impl LoadDialog {
+    fn new() -> LoadDialog {
+        let path_label = Label::new(Some("Class path:"));
+        let class_label = Label::new(Some("Main class:"));
+        let path_chooser = FileChooserButton::new("Class path", FileChooserAction::SelectFolder);
+        let class_entry = Entry::new();
 
-fn show_load_dialog(parent: &Window) -> Option<VmParams> {
-    // let mut file = None;
-    // let dialog = FileChooserDialog::new(
-    //     Some("Select an MP3 audio file"),
-    //     Some(parent),
-    //     FileChooserAction::Open,
-    // );
-    // let mp3_filter = FileFilter::new();
-    // mp3_filter.add_mime_type("audio/mp3");
-    // mp3_filter.set_name("MP3 audio file");
-    // dialog.add_filter(&mp3_filter);
-    // let m3u_filter = FileFilter::new();
-    // m3u_filter.add_mime_type("audio/x-mpegurl");
-    // m3u_filter.set_name("M3U playlist file");
-    // dialog.add_filter(&m3u_filter);
-    // dialog.add_button("Cancel", RESPONSE_CANCEL);
-    // dialog.add_button("Accept", RESPONSE_ACCEPT);
-    // let result = dialog.run();
-    // if result == RESPONSE_ACCEPT {
-    //     file = dialog.get_filename();
-    // }
-    // dialog.destroy();
-    // file
-    unimplemented!()
+        let grid = Grid::new();
+        grid.set_column_spacing(5);
+        grid.set_row_spacing(5);
+        grid.set_property_margin(10);
+
+        grid.attach(&path_label, 0, 0, 1, 1);
+        grid.attach(&class_label, 0, 1, 1, 1);
+        grid.attach(&path_chooser, 1, 0, 1, 1);
+        grid.attach(&class_entry, 1, 1, 1, 1);
+
+        let dialog = Dialog::new();
+        dialog.get_content_area().pack_start(&grid, true, true, 0);
+        dialog.add_button("Cancel", ResponseType::Cancel);
+        let load_button = dialog.add_button("Load", ResponseType::Accept).downcast::<Button>().unwrap();
+        load_button.set_sensitive(false);
+
+        let ce = class_entry.clone();
+        let pc = path_chooser.clone();
+        let lb = load_button.clone();
+        class_entry.clone().connect_changed(move |entry| {
+            let mut ok = true;
+
+            if ClassName::new(ce.get_text()).is_err() {
+                entry.get_style_context().add_class("entry-error");
+                ok = false;
+            } else {
+                entry.get_style_context().remove_class("entry-error");
+            }
+
+            if pc.get_filename().is_none() {
+                ok = false;
+            }
+            lb.set_sensitive(ok);
+        });
+
+
+        let ce = class_entry.clone();
+        let pc = path_chooser.clone();
+        let lb = load_button.clone();
+        path_chooser.clone().connect_file_set(move |entry| {
+            let mut ok = true;
+
+            if ClassName::new(ce.get_text()).is_err() {
+                ok = false;
+            }
+            if pc.get_filename().is_none() {
+                ok = false;
+            }
+            lb.set_sensitive(ok);
+        });
+
+        LoadDialog {
+            dialog,
+            path_chooser,
+            class_entry,
+            load_button
+        }
+    }
+
+    fn run(&self) -> Option<(ClassName, PathBuf)> {
+        self.dialog.show_all();
+        loop {
+            let result = self.dialog.run();
+            if result != ResponseType::Accept {
+                self.dialog.hide();
+                return None;
+            }
+
+            let class = ClassName::new(self.class_entry.get_text().trim()).unwrap();
+            let path = self.path_chooser.get_filename().unwrap();
+
+            self.dialog.hide();
+            return Some((class, path));
+        }
+    }
 }

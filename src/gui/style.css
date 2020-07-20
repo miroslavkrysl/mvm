@@ -21,3 +21,8 @@
     font-style: italic;
     color: gray;
 }
+
+.entry-error {
+    border-color: firebrick;
+    background: #ffa3a8;
+}

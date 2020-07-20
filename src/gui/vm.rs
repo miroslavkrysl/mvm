@@ -27,7 +27,6 @@ use super::{
     header::AppHeaderView,
     landing::LandingPage,
 };
-use gdk::prelude::WindowExtManual;
 use gtk::prelude::Cast;
 use crate::vm::class::class::Class;
 use crate::vm::memory::frame::Frame as VmFrame;
@@ -39,12 +38,14 @@ pub enum VmMsg {
     Update,
     Ended,
     Error(ExecError),
-    NextClicked,
-    ReloadClicked,
+    NextStep,
+    Reload,
 
     SelectFrame(usize, Arc<VmFrame>),
     SelectClass(Arc<Class>),
     SelectInstance(Instance),
+
+    Load(ClassName, Vec<PathBuf>)
 }
 
 enum VmChannelMsg {
@@ -133,10 +134,10 @@ impl Update for VmView {
                 dialog.connect_response(|dialog, _| dialog.close());
                 dialog.show_all();
             }
-            VmMsg::NextClicked => {
+            VmMsg::NextStep => {
                 self.model.vm.next();
             }
-            VmMsg::ReloadClicked => {
+            VmMsg::Reload => {
                 if !self.model.joined {
                     self.model.vm.set_end_callback(None);
                     self.model.vm.thread().unwrap().cancel();
@@ -161,6 +162,11 @@ impl Update for VmView {
             VmMsg::SelectInstance(instance) => {
                 self.classes.emit(ClassesMsg::Unselect);
                 self.fields.emit(FieldsMsg::ChangeViewed(Viewed::Instance(instance)));
+            }
+            VmMsg::Load(clas_name, path) => {
+                self.model.main_class = clas_name;
+                self.model.path = path;
+                self.relm.stream().emit(VmMsg::Reload);
             }
         }
     }
@@ -220,13 +226,13 @@ impl Widget for VmView {
             relm,
             next_button,
             connect_clicked(_),
-            VmMsg::NextClicked
+            VmMsg::NextStep
         );
         connect!(
             relm,
             reload_button,
             connect_clicked(_),
-            VmMsg::ReloadClicked
+            VmMsg::Reload
         );
 
         connect!(
@@ -254,6 +260,8 @@ impl Widget for VmView {
             }
         });
 
+        root.show_all();
+
         let view = VmView {
             model,
             root,
@@ -271,7 +279,6 @@ impl Widget for VmView {
         };
 
         view.connect();
-
         view
     }
 }
@@ -297,29 +304,3 @@ impl VmView {
     }
 }
 
-
-// fn show_load_dialog(parent: &Window) -> Option<VmParams> {
-//     // let mut file = None;
-//     // let dialog = FileChooserDialog::new(
-//     //     Some("Select an MP3 audio file"),
-//     //     Some(parent),
-//     //     FileChooserAction::Open,
-//     // );
-//     // let mp3_filter = FileFilter::new();
-//     // mp3_filter.add_mime_type("audio/mp3");
-//     // mp3_filter.set_name("MP3 audio file");
-//     // dialog.add_filter(&mp3_filter);
-//     // let m3u_filter = FileFilter::new();
-//     // m3u_filter.add_mime_type("audio/x-mpegurl");
-//     // m3u_filter.set_name("M3U playlist file");
-//     // dialog.add_filter(&m3u_filter);
-//     // dialog.add_button("Cancel", RESPONSE_CANCEL);
-//     // dialog.add_button("Accept", RESPONSE_ACCEPT);
-//     // let result = dialog.run();
-//     // if result == RESPONSE_ACCEPT {
-//     //     file = dialog.get_filename();
-//     // }
-//     // dialog.destroy();
-//     // file
-//     unimplemented!()
-// }
