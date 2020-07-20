@@ -43,7 +43,7 @@ pub enum LocalsError {
 
 #[derive(Error, Debug)]
 pub enum FrameError {
-    #[error("expected argument of type {expected}, got {}")]
+    #[error("expected argument of type {expected}, got {got}")]
     IncompatibleArgumentType {
         expected: TypeDesc,
         got: ValueType
