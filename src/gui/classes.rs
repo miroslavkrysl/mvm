@@ -17,7 +17,8 @@ use crate::vm::class::class::Class;
 pub enum ClassesMsg {
     Update(Vec<Arc<Class>>),
     ClassActivated(Arc<Class>),
-    RowActivated(usize)
+    RowActivated(usize),
+    Unselect
 }
 
 pub struct ClassesModel {
@@ -62,6 +63,9 @@ impl Update for ClassesView {
             ClassesMsg::RowActivated(index) => {
                 self.relm.stream().emit(ClassesMsg::ClassActivated(self.model.classes[index].clone()));
             },
+            ClassesMsg::Unselect => {
+                self.list_view.unselect_all();
+            }
         }
     }
 }

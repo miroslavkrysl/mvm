@@ -15,9 +15,9 @@ use crate::vm::memory::frame::Frame as VmFrame;
 #[derive(Msg)]
 pub enum FrameStackMsg {
     Update(Vec<Arc<VmFrame>>),
-    FrameActivated(Arc<VmFrame>),
+    FrameActivated(usize, Arc<VmFrame>),
     RowActivated(usize),
-    SelectTopFrame,
+    SelectTopFrame
 }
 
 pub struct FrameStackModel {
@@ -56,14 +56,14 @@ impl Update for FrameStackView {
                     self.model.frames.push(frame);
                 }
             },
-            FrameStackMsg::FrameActivated(frame) => {
+            FrameStackMsg::FrameActivated(index, frame) => {
                 // just to notify listeners
             },
             FrameStackMsg::RowActivated(index) => {
-                self.relm.stream().emit(FrameStackMsg::FrameActivated(self.model.frames[index].clone()));
+                self.relm.stream().emit(FrameStackMsg::FrameActivated(index, self.model.frames[index].clone()));
             },
             FrameStackMsg::SelectTopFrame => {
-                if let Some(row) = self.list_view.get_row_at_index(0) {
+                if let Some(row) = self.list_view.get_row_at_index(self.list_view.get_children().len() as i32 - 1) {
                     self.list_view.select_row(Some(&row));
                 }
             },
@@ -141,7 +141,7 @@ impl FrameStackRow {
         let method = frame.method();
         let method_ret_str = method.signature().return_desc().to_string();
         let method_name_str = method.signature().name().to_string();
-        let method_params_str = method.signature().params_desc().to_string();
+        let method_params_str = format!("({})", method.signature().params_desc().to_string());
         let class_name_str = frame.class().name().to_string();
 
         let ret = Label::new(Some(&method_ret_str));

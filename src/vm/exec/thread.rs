@@ -96,19 +96,8 @@ impl Thread {
         let frame = Frame::new(class.clone(), method.clone());
         
         self.stack.push(frame);
-        self.runtime.notify_update();
 
         loop {
-            match self.cmd_rx.lock().unwrap().recv() {
-                Ok(ThreadCmd::NextStep) => {}
-                Ok(ThreadCmd::Stop) => {
-                    break;
-                }
-                Err(_) => {
-                    break;
-                }
-            }
-
             let instruction = match self.stack.current() {
                 None => {
                     // start method returned
@@ -122,21 +111,31 @@ impl Thread {
                         Err(error) => {
                             // probably pc out of bounds
                             self.runtime.notify_error(error.into());
-                            return;
+                            break;
                         }
                     }
                 }
             };
+
+            self.runtime.notify_update();
+
+            match self.cmd_rx.lock().unwrap().recv() {
+                Ok(ThreadCmd::NextStep) => {}
+                Ok(ThreadCmd::Stop) => {
+                    break;
+                }
+                Err(_) => {
+                    break;
+                }
+            }
 
             println!("{:?}", &instruction);
 
             if let Err(error) = instruction.execute(&self) {
                 // error while executing instruction
                 self.runtime.notify_error(error.into());
-                return;
+                break;
             }
-
-            self.runtime.notify_update();
         }
         self.runtime.notify_end();
     }

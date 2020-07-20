@@ -44,7 +44,7 @@ pub enum DescriptorError {
 
 #[derive(Error, Debug)]
 pub enum CodeError {
-    #[error("instruction index is out of bounds: the length is {max} but the index is {index}]")]
+    #[error("instruction index is out of bounds: the length is {max} but the index is {index}")]
     IndexOutOfBounds {
         max: usize,
         index: isize,

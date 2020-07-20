@@ -17,7 +17,8 @@ use crate::vm::class::instance::Instance;
 pub enum InstancesMsg {
     Update(Vec<Instance>),
     InstanceActivated(Instance),
-    RowActivated(usize)
+    RowActivated(usize),
+    Unselect
 }
 
 pub struct InstancesModel {
@@ -62,6 +63,9 @@ impl Update for InstancesView {
             InstancesMsg::RowActivated(index) => {
                 self.relm.stream().emit(InstancesMsg::InstanceActivated(self.model.classes[index].clone()));
             },
+            InstancesMsg::Unselect => {
+                self.list_view.unselect_all();
+            }
         }
     }
 }

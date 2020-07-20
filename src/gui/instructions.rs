@@ -1,7 +1,7 @@
 use std::boxed::Box as StdBox;
 use std::sync::Arc;
 
-use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator, ShadowType, StyleContextExt, Viewport, WidgetExt, SelectionMode};
+use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator, ShadowType, StyleContextExt, Viewport, WidgetExt, SelectionMode, false_, Inhibit};
 use relm::{Component, connect, Relm, Update, Widget};
 use relm_derive::Msg;
 
@@ -9,6 +9,7 @@ use crate::vm::class::{name::ClassName};
 use crate::vm::class::class::Class;
 use crate::vm::class::method::Method;
 use crate::vm::bytecode::instruction::Instruction;
+use gtk::prelude::ObjectExt;
 
 
 #[derive(Msg)]
@@ -95,7 +96,7 @@ impl Widget for InstructionsView {
 
         let viewport = Viewport::new(NONE_ADJUSTMENT, NONE_ADJUSTMENT);
         viewport.add(&frame);
-        viewport.set_border_width(10);
+        viewport.set_border_width(25);
 
         let scrolled = ScrolledWindow::new(NONE_ADJUSTMENT, NONE_ADJUSTMENT);
         scrolled.add(&viewport);
@@ -136,7 +137,6 @@ impl InstructionsRow {
         instruction_box.pack_start(&instruction_label, false, false, 0);
 
         let root = ListBoxRow::new();
-        root.set_activatable(false);
         root.add(&instruction_box);
         root.show_all();
 

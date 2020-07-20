@@ -19,9 +19,9 @@ pub struct Vm {
     object_heap: Mutex<HashMap<InstanceId, Instance>>,
     class_loader: ClassLoader,
     thread: Mutex<Option<Arc<Thread>>>,
-    error_callback: Mutex<Option<Box<dyn 'static + Send + FnMut(&Vm, ExecError)>>>,
-    update_callback: Mutex<Option<Box<dyn 'static + Send + FnMut(&Vm)>>>,
-    end_callback: Mutex<Option<Box<dyn 'static + Send + FnMut(&Vm)>>>
+    error_callback: Mutex<Option<Box<dyn 'static + Send + FnMut(ExecError)>>>,
+    update_callback: Mutex<Option<Box<dyn 'static + Send + FnMut()>>>,
+    end_callback: Mutex<Option<Box<dyn 'static + Send + FnMut()>>>
 }
 
 
@@ -91,36 +91,36 @@ impl Vm {
 }
 
 impl Vm {
-    pub fn set_error_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut(&Vm, ExecError)>>) {
+    pub fn set_error_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut(ExecError)>>) {
         *self.error_callback.lock().unwrap() = callback;
     }
 
-    pub fn set_update_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut(&Vm)>>) {
+    pub fn set_update_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut()>>) {
         *self.update_callback.lock().unwrap() = callback;
     }
 
-    pub fn set_end_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut(&Vm)>>) {
+    pub fn set_end_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut()>>) {
         *self.end_callback.lock().unwrap() = callback;
     }
 
     pub fn notify_error(&self, error: ExecError) {
         let mut callback = self.error_callback.lock().unwrap();
         if let Some(callback) = callback.deref_mut() {
-            callback(&self, error)
+            callback(error)
         }
     }
 
     pub fn notify_update(&self) {
         let mut callback = self.update_callback.lock().unwrap();
         if let Some(callback) = callback.deref_mut() {
-            callback(&self)
+            callback()
         }
     }
 
     pub fn notify_end(&self) {
         let mut callback = self.end_callback.lock().unwrap();
         if let Some(callback) = callback.deref_mut() {
-            callback(&self)
+            callback()
         }
     }
 }

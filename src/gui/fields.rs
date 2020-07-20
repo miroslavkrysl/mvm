@@ -33,7 +33,7 @@ pub struct FieldsView {
     relm: Relm<FieldsView>,
     list_store: ListStore,
     tree_view: TreeView,
-    heading: Label
+    name: Label
 }
 
 
@@ -53,7 +53,7 @@ impl Update for FieldsView {
             FieldsMsg::Update => {
                 let fields = match &self.model.viewed {
                     Viewed::Class(class) => {
-                        self.heading.set_label(&format!("Fields of {}", class.name()));
+                        self.name.set_label(&class.name().to_string());
 
                         class.fields()
                             .filter(|f| f.is_static())
@@ -63,7 +63,7 @@ impl Update for FieldsView {
                             }).collect::<Vec<_>>()
                     },
                     Viewed::Instance(instance) => {
-                        self.heading.set_label(&format!("Fields of {}@{}", instance.class().name(), instance.id()));
+                        self.name.set_label(&format!("{}@{}", instance.class().name(), instance.id()));
 
                         instance.class().fields()
                              .filter(|f| !f.is_static())
@@ -73,7 +73,7 @@ impl Update for FieldsView {
                              }).collect::<Vec<_>>()
                     },
                     Viewed::None => {
-                        self.heading.set_label("Fields");
+                        self.name.set_label("");
                         Vec::new()
                     },
                 };
@@ -152,8 +152,14 @@ impl Widget for FieldsView {
         label.get_style_context().add_class("panel-heading");
         label.set_justify(Justification::Center);
 
+        let name = Label::new(None);
+        name.set_halign(Align::Start);
+        name.set_margin_start(10);
+        name.set_margin_end(10);
+
         let root = Box::new(Orientation::Vertical, 0);
         root.pack_start(&label, false, false, 10);
+        root.pack_start(&name, false, true, 0);
         root.pack_start(&scrolled, true, true, 0);
         root.set_size_request(250, -1);
 
@@ -163,7 +169,7 @@ impl Widget for FieldsView {
             relm: relm.clone(),
             list_store,
             tree_view,
-            heading: label
+            name
         }
     }
 }

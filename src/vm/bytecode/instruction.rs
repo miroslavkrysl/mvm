@@ -15,7 +15,7 @@ impl Display for LdcArg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             LdcArg::Int(int) => write!(f, "{}", int),
-            LdcArg::Float(float) => write!(f, "{}", float),
+            LdcArg::Float(float) => write!(f, "{:?}", float),
         }
     }
 }
@@ -31,7 +31,7 @@ impl Display for Ldc2Arg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Ldc2Arg::Long(long) => write!(f, "{}", long),
-            Ldc2Arg::Double(double) => write!(f, "{}", double),
+            Ldc2Arg::Double(double) => write!(f, "{:?}", double),
         }
     }
 }
