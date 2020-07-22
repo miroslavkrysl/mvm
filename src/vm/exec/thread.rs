@@ -104,6 +104,7 @@ impl Thread {
                     break;
                 }
                 Some(frame) => {
+                    self.runtime.notify_update();
                     match frame.method().code().instruction(frame.pc()) {
                         Ok(instruction) => {
                             instruction
@@ -116,8 +117,6 @@ impl Thread {
                     }
                 }
             };
-
-            self.runtime.notify_update();
 
             match self.cmd_rx.lock().unwrap().recv() {
                 Ok(ThreadCmd::NextStep) => {}

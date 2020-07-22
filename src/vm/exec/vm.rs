@@ -1,7 +1,6 @@
 use crate::vm::exec::class_loader::ClassLoader;
 use std::path::PathBuf;
 use std::sync::{Mutex, Arc};
-use bus::{Bus, BusReader};
 use crate::vm::exec::thread::Thread;
 use crate::vm::class::class::Class;
 use crate::vm::class::name::{ClassName, MethodName};

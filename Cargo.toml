@@ -9,7 +9,6 @@ gtk = { version = "0.9.0", features = ["v3_24"] }
 gdk = "0.13.0"
 relm = "0.20.0"
 relm-derive = "0.20.0"
-bus = "2.2.3"
 thiserror = "1.0.20"
 regex = "1.3.7"
 itertools = "0.9.0"
