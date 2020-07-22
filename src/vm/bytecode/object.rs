@@ -1,10 +1,11 @@
 use crate::vm::bytecode::instruction::Instruction;
-use crate::vm::exec::thread::Thread;
-use crate::vm::exec::error::ExecError;
-use crate::vm::class::symbolic::{FieldRef, MethodRef};
 use crate::vm::class::name::ClassName;
-use crate::vm::types::reference::Reference;
+use crate::vm::class::symbolic::{FieldRef, MethodRef};
+use crate::vm::exec::error::ExecError;
+use crate::vm::exec::thread::Thread;
 use crate::vm::memory::frame::Frame;
+use crate::vm::types::reference::Reference;
+
 
 impl Instruction {
     pub(super) fn getstatic(&self, thread: &Thread, field_ref: &FieldRef) -> Result<(), ExecError> {
@@ -28,7 +29,7 @@ impl Instruction {
     pub(super) fn getfield(&self, thread: &Thread, field_ref: &FieldRef) -> Result<(), ExecError> {
         let frame = thread.stack().current().unwrap();
         let class = thread.runtime().resolve_class(field_ref.class_name())?;
-        let instance = frame.stack().pop::<Reference>()?.to_instance()?;
+        let instance = frame.stack().pop::<Reference>()?.into_instance()?;
         let value = class.instance_field_value(&instance, field_ref.signature())?;
         frame.stack().push_value(value)?;
         frame.inc_pc();
@@ -39,7 +40,7 @@ impl Instruction {
         let frame = thread.stack().current().unwrap();
         let class = thread.runtime().resolve_class(field_ref.class_name())?;
         let value = frame.stack().pop_value()?;
-        let instance = frame.stack().pop::<Reference>()?.to_instance()?;
+        let instance = frame.stack().pop::<Reference>()?.into_instance()?;
         class.set_instance_field_value(&instance, field_ref.signature(), value)?;
         frame.inc_pc();
         Ok(())

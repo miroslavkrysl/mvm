@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use crate::vm::bytecode::instruction::Instruction;
 use crate::vm::class::class::Class;
 use crate::vm::class::code::Code;
 use crate::vm::class::descriptor::{ParamsDesc, ReturnDesc, TypeDesc};
@@ -8,7 +9,6 @@ use crate::vm::class::method::Method;
 use crate::vm::class::name::{ClassName, FieldName, MethodName};
 use crate::vm::class::signature::{FieldSig, MethodSig};
 use crate::vm::parse::error::CreateClassError;
-use crate::vm::bytecode::instruction::Instruction;
 
 
 #[derive(Debug, Clone)]

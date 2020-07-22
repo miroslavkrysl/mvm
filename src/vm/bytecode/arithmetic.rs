@@ -1,10 +1,10 @@
 use crate::vm::bytecode::instruction::Instruction;
-use crate::vm::exec::thread::Thread;
 use crate::vm::exec::error::ExecError;
-use crate::vm::types::int::Int;
-use crate::vm::types::float::Float;
-use crate::vm::types::long::Long;
+use crate::vm::exec::thread::Thread;
 use crate::vm::types::double::Double;
+use crate::vm::types::float::Float;
+use crate::vm::types::int::Int;
+use crate::vm::types::long::Long;
 
 
 impl Instruction {

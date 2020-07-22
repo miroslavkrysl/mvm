@@ -1,18 +1,20 @@
-use crate::vm::exec::class_loader::ClassLoader;
-use std::path::PathBuf;
-use std::sync::{Mutex, Arc};
-use crate::vm::exec::thread::Thread;
-use crate::vm::class::class::Class;
-use crate::vm::class::name::{ClassName, MethodName};
-use crate::vm::exec::error::{ClassLoadError, ExecError};
 use std::collections::HashMap;
-use crate::vm::class::instance::{InstanceId, Instance};
+use std::ops::{Deref, DerefMut};
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
+
+use crate::vm::class::class::Class;
+use crate::vm::class::descriptor::{ParamsDesc, ReturnDesc};
+use crate::vm::class::instance::{Instance, InstanceId};
+use crate::vm::class::name::{ClassName, MethodName};
 use crate::vm::class::signature::MethodSig;
-use crate::vm::class::descriptor::{ReturnDesc, ParamsDesc};
-use std::ops::{DerefMut, Deref};
+use crate::vm::exec::class_loader::ClassLoader;
+use crate::vm::exec::error::{ClassLoadError, ExecError};
+use crate::vm::exec::thread::Thread;
 use crate::vm::memory::frame::Frame;
 
 
+/// A virtual machine.
 pub struct Vm {
     class_heap: Mutex<HashMap<ClassName, Arc<Class>>>,
     object_heap: Mutex<HashMap<InstanceId, Instance>>,
@@ -20,13 +22,13 @@ pub struct Vm {
     thread: Mutex<Option<Arc<Thread>>>,
     error_callback: Mutex<Option<Box<dyn 'static + Send + FnMut(ExecError)>>>,
     update_callback: Mutex<Option<Box<dyn 'static + Send + FnMut()>>>,
-    end_callback: Mutex<Option<Box<dyn 'static + Send + FnMut()>>>
+    end_callback: Mutex<Option<Box<dyn 'static + Send + FnMut()>>>,
 }
 
 
 impl Vm {
-    pub const EVENT_BUS_CAPACITY: usize = 50;
-
+    /// Creates a new virtual machine, but does not start
+    /// any thread nor loads any class.
     pub fn new(class_path: Vec<PathBuf>) -> Self {
         Vm {
             class_heap: Mutex::new(HashMap::new()),
@@ -35,7 +37,7 @@ impl Vm {
             thread: Mutex::new(None),
             error_callback: Mutex::new(None),
             update_callback: Mutex::new(None),
-            end_callback: Mutex::new(None)
+            end_callback: Mutex::new(None),
         }
     }
 
@@ -44,7 +46,7 @@ impl Vm {
         let method_sig = MethodSig::new(
             ReturnDesc::Void,
             MethodName::new("main").unwrap(),
-            ParamsDesc::empty()
+            ParamsDesc::empty(),
         ).unwrap();
 
         let thread = match *main_thread {
@@ -57,11 +59,10 @@ impl Vm {
 
     /// Join and wait for the main thread.
     pub fn join(&self) {
-        let thread = self.thread.lock().unwrap().deref()
+        self.thread.lock().unwrap().deref()
             .clone()
             .expect("can not join main thread - not started")
             .join();
-
     }
 
     pub fn thread(&self) -> Option<Arc<Thread>> {
@@ -73,7 +74,7 @@ impl Vm {
         match heap.get(name) {
             Some(class) => {
                 Ok(class.clone())
-            },
+            }
             None => {
                 let class = Arc::new(self.class_loader.load(name)?);
                 heap.insert(name.clone(), class.clone());
@@ -88,6 +89,7 @@ impl Vm {
         instance
     }
 }
+
 
 impl Vm {
     pub fn set_error_callback(&self, callback: Option<Box<dyn 'static + Send + FnMut(ExecError)>>) {
@@ -124,6 +126,7 @@ impl Vm {
     }
 }
 
+
 impl Vm {
     pub fn classes(&self) -> Vec<Arc<Class>> {
         self.class_heap.lock().unwrap()
@@ -148,14 +151,14 @@ impl Vm {
 
     pub fn next(&self) {
         match self.thread.lock().unwrap().deref_mut() {
-            None => {},
+            None => {}
             Some(thread) => thread.next_step(),
         }
     }
 
     pub fn stop(&self) {
         match self.thread.lock().unwrap().deref_mut() {
-            None => {},
+            None => {}
             Some(thread) => thread.cancel(),
         }
     }

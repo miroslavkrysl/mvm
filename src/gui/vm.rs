@@ -1,36 +1,32 @@
+use std::boxed::Box as StdBox;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::boxed::Box as StdBox;
 
-use gtk::{Button, Entry, GtkWindowExt, Inhibit, Label, Orientation, Paned, Stack, StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType, PanedExt, ButtonBox, Box, ButtonBoxExt, ButtonBoxStyle, BoxExt, StyleContextExt, ButtonExt, MessageDialog, DialogFlags, DialogExt, MessageType, ButtonsType};
-use relm::{Channel, Component, connect, create_component, Relm, Update, Widget, Sender};
+use gtk::{Box, BoxExt, Button, ButtonBox, ButtonBoxExt, ButtonBoxStyle, ButtonExt, ButtonsType, DialogExt, DialogFlags, GtkWindowExt, MessageDialog, MessageType, Orientation, Paned, PanedExt, StyleContextExt, WidgetExt, Window};
+use gtk::prelude::Cast;
+use relm::{Channel, Component, connect, create_component, Relm, Sender, Update, Widget};
 use relm_derive::Msg;
 
 use crate::gui::classes::{ClassesMsg, ClassesView};
 use crate::gui::fields::{FieldsMsg, FieldsView, Viewed};
-use crate::gui::instances::{InstancesView, InstancesMsg};
+use crate::gui::instances::{InstancesMsg, InstancesView};
 use crate::gui::instructions::{InstructionsMsg, InstructionsView};
 use crate::gui::locals::{LocalsMsg, LocalsView};
 use crate::gui::operand_stack::{OperandStackMsg, OperandStackView};
 use crate::vm::{
     class::{
-        descriptor::{ParamsDesc, ReturnDesc, TypeDesc},
-        name::{ClassName, MethodName},
-        signature::MethodSig,
+        name::{ClassName},
     },
 };
+use crate::vm::class::class::Class;
+use crate::vm::class::instance::Instance;
 use crate::vm::exec::error::ExecError;
 use crate::vm::exec::vm::Vm;
+use crate::vm::memory::frame::Frame as VmFrame;
 
 use super::{
     frame_stack::{FrameStackMsg, FrameStackView},
-    header::AppHeaderView,
-    landing::LandingPage,
 };
-use gtk::prelude::Cast;
-use crate::vm::class::class::Class;
-use crate::vm::memory::frame::Frame as VmFrame;
-use crate::vm::class::instance::Instance;
 
 
 #[derive(Msg)]
@@ -45,14 +41,16 @@ pub enum VmMsg {
     SelectClass(Arc<Class>),
     SelectInstance(Instance),
 
-    Load(ClassName, Vec<PathBuf>)
+    Load(ClassName, Vec<PathBuf>),
 }
+
 
 enum VmChannelMsg {
     Update,
     Ended,
     Error(ExecError),
 }
+
 
 pub struct VmState {
     vm: Arc<Vm>,
@@ -75,7 +73,7 @@ pub struct VmView {
     classes: Component<ClassesView>,
     fields: Component<FieldsView>,
     next_button: Button,
-    reload_button: Button,
+    _reload_button: Button,
 }
 
 
@@ -89,7 +87,7 @@ impl Update for VmView {
             vm: Arc::new(Vm::new(args.1.clone())),
             main_class: args.0,
             path: args.1,
-            joined: false
+            joined: false,
         }
     }
 
@@ -129,7 +127,7 @@ impl Update for VmView {
                     DialogFlags::MODAL,
                     MessageType::Error,
                     ButtonsType::Ok,
-                    &format!("Error: {}", error)
+                    &format!("Error: {}", error),
                 );
                 dialog.connect_response(|dialog, _| dialog.close());
                 dialog.show_all();
@@ -149,7 +147,7 @@ impl Update for VmView {
                 self.connect();
                 self.next_button.set_sensitive(true);
             }
-            VmMsg::SelectFrame(index, frame) => {
+            VmMsg::SelectFrame(_, frame) => {
                 self.locals.emit(LocalsMsg::Update(frame.locals().values()));
                 self.operand_stack.emit(OperandStackMsg::Update(frame.stack().values()));
                 self.instructions.emit(InstructionsMsg::ChangeViewed(frame.class().clone(), frame.method().clone()));
@@ -274,14 +272,15 @@ impl Widget for VmView {
             classes,
             fields,
             next_button,
-            reload_button,
-            vm_channel: (channel, sender)
+            _reload_button: reload_button,
+            vm_channel: (channel, sender),
         };
 
         view.connect();
         view
     }
 }
+
 
 impl VmView {
     fn connect(&self) {

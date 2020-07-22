@@ -1,13 +1,13 @@
-use crate::vm::class::{name::ClassName, signature::MethodSig};
-use gtk::{
-    Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
-    ListBoxExt, ListBoxRow, ListBoxRowExt, Orientation, ScrolledWindow, Separator, ShadowType,
-    StyleContextExt, Viewport, WidgetExt, NONE_ADJUSTMENT,
-};
-use relm::{connect, create_component, Component, Relm, Update, Widget};
-use relm_derive::Msg;
 use std::boxed::Box as StdBox;
 use std::sync::Arc;
+
+use gtk::{
+    Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
+    ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator,
+    ShadowType, StyleContextExt, Viewport, WidgetExt,
+};
+use relm::{connect, Relm, Update, Widget};
+use relm_derive::Msg;
 
 use crate::vm::memory::frame::Frame as VmFrame;
 
@@ -17,12 +17,14 @@ pub enum FrameStackMsg {
     Update(Vec<Arc<VmFrame>>),
     FrameActivated(usize, Arc<VmFrame>),
     RowActivated(usize),
-    SelectTopFrame
+    SelectTopFrame,
 }
+
 
 pub struct FrameStackModel {
     frames: Vec<Arc<VmFrame>>,
 }
+
 
 pub struct FrameStackView {
     root: Box,
@@ -30,6 +32,7 @@ pub struct FrameStackView {
     model: FrameStackModel,
     list_view: ListBox,
 }
+
 
 impl Update for FrameStackView {
     type Model = FrameStackModel;
@@ -55,21 +58,22 @@ impl Update for FrameStackView {
                     self.list_view.add(&row.root);
                     self.model.frames.push(frame);
                 }
-            },
-            FrameStackMsg::FrameActivated(index, frame) => {
+            }
+            FrameStackMsg::FrameActivated(_, _) => {
                 // just to notify listeners
-            },
+            }
             FrameStackMsg::RowActivated(index) => {
                 self.relm.stream().emit(FrameStackMsg::FrameActivated(index, self.model.frames[index].clone()));
-            },
+            }
             FrameStackMsg::SelectTopFrame => {
                 if let Some(row) = self.list_view.get_row_at_index(self.list_view.get_children().len() as i32 - 1) {
                     self.list_view.select_row(Some(&row));
                 }
-            },
+            }
         }
     }
 }
+
 
 impl Widget for FrameStackView {
     type Root = Box;
@@ -132,9 +136,11 @@ impl Widget for FrameStackView {
     }
 }
 
+
 struct FrameStackRow {
     root: ListBoxRow
 }
+
 
 impl FrameStackRow {
     fn new(frame: &VmFrame) -> FrameStackRow {

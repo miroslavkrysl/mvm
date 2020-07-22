@@ -1,22 +1,26 @@
-use std::sync::{Arc, Condvar, Mutex};
-use std::sync::mpsc::{channel, Receiver, RecvError, Sender};
+use std::sync::{Arc, Mutex};
+use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
 
+use crate::vm::class::name::ClassName;
+use crate::vm::class::signature::MethodSig;
 use crate::vm::exec::vm::Vm;
 use crate::vm::memory::frame::Frame;
 use crate::vm::memory::frame_stack::FrameStack;
-use crate::vm::exec::error::{RuntimeError, ExecError};
-use crate::vm::class::signature::MethodSig;
-use crate::vm::class::name::ClassName;
 
 
+/// An internal command enum for notifying
+/// the thread from other thread.
 enum ThreadCmd {
     NextStep,
     Stop,
 }
 
 
+/// A virtual machine thread.
+/// It runs a system thread.
+/// It can be controlled by calling the next and cancel method.
 pub struct Thread {
     start_method: (ClassName, MethodSig),
     runtime: Arc<Vm>,
@@ -31,7 +35,7 @@ impl Thread {
     pub fn new(runtime: Arc<Vm>, class_name: ClassName, method_sig: MethodSig) -> Arc<Self> {
         let (tx, rx) = channel();
 
-        let mut thread = Arc::new(Thread {
+        let thread = Arc::new(Thread {
             runtime,
             start_method: (class_name, method_sig),
             stack: FrameStack::new(),
@@ -78,7 +82,7 @@ impl Thread {
             Err(error) => {
                 self.runtime.notify_error(error.into());
                 return;
-            },
+            }
         };
 
         let method = match class.static_method(&method_sig) {
@@ -86,7 +90,7 @@ impl Thread {
             Err(error) => {
                 self.runtime.notify_error(error.into());
                 return;
-            },
+            }
         };
 
         assert!(method.is_static());
@@ -94,7 +98,7 @@ impl Thread {
         assert!(method.signature().return_desc().is_void());
 
         let frame = Frame::new(class.clone(), method.clone());
-        
+
         self.stack.push(frame);
 
         loop {
@@ -143,7 +147,7 @@ impl Thread {
     pub fn stack(&self) -> &FrameStack {
         &self.stack
     }
-    
+
     pub fn runtime(&self) -> &Arc<Vm> {
         &self.runtime
     }

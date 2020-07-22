@@ -1,12 +1,13 @@
 use gtk::{
-    Align, BaselinePosition, Box, BoxExt, IconSize, Image, ImageExt, Label, Orientation,
-    StyleContextExt, WidgetExt,
+    Align, BaselinePosition, Box, BoxExt, IconSize, Image, ImageExt, Label, Orientation, WidgetExt,
 };
 use relm::{Relm, Update, Widget};
+
 
 pub struct LandingPage {
     root: Box,
 }
+
 
 impl Update for LandingPage {
     type Model = ();
@@ -17,6 +18,7 @@ impl Update for LandingPage {
 
     fn update(&mut self, _: ()) {}
 }
+
 
 impl Widget for LandingPage {
     type Root = Box;

@@ -1,15 +1,14 @@
-use crate::vm::class::{name::ClassName, signature::MethodSig};
-use gtk::{
-    Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
-    ListBoxExt, ListBoxRow, ListBoxRowExt, Orientation, ScrolledWindow, Separator, ShadowType,
-    StyleContextExt, Viewport, WidgetExt, NONE_ADJUSTMENT,
-};
-use relm::{connect, create_component, Component, Relm, Update, Widget};
-use relm_derive::Msg;
 use std::boxed::Box as StdBox;
 use std::sync::Arc;
 
-use crate::vm::memory::frame::Frame as VmFrame;
+use gtk::{
+    Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
+    ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator,
+    ShadowType, StyleContextExt, Viewport, WidgetExt,
+};
+use relm::{connect, Relm, Update, Widget};
+use relm_derive::Msg;
+
 use crate::vm::class::class::Class;
 
 
@@ -18,12 +17,14 @@ pub enum ClassesMsg {
     Update(Vec<Arc<Class>>),
     ClassActivated(Arc<Class>),
     RowActivated(usize),
-    Unselect
+    Unselect,
 }
+
 
 pub struct ClassesModel {
     classes: Vec<Arc<Class>>,
 }
+
 
 pub struct ClassesView {
     root: Box,
@@ -31,6 +32,7 @@ pub struct ClassesView {
     model: ClassesModel,
     list_view: ListBox,
 }
+
 
 impl Update for ClassesView {
     type Model = ClassesModel;
@@ -56,19 +58,20 @@ impl Update for ClassesView {
                     self.list_view.add(&row.root);
                     self.model.classes.push(class);
                 }
-            },
-            ClassesMsg::ClassActivated(class) => {
+            }
+            ClassesMsg::ClassActivated(_) => {
                 // just to notify listeners
-            },
+            }
             ClassesMsg::RowActivated(index) => {
                 self.relm.stream().emit(ClassesMsg::ClassActivated(self.model.classes[index].clone()));
-            },
+            }
             ClassesMsg::Unselect => {
                 self.list_view.unselect_all();
             }
         }
     }
 }
+
 
 impl Widget for ClassesView {
     type Root = Box;
@@ -131,9 +134,11 @@ impl Widget for ClassesView {
     }
 }
 
+
 struct ClassesRow {
     root: ListBoxRow
 }
+
 
 impl ClassesRow {
     fn new(class: &Arc<Class>) -> ClassesRow {

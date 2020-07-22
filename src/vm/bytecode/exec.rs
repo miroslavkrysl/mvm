@@ -4,6 +4,7 @@ use crate::vm::exec::thread::Thread;
 
 
 impl Instruction {
+    /// Execute the instruction. The given thread is used as a context.
     pub fn execute(&self, thread: &Thread) -> Result<(), ExecError> {
         match self {
             Instruction::NOP => self.nop(thread)?,
@@ -169,8 +170,7 @@ impl Instruction {
             Instruction::PUTFIELD(field_ref) => self.putfield(thread, field_ref)?,
             Instruction::INVOKEVIRTUAL(method_ref) => self.invokevirtual(thread, method_ref)?,
             Instruction::INVOKESTATIC(method_ref) => self.invokestatic(thread, method_ref)?,
-            Instruction::NEW(class_name) => self.new(thread, class_name)?,
-            _ => unreachable!()
+            Instruction::NEW(class_name) => self.new(thread, class_name)?
         }
         Ok(())
     }

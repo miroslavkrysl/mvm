@@ -1,39 +1,41 @@
-use std::boxed::Box as StdBox;
 use std::sync::Arc;
 
-use gtk::{Align, Box, BoxExt, CellLayoutExt, CellRendererText, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, Separator, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumn, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
+use gtk::{Align, Box, BoxExt, CellLayoutExt, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
 use gtk::prelude::{GtkListStoreExtManual, StaticType};
-use relm::{Component, connect, Relm, Update, Widget};
+use relm::{Relm, Update, Widget};
 use relm_derive::Msg;
 
-use crate::vm::class::instance::{InstanceId, Instance};
 use crate::vm::class::class::Class;
 use crate::vm::class::field::Field;
+use crate::vm::class::instance::Instance;
 
 
 #[derive(Msg)]
 pub enum FieldsMsg {
     Update,
-    ChangeViewed(Viewed)
+    ChangeViewed(Viewed),
 }
+
 
 pub enum Viewed {
     Class(Arc<Class>),
     Instance(Instance),
-    None
+    None,
 }
+
 
 pub struct FieldsModel {
     viewed: Viewed,
 }
+
 
 pub struct FieldsView {
     root: Box,
     model: FieldsModel,
     relm: Relm<FieldsView>,
     list_store: ListStore,
-    tree_view: TreeView,
-    name: Label
+    _tree_view: TreeView,
+    name: Label,
 }
 
 
@@ -56,26 +58,26 @@ impl Update for FieldsView {
                         self.name.set_label(&class.name().to_string());
 
                         class.fields()
-                            .filter(|f| f.is_static())
-                            .map(|f: &Arc<Field>| {
-                                let sig = f.signature();
-                                (sig, class.static_field_value(sig).unwrap())
-                            }).collect::<Vec<_>>()
-                    },
+                             .filter(|f| f.is_static())
+                             .map(|f: &Arc<Field>| {
+                                 let sig = f.signature();
+                                 (sig, class.static_field_value(sig).unwrap())
+                             }).collect::<Vec<_>>()
+                    }
                     Viewed::Instance(instance) => {
                         self.name.set_label(&format!("{}@{}", instance.class().name(), instance.id()));
 
                         instance.class().fields()
-                             .filter(|f| !f.is_static())
-                             .map(|f: &Arc<Field>| {
-                                 let sig = f.signature();
-                                 (sig, instance.class().instance_field_value(&instance, sig).unwrap())
-                             }).collect::<Vec<_>>()
-                    },
+                                .filter(|f| !f.is_static())
+                                .map(|f: &Arc<Field>| {
+                                    let sig = f.signature();
+                                    (sig, instance.class().instance_field_value(&instance, sig).unwrap())
+                                }).collect::<Vec<_>>()
+                    }
                     Viewed::None => {
                         self.name.set_label("");
                         Vec::new()
-                    },
+                    }
                 };
 
                 self.list_store.clear();
@@ -87,11 +89,11 @@ impl Update for FieldsView {
                                                            &sig.name().to_string(),
                                                            &value.to_string()]);
                 }
-            },
+            }
             FieldsMsg::ChangeViewed(viewed) => {
                 self.model.viewed = viewed;
                 self.relm.stream().emit(FieldsMsg::Update);
-            },
+            }
         }
     }
 }
@@ -168,8 +170,8 @@ impl Widget for FieldsView {
             model,
             relm: relm.clone(),
             list_store,
-            tree_view,
-            name
+            _tree_view: tree_view,
+            name,
         }
     }
 }

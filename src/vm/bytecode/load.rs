@@ -1,11 +1,12 @@
 use crate::vm::bytecode::instruction::Instruction;
-use crate::vm::exec::thread::Thread;
 use crate::vm::exec::error::ExecError;
-use crate::vm::types::int::Int;
-use crate::vm::types::float::Float;
-use crate::vm::types::long::Long;
+use crate::vm::exec::thread::Thread;
 use crate::vm::types::double::Double;
+use crate::vm::types::float::Float;
+use crate::vm::types::int::Int;
+use crate::vm::types::long::Long;
 use crate::vm::types::reference::Reference;
+
 
 impl Instruction {
     pub(super) fn iload(&self, thread: &Thread, index: u8) -> Result<(), ExecError> {

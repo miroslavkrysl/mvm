@@ -1,12 +1,8 @@
-use std::boxed::Box as StdBox;
-use std::sync::Arc;
-
-use gtk::{Align, Box, BoxExt, CellLayoutExt, CellRendererText, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, Separator, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumn, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
+use gtk::{Align, Box, BoxExt, CellLayoutExt, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
 use gtk::prelude::{GtkListStoreExtManual, StaticType};
-use relm::{Component, connect, Relm, Update, Widget};
+use relm::{Relm, Update, Widget};
 use relm_derive::Msg;
 
-use crate::vm::memory::locals::Slot;
 use crate::vm::types::value::Value;
 
 
@@ -19,7 +15,7 @@ pub enum OperandStackMsg {
 pub struct OperandStackView {
     root: Box,
     list_store: ListStore,
-    tree_view: TreeView,
+    _tree_view: TreeView,
 }
 
 
@@ -55,7 +51,7 @@ impl Widget for OperandStackView {
         self.root.clone()
     }
 
-    fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
+    fn view(_: &Relm<Self>, _: Self::Model) -> Self {
         let tree_view = gtk::TreeView::new();
 
         let size_column = gtk::TreeViewColumn::new();
@@ -111,7 +107,7 @@ impl Widget for OperandStackView {
         OperandStackView {
             root,
             list_store,
-            tree_view,
+            _tree_view: tree_view,
         }
     }
 }

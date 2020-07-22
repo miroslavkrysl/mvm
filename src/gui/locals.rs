@@ -1,14 +1,9 @@
-use std::boxed::Box as StdBox;
-use std::sync::Arc;
-
-use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator, ShadowType, StyleContextExt, TreeView, TreeViewExt, Viewport, WidgetExt, TreeViewColumn, CellRendererText, CellLayoutExt, ListStore, GtkListStoreExt, TreeViewColumnExt, TreeViewGridLines, TreeSelectionExt, SelectionMode};
-use relm::{Component, connect, Relm, Update, Widget};
+use gtk::{Align, Box, BoxExt, CellLayoutExt, ContainerExt, Frame, FrameExt, GtkListStoreExt, Justification, Label, LabelExt, ListStore, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, ShadowType, StyleContextExt, TreeSelectionExt, TreeView, TreeViewColumnExt, TreeViewExt, TreeViewGridLines, Viewport, WidgetExt};
+use gtk::prelude::{GtkListStoreExtManual, StaticType};
+use relm::{Relm, Update, Widget};
 use relm_derive::Msg;
 
 use crate::vm::memory::locals::Slot;
-use gtk::prelude::{StaticType, GtkListStoreExtManual};
-use std::fs;
-use std::path::MAIN_SEPARATOR;
 
 
 #[derive(Msg)]
@@ -20,7 +15,7 @@ pub enum LocalsMsg {
 pub struct LocalsView {
     root: Box,
     list_store: ListStore,
-    tree_view: TreeView,
+    _tree_view: TreeView,
 }
 
 
@@ -41,14 +36,14 @@ impl Update for LocalsView {
                     match value {
                         Slot::Undefined => {
                             self.list_store.insert_with_values(None,
-                                                          &[0, 1, 2],
-                                                          &[&index, &"", &"UNDEFINED"]);
-                        },
+                                                               &[0, 1, 2],
+                                                               &[&index, &"", &"UNDEFINED"]);
+                        }
                         Slot::Value(value) => {
                             self.list_store.insert_with_values(None,
                                                                &[0, 1, 2],
                                                                &[&index, &value.value_type().to_string(), &value.to_string()]);
-                        },
+                        }
                     }
                 }
             }
@@ -64,7 +59,7 @@ impl Widget for LocalsView {
         self.root.clone()
     }
 
-    fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
+    fn view(_: &Relm<Self>, _: Self::Model) -> Self {
         let tree_view = gtk::TreeView::new();
 
         let index_column = gtk::TreeViewColumn::new();
@@ -120,7 +115,7 @@ impl Widget for LocalsView {
         LocalsView {
             root,
             list_store,
-            tree_view,
+            _tree_view: tree_view,
         }
     }
 }

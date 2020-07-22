@@ -1,5 +1,5 @@
 use std::fmt;
-use std::intrinsics::transmute;
+
 use crate::vm::class::instance::Instance;
 use crate::vm::types::error::ValueError;
 
@@ -27,7 +27,7 @@ impl Reference {
         }
     }
 
-    pub fn to_instance(self) -> Result<Instance, ValueError> {
+    pub fn into_instance(self) -> Result<Instance, ValueError> {
         match self {
             Reference::Null => Err(ValueError::NullPointer),
             Reference::Instance(instance) => Ok(instance),
@@ -68,6 +68,7 @@ impl Default for Reference {
         Self::null()
     }
 }
+
 
 impl PartialEq for Reference {
     fn eq(&self, other: &Self) -> bool {

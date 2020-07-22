@@ -2,11 +2,13 @@
 
 use std::fmt;
 use std::iter::FromIterator;
-use crate::vm::class::name::ClassName;
-use crate::vm::types::value::{ValueType, Value};
-use crate::vm::types::reference::Reference;
-use crate::vm::class::instance::Instance;
+
 use itertools::join;
+
+use crate::vm::class::instance::Instance;
+use crate::vm::class::name::ClassName;
+use crate::vm::types::reference::Reference;
+use crate::vm::types::value::{Value, ValueType};
 
 
 /// A MVM type descriptor.
@@ -18,6 +20,7 @@ pub enum TypeDesc {
     Double,
     Reference(ClassName),
 }
+
 
 impl TypeDesc {
     /// Returns the value type of the `MvmValue` type described by this descriptor.
@@ -95,7 +98,6 @@ impl TypeDesc {
         }
     }
 }
-
 
 
 impl fmt::Display for TypeDesc {

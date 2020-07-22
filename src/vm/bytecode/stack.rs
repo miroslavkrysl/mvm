@@ -1,6 +1,6 @@
 use crate::vm::bytecode::instruction::Instruction;
-use crate::vm::exec::thread::Thread;
 use crate::vm::exec::error::ExecError;
+use crate::vm::exec::thread::Thread;
 
 
 impl Instruction {

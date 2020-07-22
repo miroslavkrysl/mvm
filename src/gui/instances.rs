@@ -1,15 +1,13 @@
-use crate::vm::class::{name::ClassName, signature::MethodSig};
+use std::boxed::Box as StdBox;
+
 use gtk::{
     Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox,
-    ListBoxExt, ListBoxRow, ListBoxRowExt, Orientation, ScrolledWindow, Separator, ShadowType,
-    StyleContextExt, Viewport, WidgetExt, NONE_ADJUSTMENT,
+    ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator,
+    ShadowType, StyleContextExt, Viewport, WidgetExt,
 };
-use relm::{connect, Component, Relm, Update, Widget};
+use relm::{connect, Relm, Update, Widget};
 use relm_derive::Msg;
-use std::boxed::Box as StdBox;
-use std::sync::Arc;
 
-use crate::vm::class::class::Class;
 use crate::vm::class::instance::Instance;
 
 
@@ -18,12 +16,14 @@ pub enum InstancesMsg {
     Update(Vec<Instance>),
     InstanceActivated(Instance),
     RowActivated(usize),
-    Unselect
+    Unselect,
 }
+
 
 pub struct InstancesModel {
     classes: Vec<Instance>,
 }
+
 
 pub struct InstancesView {
     root: Box,
@@ -31,6 +31,7 @@ pub struct InstancesView {
     model: InstancesModel,
     list_view: ListBox,
 }
+
 
 impl Update for InstancesView {
     type Model = InstancesModel;
@@ -56,19 +57,20 @@ impl Update for InstancesView {
                     self.list_view.add(&row.root);
                     self.model.classes.push(instance);
                 }
-            },
-            InstancesMsg::InstanceActivated(class) => {
+            }
+            InstancesMsg::InstanceActivated(_) => {
                 // just to notify listeners
-            },
+            }
             InstancesMsg::RowActivated(index) => {
                 self.relm.stream().emit(InstancesMsg::InstanceActivated(self.model.classes[index].clone()));
-            },
+            }
             InstancesMsg::Unselect => {
                 self.list_view.unselect_all();
             }
         }
     }
 }
+
 
 impl Widget for InstancesView {
     type Root = Box;
@@ -131,9 +133,11 @@ impl Widget for InstancesView {
     }
 }
 
+
 struct InstanceRow {
     root: ListBoxRow
 }
+
 
 impl InstanceRow {
     fn new(instance: &Instance) -> InstanceRow {

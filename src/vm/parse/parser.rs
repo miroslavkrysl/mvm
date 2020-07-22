@@ -1,13 +1,13 @@
 use std::cell::{Cell, RefCell};
 use std::str::{Lines, SplitWhitespace};
 
+use crate::vm::bytecode::instruction::{Instruction, Ldc2Arg, LdcArg};
 use crate::vm::class::descriptor::{ParamsDesc, ReturnDesc, TypeDesc};
 use crate::vm::class::name::{ClassName, FieldName, MethodName};
 use crate::vm::class::signature::{FieldSig, MethodSig};
 use crate::vm::class::symbolic::{FieldRef, MethodRef};
 use crate::vm::parse::classfile::{ClassInfo, FieldInfo, MethodInfo};
 use crate::vm::parse::error::{ParseClassError, ParseClassErrorKind, ParseNumberError};
-use crate::vm::bytecode::instruction::{Instruction, Ldc2Arg, LdcArg};
 
 
 /// MVM class file parser.

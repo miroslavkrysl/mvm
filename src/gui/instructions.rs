@@ -1,15 +1,13 @@
 use std::boxed::Box as StdBox;
 use std::sync::Arc;
 
-use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, Separator, ShadowType, StyleContextExt, Viewport, WidgetExt, SelectionMode, false_, Inhibit};
-use relm::{Component, connect, Relm, Update, Widget};
+use gtk::{Align, Box, BoxExt, ContainerExt, Frame, FrameExt, Justification, Label, LabelExt, ListBox, ListBoxExt, ListBoxRow, ListBoxRowExt, NONE_ADJUSTMENT, Orientation, ScrolledWindow, SelectionMode, Separator, ShadowType, StyleContextExt, Viewport, WidgetExt};
+use relm::{Relm, Update, Widget};
 use relm_derive::Msg;
 
-use crate::vm::class::{name::ClassName};
+use crate::vm::bytecode::instruction::Instruction;
 use crate::vm::class::class::Class;
 use crate::vm::class::method::Method;
-use crate::vm::bytecode::instruction::Instruction;
-use gtk::prelude::ObjectExt;
 
 
 #[derive(Msg)]
@@ -18,28 +16,20 @@ pub enum InstructionsMsg {
     SelectInstruction(isize),
 }
 
-pub struct InstructionsModel {
-    last_selected: isize,
-}
 
 pub struct InstructionsView {
     root: Box,
-    model: InstructionsModel,
     heading: Label,
     list_view: ListBox,
 }
 
 
 impl Update for InstructionsView {
-    type Model = InstructionsModel;
+    type Model = ();
     type ModelParam = ();
     type Msg = InstructionsMsg;
 
-    fn model(_: &Relm<Self>, _: ()) -> InstructionsModel {
-        InstructionsModel {
-            last_selected: -1
-        }
-    }
+    fn model(_: &Relm<Self>, _: ()) -> () {}
 
     fn update(&mut self, event: InstructionsMsg) {
         match event {
@@ -54,10 +44,10 @@ impl Update for InstructionsView {
                 }
 
                 let method_str = format!("{} {} {} ({})",
-                    method.signature().return_desc().to_string(),
-                    class.name().to_string(),
-                    method.signature().name().to_string(),
-                    method.signature().params_desc().to_string(),
+                                         method.signature().return_desc().to_string(),
+                                         class.name().to_string(),
+                                         method.signature().name().to_string(),
+                                         method.signature().params_desc().to_string(),
                 );
                 self.heading.set_label(&method_str);
             }
@@ -78,7 +68,7 @@ impl Widget for InstructionsView {
         self.root.clone()
     }
 
-    fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
+    fn view(_: &Relm<Self>, _: Self::Model) -> Self {
         let list = ListBox::new();
         list.set_header_func(Some(StdBox::new(
             |row: &ListBoxRow, before: Option<&ListBoxRow>| {
@@ -112,7 +102,6 @@ impl Widget for InstructionsView {
 
         InstructionsView {
             root,
-            model,
             heading: label,
             list_view: list,
         }

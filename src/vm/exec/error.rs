@@ -2,34 +2,13 @@ use std::io;
 
 use thiserror::Error;
 
-use crate::vm::class::error::{CodeError, ClassError};
-use crate::vm::class::name::ClassName;
-use crate::vm::parse::error::{CreateClassError, ParseClassError};
-use crate::vm::memory::error::{OperandStackError, LocalsError, FrameError};
 use crate::vm::class::descriptor::ReturnDesc;
-use crate::vm::types::value::ValueType;
+use crate::vm::class::error::{ClassError, CodeError};
+use crate::vm::class::name::ClassName;
+use crate::vm::memory::error::{FrameError, LocalsError, OperandStackError};
+use crate::vm::parse::error::{CreateClassError, ParseClassError};
 use crate::vm::types::error::ValueError;
-
-
-#[derive(Error, Debug)]
-pub enum RuntimeError {
-
-    #[error(transparent)]
-    ClassLoad {
-        #[from]
-        source: ClassLoadError
-    },
-    #[error(transparent)]
-    Code {
-        #[from]
-        source: CodeError
-    },
-    #[error(transparent)]
-    ExecError {
-        #[from]
-        source: ExecError
-    },
-}
+use crate::vm::types::value::ValueType;
 
 
 #[derive(Error, Debug)]
@@ -76,7 +55,7 @@ pub enum ExecError {
     #[error("invalid return call, expected return of {expected}, called {called}")]
     InvalidReturnType {
         expected: ReturnDesc,
-        called: ValueType
+        called: ValueType,
     },
 }
 

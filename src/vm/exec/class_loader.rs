@@ -18,7 +18,7 @@ pub struct ClassLoader {
 
 
 impl ClassLoader {
-    /// Create a new class loader with given class paths
+    /// Creates a new class loader with given class paths
     pub fn new(paths: Vec<PathBuf>) -> Self {
         ClassLoader {
             paths

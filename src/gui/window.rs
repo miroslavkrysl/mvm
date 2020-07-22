@@ -1,34 +1,25 @@
+use std::path::PathBuf;
+
+use gtk::{BoxExt, Button, ContainerExt, Dialog, DialogExt, EditableSignals, Entry, EntryExt, FileChooserAction, FileChooserButton, FileChooserButtonExt, FileChooserExt, Grid, GridExt, GtkWindowExt, Inhibit, Label, ResponseType, StyleContextExt, WidgetExt, Window, WindowType};
+use gtk::prelude::Cast;
+use relm::{
+    Component, connect, create_component, Relm, Update,
+    Widget,
+};
+use relm_derive::Msg;
+
+use crate::gui::vm::{VmMsg, VmView};
+use crate::vm::{
+    class::{
+        name::{ClassName},
+    },
+};
+
 use super::{
-    frame_stack::{FrameStackMsg, FrameStackView},
     header::AppHeaderEvent,
     header::AppHeaderView,
     landing::LandingPage,
 };
-use crate::vm::{
-    class::{
-        descriptor::{ParamsDesc, ReturnDesc, TypeDesc},
-        name::{ClassName, MethodName},
-        signature::MethodSig,
-    },
-};
-use gdk::Screen;
-use gtk::{Button, GridExt, ContainerExt, CssProviderExt, Entry, GtkWindowExt, Inhibit, Label, Orientation, Stack, StackExt, StackSwitcher, StackSwitcherExt, StyleContext, WidgetExt, Window, WindowType, STYLE_PROVIDER_PRIORITY_APPLICATION, SpinnerExt, FileChooserDialog, FileFilter, FileChooserExt, FileChooserAction, DialogExt, ResponseType, FileChooserButton, Grid, Dialog, BoxExt, EditableSignals, StyleContextExt, false_, FileChooserButtonExt, EntryExt};
-use relm::{
-    connect, connect_stream, create_component, init, interval, Channel, Component, Relm, Update,
-    Widget,
-};
-use relm_derive::Msg;
-use crate::vm::exec::vm::Vm;
-use std::sync::Arc;
-use crate::gui::locals::{LocalsView, LocalsMsg};
-use crate::gui::operand_stack::{OperandStackView, OperandStackMsg};
-use crate::gui::fields::{FieldsView, FieldsMsg, Viewed};
-use crate::gui::classes::{ClassesView, ClassesMsg};
-use crate::gui::instructions::{InstructionsView, InstructionsMsg};
-use crate::gui::vm::{VmView, VmMsg};
-use gtk::prelude::{WidgetExtManual, Cast};
-use std::path::PathBuf;
-use crate::vm::class::error::NameError;
 
 
 #[derive(Msg)]
@@ -37,21 +28,22 @@ pub enum AppEvent {
     Quit,
 }
 
+
 pub struct AppWindow {
     window: Window,
-    header: Component<AppHeaderView>,
+    _header: Component<AppHeaderView>,
     load_dialog: LoadDialog,
     vm: Option<Component<VmView>>,
-    landing_page: Component<LandingPage>
+    landing_page: Component<LandingPage>,
 }
+
 
 impl Update for AppWindow {
     type Model = ();
     type ModelParam = ();
     type Msg = AppEvent;
 
-    fn model(_: &Relm<Self>, _: ()) -> () {
-    }
+    fn model(_: &Relm<Self>, _: ()) -> () {}
 
     fn update(&mut self, event: AppEvent) {
         match event {
@@ -75,6 +67,7 @@ impl Update for AppWindow {
     }
 }
 
+
 impl Widget for AppWindow {
     type Root = Window;
 
@@ -82,7 +75,7 @@ impl Widget for AppWindow {
         self.window.clone()
     }
 
-    fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
+    fn view(relm: &Relm<Self>, _: Self::Model) -> Self {
         // set up window
         let window = Window::new(WindowType::Toplevel);
         window.set_title("MVM - Mirek's Virtual Machine");
@@ -115,20 +108,22 @@ impl Widget for AppWindow {
 
         AppWindow {
             window,
-            header,
+            _header: header,
             load_dialog,
             vm: None,
-            landing_page
+            landing_page,
         }
     }
 }
+
 
 struct LoadDialog {
     dialog: Dialog,
     path_chooser: FileChooserButton,
     class_entry: Entry,
-    load_button: Button
+    _load_button: Button,
 }
+
 
 impl LoadDialog {
     fn new() -> LoadDialog {
@@ -176,7 +171,7 @@ impl LoadDialog {
         let ce = class_entry.clone();
         let pc = path_chooser.clone();
         let lb = load_button.clone();
-        path_chooser.clone().connect_file_set(move |entry| {
+        path_chooser.clone().connect_file_set(move |_| {
             let mut ok = true;
 
             if ClassName::new(ce.get_text()).is_err() {
@@ -192,7 +187,7 @@ impl LoadDialog {
             dialog,
             path_chooser,
             class_entry,
-            load_button
+            _load_button: load_button,
         }
     }
 

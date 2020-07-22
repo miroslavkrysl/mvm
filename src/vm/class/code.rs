@@ -1,6 +1,6 @@
+use crate::vm::bytecode::instruction::Instruction;
 use crate::vm::class::error::CodeError;
 use crate::vm::memory::locals::Locals;
-use crate::vm::bytecode::instruction::Instruction;
 
 
 /// A method code.

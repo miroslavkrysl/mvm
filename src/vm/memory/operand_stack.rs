@@ -1,10 +1,11 @@
 use std::convert::{TryFrom, TryInto};
+use std::sync::Mutex;
 
 use crate::vm::memory::error::OperandStackError;
 use crate::vm::types::value::{Value, ValueCategory};
-use std::sync::Mutex;
 
 
+/// An operand stack.
 #[derive(Debug)]
 pub struct OperandStack {
     values: Mutex<Vec<Value>>,
@@ -14,6 +15,7 @@ pub struct OperandStack {
 
 
 impl OperandStack {
+    /// Creates a new OperandStack
     pub fn new(capacity: usize) -> Self {
         OperandStack {
             values: Mutex::new(Vec::with_capacity(capacity)),
@@ -22,7 +24,7 @@ impl OperandStack {
         }
     }
 
-    pub fn check_overflow(&self, size: usize) -> Result<(), OperandStackError> {
+    fn check_overflow(&self, size: usize) -> Result<(), OperandStackError> {
         if *self.size.lock().unwrap() + size > *self.capacity.lock().unwrap() {
             Err(OperandStackError::Overflow)
         } else {
@@ -30,7 +32,7 @@ impl OperandStack {
         }
     }
 
-    pub fn check_underflow(&self, size: usize) -> Result<(), OperandStackError> {
+    fn check_underflow(&self, size: usize) -> Result<(), OperandStackError> {
         if size > *self.size.lock().unwrap() {
             Err(OperandStackError::Underflow)
         } else {
@@ -38,7 +40,9 @@ impl OperandStack {
         }
     }
 
-    pub fn dup_skip(&self, dup: usize, skip: usize) -> Result<(), OperandStackError> {
+    /// Duplicate top dup values (total comp size = dup) and
+    /// insert it on to the stack skipping the dup + skip values.
+    fn dup_skip(&self, dup: usize, skip: usize) -> Result<(), OperandStackError> {
         if dup == 0 {
             return Ok(());
         }
@@ -94,6 +98,12 @@ impl OperandStack {
         Ok(())
     }
 
+    /// Pop and discard top values of the given total comp size.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
     pub fn pop_discard(&self, size: usize) -> Result<(), OperandStackError> {
         self.check_underflow(size)?;
         let mut values = self.values.lock().unwrap();
@@ -120,6 +130,12 @@ impl OperandStack {
         Ok(())
     }
 
+    /// Peek a generic value from top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Underflow`
+    /// if the stack is empty.
     pub fn peek_value(&self, index: usize) -> Result<Value, OperandStackError> {
         let values = self.values.lock().unwrap();
         if index >= values.len() {
@@ -129,6 +145,12 @@ impl OperandStack {
         Ok(values[values.len() - index - 1].clone())
     }
 
+    /// Peek a value from top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Underflow`
+    /// if the stack is empty.
     pub fn peek<T>(&self, index: usize) -> Result<T, OperandStackError>
                    where T: TryFrom<Value>,
                          OperandStackError: From<<T as TryFrom<Value>>::Error> {
@@ -140,38 +162,129 @@ impl OperandStack {
         Ok(values[values.len() - index - 1].clone().try_into()?)
     }
 
+    /// Duplicate the top value of the comp size 1.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough value on the stack.
     pub fn dup1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 0)
     }
 
+    /// Duplicate the top value of the comp size 1
+    /// and insert it onto the stack skipping the
+    /// 2 values of the comp size 1.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough values on the stack or
+    /// `OperandStackError::Overflow` of there is no more
+    /// room on the stack.
     pub fn dup1_skip1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 1)
     }
 
+    /// Duplicate the top value of the comp size 1
+    /// and insert it onto the stack skipping the
+    /// values of the total comp size 3.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough values on the stack or
+    /// `OperandStackError::Overflow` of there is no more
+    /// room on the stack.
     pub fn dup1_skip2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(1, 2)
     }
 
+    /// Duplicate the top values of the total comp size 2.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough values on the stack or
+    /// `OperandStackError::Overflow` of there is no more
+    /// room on the stack.
     pub fn dup2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 0)
     }
 
+    /// Duplicate the top values of the total comp size 2
+    /// and insert it onto the stack skipping the
+    /// values of the total comp size 3.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough values on the stack or
+    /// `OperandStackError::Overflow` of there is no more
+    /// room on the stack.
     pub fn dup2_skip1(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 1)
     }
 
+    /// Duplicate the top values of the total comp size 2
+    /// and insert it onto the stack skipping the
+    /// values of the total comp size 4.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough values on the stack or
+    /// `OperandStackError::Overflow` of there is no more
+    /// room on the stack.
     pub fn dup2_skip2(&self) -> Result<(), OperandStackError> {
         self.dup_skip(2, 2)
     }
 
+    /// Pop and discard top values of the total comp size = 1.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough value on the stack.
     pub fn pop_discard1(&self) -> Result<(), OperandStackError> {
         self.pop_discard(1)
     }
 
+
+    /// Pop and discard top values of the total comp size = 2.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough value on the stack.
     pub fn pop_discard2(&self) -> Result<(), OperandStackError> {
         self.pop_discard(2)
     }
 
+    /// Swap the top twe values of the comp size 1.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OperandStackError::InvalidType` if the operation
+    /// affect only a half of any value of comp type 2.
+    /// Returns an `OperandStackError::Underflow` if there
+    /// are not enough value on the stack.
     pub fn swap(&self) -> Result<(), OperandStackError> {
         let value0 = self.peek_value(0)?;
         let value1 = self.peek_value(1)?;
@@ -189,6 +302,12 @@ impl OperandStack {
         Ok(())
     }
 
+    /// Pop a value from top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Underflow`
+    /// if the stack is empty.
     pub fn pop<T>(&self) -> Result<T, OperandStackError>
                   where T: TryFrom<Value>,
                         OperandStackError: From<<T as TryFrom<Value>>::Error> {
@@ -203,6 +322,12 @@ impl OperandStack {
         }
     }
 
+    /// Pop a generic value from top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Underflow`
+    /// if the stack is empty.
     pub fn pop_value(&self) -> Result<Value, OperandStackError> {
         let mut values = self.values.lock().unwrap();
         match values.pop() {
@@ -214,10 +339,22 @@ impl OperandStack {
         }
     }
 
+    /// Push a value on top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Overflow` if the
+    /// maximum stack capacity is reached.
     pub fn push<T: Into<Value>>(&self, value: T) -> Result<(), OperandStackError> {
         self.push_value(value.into())
     }
 
+    /// Push a generic value on top of the stack.
+    ///
+    /// # Errors
+    ///
+    /// Can return `OperandStack::Overflow` if the
+    /// maximum stack capacity is reached.
     pub fn push_value(&self, value: Value) -> Result<(), OperandStackError> {
         self.check_overflow(value.value_type().category().size())?;
 
@@ -227,6 +364,7 @@ impl OperandStack {
         Ok(())
     }
 
+    /// Returns all the values of the local variables array.
     pub fn values(&self) -> Vec<Value> {
         self.values.lock().unwrap().clone()
     }

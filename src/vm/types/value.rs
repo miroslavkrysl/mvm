@@ -2,13 +2,13 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::fmt::Debug;
 
+use crate::vm::class::name::ClassName;
 use crate::vm::types::double::Double;
 use crate::vm::types::error::ValueError;
 use crate::vm::types::float::Float;
 use crate::vm::types::int::Int;
 use crate::vm::types::long::Long;
 use crate::vm::types::reference::Reference;
-use crate::vm::class::name::ClassName;
 
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -86,6 +86,7 @@ impl ValueType {
 }
 
 
+/// A generic value type.
 #[derive(Debug, Clone)]
 pub enum Value {
     Int(Int),
@@ -218,7 +219,6 @@ impl From<Reference> for Value {
         Value::Reference(reference)
     }
 }
-
 
 
 impl fmt::Display for Value {

@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 
 use crate::vm::class::error::ClassError;
 use crate::vm::class::field::Field;
@@ -8,7 +8,6 @@ use crate::vm::class::method::Method;
 use crate::vm::class::name::ClassName;
 use crate::vm::class::signature::{FieldSig, MethodSig};
 use crate::vm::types::value::Value;
-use std::sync::{RwLock, Arc};
 
 
 /// A class.

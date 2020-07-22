@@ -1,14 +1,17 @@
 use std::sync::{Arc, RwLock};
-use crate::vm::class::method::Method;
-use crate::vm::memory::operand_stack::OperandStack;
-use crate::vm::memory::locals::Locals;
-use crate::vm::memory::error::FrameError;
+
 use crate::vm::class::class::Class;
+use crate::vm::class::method::Method;
+use crate::vm::memory::error::FrameError;
+use crate::vm::memory::locals::Locals;
+use crate::vm::memory::operand_stack::OperandStack;
 use crate::vm::types::reference::Reference;
-use crate::vm::exec::error::ExecError;
 use crate::vm::types::value::ValueType;
 
 
+/// A method frame.
+/// Every frame has its own locasl, operand stack
+/// and pc register.
 pub struct Frame {
     class: Arc<Class>,
     method: Arc<Method>,
@@ -17,12 +20,13 @@ pub struct Frame {
     pc: RwLock<isize>,
 }
 
+
 impl Frame {
     pub const MAX_STACK: usize = 255;
 
     /// Create a new frame for method.
     pub fn new(class: Arc<Class>, method: Arc<Method>) -> Self {
-        let mut locals = Locals::new(method.code().locals_size());
+        let locals = Locals::new(method.code().locals_size());
 
         Frame {
             class,
@@ -50,7 +54,7 @@ impl Frame {
             if !type_desc.is_assignable_with(value) {
                 return Err(FrameError::IncompatibleArgumentType {
                     expected: type_desc.clone(),
-                    got: value.value_type()
+                    got: value.value_type(),
                 });
             }
 
@@ -73,30 +77,37 @@ impl Frame {
         })
     }
 
+    /// Returns the stack of this Frame.
     pub fn stack(&self) -> &OperandStack {
         &self.stack
     }
 
+    /// Returns the loacals of this Frame.
     pub fn locals(&self) -> &Locals {
         &self.locals
     }
 
+    /// Returns the method of this Frame.
     pub fn method(&self) -> &Arc<Method> {
         &self.method
     }
-    
+
+    /// Returns the class of this Frame.
     pub fn class(&self) -> &Arc<Class> {
         &self.class
     }
 
+    /// Returns the pc of this Frame.
     pub fn pc(&self) -> isize {
         self.pc.read().unwrap().clone()
     }
 
+    /// Increment the pc of this Frame by one.
     pub fn inc_pc(&self) {
         *self.pc.write().unwrap() += 1
     }
 
+    /// Sets the value of the pc of this Frame as current pc + offset.
     pub fn offset_pc(&self, offset: i16) {
         *self.pc.write().unwrap() += offset as isize;
     }

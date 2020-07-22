@@ -1,10 +1,8 @@
 use thiserror::Error;
 
-use crate::vm::class::descriptor::{ParamsDesc, ReturnDesc};
-use crate::vm::class::name::{ClassName, MethodName};
+use crate::vm::class::name::{ClassName};
 use crate::vm::class::signature::{FieldSig, MethodSig};
-use crate::vm::types::int::Int;
-use crate::vm::types::value::{Value, ValueType};
+use crate::vm::types::value::{Value};
 
 
 /// An error that can occur while creating a class, field or method name.

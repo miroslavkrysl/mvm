@@ -1,7 +1,7 @@
-use crate::vm::class::symbolic::{MethodRef, FieldRef};
-use crate::vm::class::name::ClassName;
-use crate::vm::class::descriptor::{TypeDesc};
 use std::fmt::{Display, Formatter};
+
+use crate::vm::class::name::ClassName;
+use crate::vm::class::symbolic::{FieldRef, MethodRef};
 
 
 /// Argument for `LDC` instruction.
@@ -10,6 +10,7 @@ pub enum LdcArg {
     Int(i32),
     Float(f32),
 }
+
 
 impl Display for LdcArg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -20,12 +21,14 @@ impl Display for LdcArg {
     }
 }
 
+
 /// Argument for `LDC2` and `LDC2_W` instructions.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Ldc2Arg {
     Long(i64),
     Double(f64),
 }
+
 
 impl Display for Ldc2Arg {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -35,6 +38,7 @@ impl Display for Ldc2Arg {
         }
     }
 }
+
 
 /// Enum of bytecode instructions.
 #[derive(Debug, Clone, PartialEq)]
@@ -63,7 +67,7 @@ pub enum Instruction {
     // push constant args
     BIPUSH(i8),
     SIPUSH(i16),
-    LDC(LdcArg), 
+    LDC(LdcArg),
     LDC_W(LdcArg),
     LDC2_W(Ldc2Arg),
 
@@ -169,7 +173,7 @@ pub enum Instruction {
     LOR,
     IXOR,
     LXOR,
-    IINC (u8, i8),
+    IINC(u8, i8),
 
     // conversions
     I2L,
@@ -229,6 +233,7 @@ pub enum Instruction {
     // object creation
     NEW(ClassName),
 }
+
 
 impl Display for Instruction {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

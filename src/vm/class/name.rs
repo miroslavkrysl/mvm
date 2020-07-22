@@ -59,16 +59,16 @@ impl fmt::Display for ClassName {
 }
 
 
+/// A method name.
+/// The name must have at least one character and must not
+/// contain any of the characters {`. ; [ ] < >`} except for
+/// special method names `<init>` and `<clinit>`.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct MethodName {
     name: String,
 }
 
 
-/// A method name.
-/// The name must have at least one character and must not
-/// contain any of the characters {`. ; [ ] < >`} except for
-/// special method names `<init>` and `<clinit>`.
 impl MethodName {
     pub const INIT_STRING: &'static str = "<init>";
     pub const CLINIT_STRING: &'static str = "<clinit>";
@@ -124,15 +124,15 @@ impl fmt::Display for MethodName {
 }
 
 
+/// A field name.
+/// The name must have at least one character and must not
+/// contain any of the characters {`. ; [ ]`}.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct FieldName {
     name: String
 }
 
 
-/// A field name.
-/// The name must have at least one character and must not
-/// contain any of the characters {`. ; [ ]`}.
 impl FieldName {
     /// Create a new field name.
     ///

@@ -2,26 +2,30 @@ use gtk::{Button, ButtonExt, HeaderBar, HeaderBarExt};
 use relm::{connect, Relm, Update, Widget};
 use relm_derive::Msg;
 
+
 #[derive(Msg)]
 pub enum AppHeaderEvent {
     Load,
 }
 
+
 pub struct AppHeaderView {
     header: HeaderBar,
 }
+
 
 impl Update for AppHeaderView {
     type Model = ();
     type ModelParam = ();
     type Msg = AppHeaderEvent;
 
-    fn model(relm: &Relm<Self>, _: Self::ModelParam) -> Self::Model {
+    fn model(_: &Relm<Self>, _: Self::ModelParam) -> Self::Model {
         ()
     }
 
     fn update(&mut self, _: Self::Msg) {}
 }
+
 
 impl Widget for AppHeaderView {
     type Root = HeaderBar;

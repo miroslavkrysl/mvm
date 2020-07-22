@@ -1,8 +1,7 @@
 use thiserror::Error;
 
-use crate::vm::class::name::ClassName;
-use crate::vm::types::error::ValueError;
 use crate::vm::class::descriptor::TypeDesc;
+use crate::vm::types::error::ValueError;
 use crate::vm::types::value::ValueType;
 
 
@@ -46,7 +45,7 @@ pub enum FrameError {
     #[error("expected argument of type {expected}, got {got}")]
     IncompatibleArgumentType {
         expected: TypeDesc,
-        got: ValueType
+        got: ValueType,
     },
     #[error(transparent)]
     OperandStack {

@@ -38,7 +38,7 @@ impl Method {
             params_size += ValueType::AnyReference.category().size();
         }
 
-        if code.locals_size() <  params_size {
+        if code.locals_size() < params_size {
             return Err(MethodError::TooFewLocalsEntries {
                 locals_size: code.locals_size(),
                 params_size,

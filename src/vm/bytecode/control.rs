@@ -1,13 +1,14 @@
 use crate::vm::bytecode::instruction::Instruction;
-use crate::vm::exec::thread::Thread;
-use crate::vm::exec::error::ExecError;
 use crate::vm::class::descriptor::{ReturnDesc, TypeDesc};
-use crate::vm::types::value::ValueType;
+use crate::vm::exec::error::ExecError;
+use crate::vm::exec::thread::Thread;
+use crate::vm::types::double::Double;
+use crate::vm::types::float::Float;
 use crate::vm::types::int::Int;
 use crate::vm::types::long::Long;
-use crate::vm::types::float::Float;
-use crate::vm::types::double::Double;
 use crate::vm::types::reference::Reference;
+use crate::vm::types::value::ValueType;
+
 
 impl Instruction {
     pub(super) fn ireturn(&self, thread: &Thread) -> Result<(), ExecError> {
@@ -17,8 +18,8 @@ impl Instruction {
         if *expected_type != ReturnDesc::NonVoid(TypeDesc::Int) {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Int
-            })
+                called: ValueType::Int,
+            });
         }
 
         let value = frame.stack().pop::<Int>()?;
@@ -36,8 +37,8 @@ impl Instruction {
         if *expected_type != ReturnDesc::NonVoid(TypeDesc::Long) {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Long
-            })
+                called: ValueType::Long,
+            });
         }
 
         let value = frame.stack().pop::<Long>()?;
@@ -55,8 +56,8 @@ impl Instruction {
         if *expected_type != ReturnDesc::NonVoid(TypeDesc::Float) {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Float
-            })
+                called: ValueType::Float,
+            });
         }
 
         let value = frame.stack().pop::<Float>()?;
@@ -74,8 +75,8 @@ impl Instruction {
         if *expected_type != ReturnDesc::NonVoid(TypeDesc::Double) {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Double
-            })
+                called: ValueType::Double,
+            });
         }
 
         let value = frame.stack().pop::<Double>()?;
@@ -98,10 +99,9 @@ impl Instruction {
                 if *instance.class().name() != *class_name {
                     return Err(ExecError::InvalidReturnType {
                         expected: expected_type.clone(),
-                        called: ValueType::Reference(instance.class().name().clone())
-                    })
+                        called: ValueType::Reference(instance.class().name().clone()),
+                    });
                 }
-
             }
 
             thread.stack().pop().expect("frame stack should not be empty");
@@ -111,8 +111,8 @@ impl Instruction {
         } else {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::AnyReference
-            })
+                called: ValueType::AnyReference,
+            });
         }
     }
 
@@ -123,8 +123,8 @@ impl Instruction {
         if *expected_type != ReturnDesc::Void {
             return Err(ExecError::InvalidReturnType {
                 expected: expected_type.clone(),
-                called: ValueType::Void
-            })
+                called: ValueType::Void,
+            });
         }
 
         thread.stack().pop().expect("frame stack should not be empty");
